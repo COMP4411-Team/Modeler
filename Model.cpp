@@ -13,6 +13,8 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+const aiScene* scene;
+
 // To make a SampleModel, we inherit off of ModelerView
 class SampleModel : public ModelerView 
 {
@@ -28,6 +30,11 @@ public:
 ModelerView* createSampleModel(int x, int y, int w, int h, char *label)
 { 
     return new SampleModel(x,y,w,h,label); 
+}
+
+void drawTriangle(const aiVector3D* v1, const aiVector3D* v2, const aiVector3D* v3)
+{
+	drawTriangle(v1->x, v1->y, v1->z, v2->x, v2->y, v2->z, v3->x, v3->y, v3->z);
 }
 
 // We are going to override (is that the right word?) the draw()
@@ -51,53 +58,79 @@ void SampleModel::draw()
 	 */
 
 	// draw the floor
-	setAmbientColor(.1f,.1f,.1f);
-	setDiffuseColor(COLOR_RED);
-	glPushMatrix();
-	glTranslated(-5,0,-5);
-	drawBox(10,0.01f,10);
-	glPopMatrix();
+	setAmbientColor(0.75f, 0.75f, 0.75f);
+	setDiffuseColor(0.75f, 0.75f, 0.75f);
+	glScaled(0.01, 0.01, 0.01);
+	const aiMesh* mesh = scene->mMeshes[0];
 
-	// draw the sample model
-	setAmbientColor(.1f,.1f,.1f);
-	setDiffuseColor(COLOR_GREEN);
-	glPushMatrix();
-	glTranslated(VAL(XPOS), VAL(YPOS), VAL(ZPOS));
+	for (int i = 0; i < mesh->mNumBones; ++i)
+	{
+		auto* bone = *(mesh->mBones + i);
+		auto name = bone->mName;
+		for (int j = 0; j < bone->mNumWeights; ++j)
+		{
+			auto* weight = bone->mWeights + j;
+		}
+	}
 
-		glPushMatrix();
-		glTranslated(-1.5, 0, -2);
-		glScaled(3, 1, 4);
-		drawBox(1,1,1);
-		glPopMatrix();
+	
+	for (int i = 0; i < mesh->mNumFaces; ++i)
+	{
+		const aiFace& face = mesh->mFaces[i];
+		const aiVector3D* vertices[3];
+		for (int j = 0; j < 3; ++j)
+		{
+			auto idx = face.mIndices[j];
+			vertices[j] = &(mesh->mVertices[idx]);
+		}
+		drawTriangle(vertices[0], vertices[1], vertices[2]);
+	}
+	
+	//glPushMatrix();
+	//glTranslated(-5,0,-5);
+	//drawBox(10,0.01f,10);
+	//glPopMatrix();
 
-		// draw cannon
-		glPushMatrix();
-		glRotated(VAL(ROTATE), 0.0, 1.0, 0.0);
-		glRotated(-90, 1.0, 0.0, 0.0);
-		drawCylinder(VAL(HEIGHT), 0.1, 0.1);
+	//// draw the sample model
+	//setAmbientColor(.1f,.1f,.1f);
+	//setDiffuseColor(COLOR_GREEN);
+	//glPushMatrix();
+	//glTranslated(VAL(XPOS), VAL(YPOS), VAL(ZPOS));
 
-		glTranslated(0.0, 0.0, VAL(HEIGHT));
-		drawCylinder(1, 1.0, 0.9);
+	//	glPushMatrix();
+	//	glTranslated(-1.5, 0, -2);
+	//	glScaled(3, 1, 4);
+	//	drawBox(1,1,1);
+	//	glPopMatrix();
 
-		glTranslated(0.0, 0.0, 0.5);
-		glRotated(90, 1.0, 0.0, 0.0);
-		drawCylinder(4, 0.1, 0.2);
-		glPopMatrix();
+	//	// draw cannon
+	//	glPushMatrix();
+	//	glRotated(VAL(ROTATE), 0.0, 1.0, 0.0);
+	//	glRotated(-90, 1.0, 0.0, 0.0);
+	//	drawCylinder(VAL(HEIGHT), 0.1, 0.1);
 
-	glPopMatrix();
+	//	glTranslated(0.0, 0.0, VAL(HEIGHT));
+	//	drawCylinder(1, 1.0, 0.9);
+
+	//	glTranslated(0.0, 0.0, 0.5);
+	//	glRotated(90, 1.0, 0.0, 0.0);
+	//	drawCylinder(4, 0.1, 0.2);
+	//	glPopMatrix();
+
+	//glPopMatrix();
 }
 
 int main()
 {
 	// Test assimp
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile("./models/bunny/bunny.obj", 
+	scene = importer.ReadFile("./models/lowpolydeer.dae", 
 		aiProcess_CalcTangentSpace |
 		aiProcess_Triangulate |
 		aiProcess_JoinIdenticalVertices |
 		aiProcess_SortByPType);
-	std::cout << "import done, vertices: " << (*(scene->mMeshes))->mNumVertices << std::endl;
-	
+	std::cout << "import done\nmeshes: " << scene->mNumMeshes << std::endl;
+	std::cout << "bones: " << scene->mMeshes[0]->mNumBones << std::endl;
 	
 	// Initialize the controls
 	// Constructor is ModelerControl(name, minimumvalue, maximumvalue, 
