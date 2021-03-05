@@ -69,13 +69,13 @@ void traverseBoneHierarchy(Mesh& mesh, const aiNode* cur, const Matrix4f& parent
 		// final_transformation is used to transform the vertices from local space to world space
 		// any other transformation should be inserted between cur_transformation and offset
 		mesh.bones[bone_index].final_transformation = 
-			global_transformation * mesh.bones[bone_index].offset;
+			global_inverse * global_transformation * mesh.bones[bone_index].offset;
+	}
 
-		// Recursively visit its children
-		for (int i = 0; i < cur->mNumChildren; ++i)
-		{
-			traverseBoneHierarchy(mesh, cur->mChildren[i], global_transformation);
-		}
+	// Recursively visit its children
+	for (int i = 0; i < cur->mNumChildren; ++i)
+	{
+		traverseBoneHierarchy(mesh, cur->mChildren[i], global_transformation);
 	}
 }
 
@@ -90,10 +90,10 @@ void processVertices(Mesh& mesh)
 
 		for (int i = 1; i < vertex.bone_index.size(); ++i)
 		{
-			auto& bone = mesh.bones[vertex.bone_index[0]];
-			transformation = transformation + bone.final_transformation * vertex.bone_weight[0]; // seems that += is not overloaded
+			auto& bone = mesh.bones[vertex.bone_index[i]];
+			transformation = transformation + bone.final_transformation * vertex.bone_weight[i]; // seems that += is not overloaded
 		}
-		vertex.world_pos = global_inverse * transformation * vertex.original_pos; // apply mat4 transformation to vec3 is possible in assimp
+		vertex.world_pos = transformation * vertex.original_pos; // apply mat4 transformation to vec3 is possible in assimp
 	}
 }
 
@@ -137,7 +137,7 @@ void SampleModel::draw()
 	// draw the floor
 	setAmbientColor(0.75f, 0.75f, 0.75f);
 	setDiffuseColor(0.75f, 0.75f, 0.75f);
-	glScaled(0.01, 0.01, 0.01);
+	glScaled(1.0, 1.0, 1.0);
 
 	auto& mesh = helper.meshes[0];
 	auto* scene = helper.scene;
