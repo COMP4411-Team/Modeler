@@ -5,8 +5,8 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.92.0 commit date:2021-02-24, commit time:16:25, hash:02948a2cab44</authoring_tool>
     </contributor>
-    <created>2021-03-02T23:11:39</created>
-    <modified>2021-03-02T23:11:39</modified>
+    <created>2021-03-06T16:32:07</created>
+    <modified>2021-03-06T16:32:07</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -125,7 +125,7 @@
       <skin source="#ID6-mesh">
         <bind_shape_matrix>-4.10504e-5 0.01004604 -2.32135e-4 -0.8230612 -0.01004698 -3.67147e-5 1.87806e-4 0.04424486 1.86906e-4 2.32861e-4 0.01004436 0.04397414 0 0 0 1</bind_shape_matrix>
         <source id="骨架_grp1_2-skin-joints">
-          <Name_array id="骨架_grp1_2-skin-joints-array" count="17">mainBone neckBone headBone leftForeLimp1 leftForeLimp2 leftForeLimp3 rightForeLimp1 rightForeLimp2 rightForeLimp3 leftRearLimp1 leftRearLimp2 leftRearLimp3 rightRearLimp1 rightRearLimp2 rightRearLimp3 rearBone tailBone</Name_array>
+          <Name_array id="骨架_grp1_2-skin-joints-array" count="17">main neck head foreLimpLeft1 foreLimpLeft2 foreLimpLeft3 foreLimpRight1 foreLimpRight2 foreLimpRight3 rearLimpLeft1 rearLimpLeft2 rearLimpLeft3 rearLimpRight1 rearLimpRight2 rearLimpRight3 rear tail</Name_array>
           <technique_common>
             <accessor source="#骨架_grp1_2-skin-joints-array" count="17" stride="1">
               <param name="JOINT" type="name"/>
@@ -133,7 +133,7 @@
           </technique_common>
         </source>
         <source id="骨架_grp1_2-skin-bind_poses">
-          <float_array id="骨架_grp1_2-skin-bind_poses-array" count="272">-0.05135667 -0.04439508 -0.9976931 6.969732 0.9924508 -0.1136782 -0.04602825 3.245183 -0.1113725 -0.9925252 0.04989808 -0.3485308 0 0 0 1 0.7300748 0.03569102 -0.6824347 3.706607 0.6829949 -0.005141139 0.7304052 -6.012162 0.02256035 -0.9993497 -0.02813017 0.002881228 0 0 0 1 -0.4683969 0.03970867 -0.8826253 11.05995 0.8683251 -0.1637749 -0.4681761 0.8781149 -0.1631425 -0.9856983 0.04223155 0.1138118 0 0 0 1 -0.8419362 -0.5334153 -0.08131247 1.656042 -0.1657944 0.3991512 -0.9017708 6.537199 0.5134744 -0.7457522 -0.424497 2.099424 0 0 0 1 -0.8416044 -0.5328056 0.08843278 0.8318822 -0.06570404 -0.06151801 -0.995941 4.944369 0.5360834 -0.8439985 0.01676642 0.01028132 0 0 0 1 -0.834092 -0.5441961 -0.09023004 1.322635 0.09566509 0.01838904 -0.9952438 2.635131 0.5432671 -0.8387565 0.03672254 -0.05408298 0 0 0 1 -0.8238394 0.5626608 -0.06857001 1.71824 -0.1897219 -0.3877176 -0.9020426 6.44643 -0.5341296 -0.7301289 0.426166 -2.318673 0 0 0 1 -0.7997174 0.5942665 0.08543503 0.972665 -0.1072919 -0.001449525 -0.9942266 4.974546 -0.5907118 -0.8042668 0.06491911 -0.5697916 0 0 0 1 -0.8003745 0.5897516 -0.1076754 1.524178 0.05661058 -0.1044559 -0.9929172 2.706474 -0.5968216 -0.800801 0.0502175 -0.5192874 0 0 0 1 0.9858551 -0.05942714 -0.1567106 3.996117 -0.1117171 0.4640027 -0.8787609 5.778754 0.1249364 0.8838381 0.4508004 -3.141167 0 0 0 1 0.7954441 -0.2340249 -0.5590181 5.792721 -0.5627878 0.05692487 -0.8246389 2.630896 0.2248082 0.9705627 -0.08642566 -0.03333657 0 0 0 1 0.9659659 -0.2370603 0.1034982 3.842571 0.08911341 -0.07064199 -0.993513 4.431345 0.242834 0.9689232 -0.04711246 -0.1148567 0 0 0 1 -0.7733632 0.6134634 -0.1599131 -1.309229 -0.2218111 -0.498135 -0.8382492 5.490666 -0.5938935 -0.6128006 0.5213121 -5.231479 0 0 0 1 -0.5313464 0.7676913 0.3582195 -3.198571 -0.5575013 0.00150901 -0.8301749 2.627408 -0.6378588 -0.6408182 0.4271868 -4.888257 0 0 0 1 -0.6738596 0.7367292 -0.05606299 -2.181451 0.06409388 -0.01730501 -0.9977938 4.244475 -0.7360743 -0.6759663 -0.03555876 -3.489715 0 0 0 1 0.3017792 0.9364151 0.1790424 -0.7104937 -0.7527977 0.1188141 0.6474402 -6.833825 0.585 -0.3301668 0.7407867 -3.467548 0 0 0 1 0.06479746 0.9717273 -0.2270413 1.625222 -0.9348919 -0.02045011 -0.3543434 -1.026438 -0.3489682 0.2352196 0.9071345 -9.119416 0 0 0 1</float_array>
+          <float_array id="骨架_grp1_2-skin-bind_poses-array" count="272">-0.05135667 -0.04439508 -0.9976931 6.969732 0.9924508 -0.1136782 -0.04602825 3.245183 -0.1113725 -0.9925252 0.04989808 -0.3485308 0 0 0 1 0.7300748 0.03569102 -0.6824347 3.706607 0.6829949 -0.005141139 0.7304052 -6.012162 0.02256035 -0.9993497 -0.02813017 0.002881228 0 0 0 1 -0.4683969 0.03970867 -0.8826253 11.05995 0.8683251 -0.1637749 -0.4681761 0.8781149 -0.1631425 -0.9856983 0.04223155 0.1138118 0 0 0 1 -0.8419362 -0.5334153 -0.08131247 1.656042 -0.1657944 0.3991512 -0.9017708 6.537199 0.5134744 -0.7457522 -0.424497 2.099424 0 0 0 1 -0.8416044 -0.5328056 0.08843278 0.8318822 -0.06570404 -0.06151801 -0.995941 4.944369 0.5360834 -0.8439985 0.01676642 0.01028132 0 0 0 1 -0.834092 -0.5441961 -0.09023004 1.322635 0.09566509 0.01838904 -0.9952438 2.635131 0.5432671 -0.8387565 0.03672254 -0.05408298 0 0 0 1 -0.8238394 0.5626608 -0.06857001 1.71824 -0.1897219 -0.3877176 -0.9020426 6.44643 -0.5341296 -0.7301289 0.426166 -2.318673 0 0 0 1 -0.7997174 0.5942665 0.08543503 0.972665 -0.1072919 -0.001449525 -0.9942266 4.974546 -0.5907118 -0.8042668 0.06491911 -0.5697916 0 0 0 1 -0.8003745 0.5897516 -0.1076754 1.524178 0.05661058 -0.1044559 -0.9929172 2.706474 -0.5968216 -0.800801 0.0502175 -0.5192874 0 0 0 1 0.9858551 -0.05942714 -0.1567107 3.996118 -0.1117172 0.4640028 -0.8787609 5.778753 0.1249364 0.8838381 0.4508004 -3.141166 0 0 0 1 0.795444 -0.2340249 -0.559018 5.792721 -0.562788 0.05692499 -0.824639 2.630896 0.2248081 0.9705627 -0.08642572 -0.03333616 0 0 0 1 0.9659662 -0.2370604 0.1034982 3.842573 0.08911317 -0.07064181 -0.9935132 4.431345 0.2428339 0.9689234 -0.04711246 -0.1148567 0 0 0 1 -0.7733632 0.6134632 -0.1599132 -1.309229 -0.2218108 -0.4981347 -0.838249 5.490666 -0.5938933 -0.6128006 0.5213118 -5.231477 0 0 0 1 -0.5313463 0.7676912 0.3582195 -3.19857 -0.5575012 0.001509308 -0.8301749 2.627408 -0.6378586 -0.6408179 0.4271868 -4.888256 0 0 0 1 -0.6738595 0.7367292 -0.05606299 -2.18145 0.06409376 -0.01730489 -0.9977937 4.244474 -0.7360742 -0.675966 -0.03555876 -3.489715 0 0 0 1 0.301779 0.9364147 0.1790423 -0.7104934 -0.7527977 0.1188139 0.6474401 -6.833825 0.5849999 -0.3301666 0.7407867 -3.467548 0 0 0 1 0.06479758 0.9717265 -0.2270415 1.625224 -0.9348917 -0.02044993 -0.3543433 -1.026439 -0.3489681 0.2352194 0.9071344 -9.119415 0 0 0 1</float_array>
           <technique_common>
             <accessor source="#骨架_grp1_2-skin-bind_poses-array" count="17" stride="16">
               <param name="TRANSFORM" type="float4x4"/>
@@ -165,11 +165,11 @@
     <visual_scene id="Scene" name="Scene">
       <node id="骨架" name="骨架" type="NODE">
         <matrix sid="transform">0.9920794 0.0997431 0.07635316 -0.139882 -0.1021522 0.9943657 0.02831603 -0.1958804 -0.07309863 -0.0358914 0.9966787 0.3698431 0 0 0 1</matrix>
-        <node id="骨架_mainBone" name="mainBone" sid="mainBone" type="JOINT">
+        <node id="骨架_main" name="main" sid="main" type="JOINT">
           <matrix sid="transform">0.02651528 0.9995671 -0.01274927 -3.287227 -0.01345888 -0.01239564 -0.9998326 0.007561579 -0.9995578 0.02668232 0.01312438 6.532248 0 0 0 1</matrix>
-          <node id="骨架_neckBone" name="neckBone" sid="neckBone" type="JOINT">
+          <node id="骨架_neck" name="neck" sid="neck" type="JOINT">
             <matrix sid="transform">0.6417816 -0.7635682 0.07127297 -1.45286e-7 0.7519173 0.644804 0.1372892 4.334391 -0.1507868 -0.03451834 0.9879635 0 0 0 0 1</matrix>
-            <node id="骨架_headBone" name="headBone" sid="headBone" type="JOINT">
+            <node id="骨架_head" name="head" sid="head" type="JOINT">
               <matrix sid="transform">0.2617866 0.9475969 -0.1831071 0 -0.9647911 0.2519454 -0.07551172 4.445736 -0.02542166 0.196428 0.9801887 2.98023e-8 0 0 0 1</matrix>
               <extra>
                 <technique profile="blender">
@@ -190,11 +190,11 @@
               </technique>
             </extra>
           </node>
-          <node id="骨架_leftForeLimp1" name="leftForeLimp1" sid="leftForeLimp1" type="JOINT">
+          <node id="骨架_foreLimpLeft1" name="foreLimpLeft1" sid="foreLimpLeft1" type="JOINT">
             <matrix sid="transform">0.1480449 0.8904848 0.4302553 -1.45286e-7 -0.7711997 -0.1684105 0.6139128 4.334391 0.6191395 -0.4226994 0.6618093 0 0 0 0 1</matrix>
-            <node id="骨架_leftForeLimp2" name="leftForeLimp2" sid="leftForeLimp2" type="JOINT">
+            <node id="骨架_foreLimpLeft2" name="foreLimpLeft2" sid="foreLimpLeft2" type="JOINT">
               <matrix sid="transform">0.985593 0.1691156 -0.002509261 2.38419e-7 -0.152883 0.8844489 -0.4408821 2.295872 -0.07234068 0.434914 0.8975616 -1.19209e-7 0 0 0 1</matrix>
-              <node id="骨架_leftForeLimp3" name="leftForeLimp3" sid="leftForeLimp3" type="JOINT">
+              <node id="骨架_foreLimpLeft3" name="foreLimpLeft3" sid="foreLimpLeft3" type="JOINT">
                 <matrix sid="transform">0.9839466 -0.1783223 -0.007074183 0 0.1781447 0.9837871 -0.02066956 2.115222 0.01064535 0.01907752 0.9997613 2.98023e-8 0 0 0 1</matrix>
                 <extra>
                   <technique profile="blender">
@@ -223,11 +223,11 @@
               </technique>
             </extra>
           </node>
-          <node id="骨架_rightForeLimp1" name="rightForeLimp1" sid="rightForeLimp1" type="JOINT">
+          <node id="骨架_foreLimpRight1" name="foreLimpRight1" sid="foreLimpRight1" type="JOINT">
             <matrix sid="transform">0.08574204 0.9269179 -0.3653376 -1.45286e-7 -0.8784262 -0.1026951 -0.4667134 4.334391 -0.4701233 0.360939 0.8054236 0 0 0 0 1</matrix>
-            <node id="骨架_rightForeLimp2" name="rightForeLimp2" sid="rightForeLimp2" type="JOINT">
+            <node id="骨架_foreLimpRight2" name="foreLimpRight2" sid="foreLimpRight2" type="JOINT">
               <matrix sid="transform">0.9873508 0.1557498 0.02967075 0 -0.1557497 0.917752 0.3653394 2.240688 0.02967115 -0.3653393 0.9304013 0 0 0 0 1</matrix>
-              <node id="骨架_rightForeLimp3" name="rightForeLimp3" sid="rightForeLimp3" type="JOINT">
+              <node id="骨架_foreLimpRight3" name="foreLimpRight3" sid="foreLimpRight3" type="JOINT">
                 <matrix sid="transform">0.9813437 -0.1921771 0.005689722 0 0.1920726 0.981262 0.0152672 2.033962 -0.008517099 -0.01388953 0.9998673 0 0 0 0 1</matrix>
                 <extra>
                   <technique profile="blender">
@@ -256,6 +256,92 @@
               </technique>
             </extra>
           </node>
+          <node id="骨架_rearLimpLeft1" name="rearLimpLeft1" sid="rearLimpLeft1" type="JOINT">
+            <matrix sid="transform">0.1083574 0.8618716 -0.4954149 -4.47035e-8 0.9923814 -0.1231729 0.002770512 -4.76837e-7 -0.05863393 -0.4919407 -0.8686521 -7.45058e-9 0 0 0 1</matrix>
+            <node id="骨架_rearLimpLeft2" name="rearLimpLeft2" sid="rearLimpLeft2" type="JOINT">
+              <matrix sid="transform">0.8857042 -0.4289804 0.1774944 -2.38419e-7 0.2937903 0.813947 0.5011764 1.952206 -0.3594658 -0.3917478 0.8469463 -2.38419e-7 0 0 0 1</matrix>
+              <node id="骨架_rearLimpLeft3" name="rearLimpLeft3" sid="rearLimpLeft3" type="JOINT">
+                <matrix sid="transform">0.7659927 0.6428086 -0.007254657 -4.76837e-7 -0.6424774 0.7651167 -0.0426573 1.704267 -0.0218698 0.03733612 0.9990634 8.9407e-8 0 0 0 1</matrix>
+                <extra>
+                  <technique profile="blender">
+                    <connect sid="connect" type="bool">1</connect>
+                    <layer sid="layer" type="string">0</layer>
+                    <roll sid="roll" type="float">-0.02547717</roll>
+                    <tip_x sid="tip_x" type="float">0.5074167</tip_x>
+                    <tip_y sid="tip_y" type="float">-0.07749873</tip_y>
+                    <tip_z sid="tip_z" type="float">-2.971878</tip_z>
+                  </technique>
+                </extra>
+              </node>
+              <extra>
+                <technique profile="blender">
+                  <connect sid="connect" type="bool">1</connect>
+                  <layer sid="layer" type="string">0</layer>
+                  <roll sid="roll" type="float">0.6620927</roll>
+                </technique>
+              </extra>
+            </node>
+            <extra>
+              <technique profile="blender">
+                <layer sid="layer" type="string">0</layer>
+                <roll sid="roll" type="float">0.05625081</roll>
+              </technique>
+            </extra>
+          </node>
+          <node id="骨架_rearLimpRight1" name="rearLimpRight1" sid="rearLimpRight1" type="JOINT">
+            <matrix sid="transform">0.1720268 0.8698217 -0.4624036 -4.47035e-8 -0.8299019 -0.124926 -0.5437429 -4.76837e-7 -0.5307256 0.477288 0.700376 -7.45058e-9 0 0 0 1</matrix>
+            <node id="骨架_rearLimpRight2" name="rearLimpRight2" sid="rearLimpRight2" type="JOINT">
+              <matrix sid="transform">0.8245901 0.5648327 0.03186534 0 -0.5648327 0.8188013 0.1026088 2.034264 0.0318654 -0.1026087 0.9942113 -4.76837e-7 0 0 0 1</matrix>
+              <node id="骨架_rearLimpRight3" name="rearLimpRight3" sid="rearLimpRight3" type="JOINT">
+                <matrix sid="transform">0.9035506 -0.4047701 -0.1405609 -4.76837e-7 0.4233315 0.7925848 0.438862 1.718282 -0.0662317 -0.4560379 0.8874925 -2.38419e-7 0 0 0 1</matrix>
+                <extra>
+                  <technique profile="blender">
+                    <connect sid="connect" type="bool">1</connect>
+                    <layer sid="layer" type="string">0</layer>
+                    <roll sid="roll" type="float">-2.54941</roll>
+                    <tip_x sid="tip_x" type="float">0.401187</tip_x>
+                    <tip_y sid="tip_y" type="float">0.072519</tip_y>
+                    <tip_z sid="tip_z" type="float">-2.872238</tip_z>
+                  </technique>
+                </extra>
+              </node>
+              <extra>
+                <technique profile="blender">
+                  <connect sid="connect" type="bool">1</connect>
+                  <layer sid="layer" type="string">0</layer>
+                  <roll sid="roll" type="float">-1.854197</roll>
+                </technique>
+              </extra>
+            </node>
+            <extra>
+              <technique profile="blender">
+                <layer sid="layer" type="string">0</layer>
+                <roll sid="roll" type="float">-2.353014</roll>
+              </technique>
+            </extra>
+          </node>
+          <node id="骨架_rear" name="rear" sid="rear" type="JOINT">
+            <matrix sid="transform">-0.2357003 -0.6125603 -0.7544637 -4.47035e-8 0.1848098 -0.790422 0.5840195 -4.76837e-7 -0.9540921 -0.001778986 0.2995097 -7.45058e-9 0 0 0 1</matrix>
+            <node id="骨架_tail" name="tail" sid="tail" type="JOINT">
+              <matrix sid="transform">0.8888445 -0.364723 0.2773677 -1.19209e-7 -0.08032036 0.4719385 0.8779651 1.787656 -0.4511145 -0.8026527 0.3901851 0 0 0 0 1</matrix>
+              <extra>
+                <technique profile="blender">
+                  <connect sid="connect" type="bool">1</connect>
+                  <layer sid="layer" type="string">0</layer>
+                  <roll sid="roll" type="float">-0.2733376</roll>
+                  <tip_x sid="tip_x" type="float">-1.464309</tip_x>
+                  <tip_y sid="tip_y" type="float">-0.1642019</tip_y>
+                  <tip_z sid="tip_z" type="float">-0.6920743</tip_z>
+                </technique>
+              </extra>
+            </node>
+            <extra>
+              <technique profile="blender">
+                <layer sid="layer" type="string">0</layer>
+                <roll sid="roll" type="float">0.3315263</roll>
+              </technique>
+            </extra>
+          </node>
           <extra>
             <technique profile="blender">
               <layer sid="layer" type="string">0</layer>
@@ -263,99 +349,10 @@
             </technique>
           </extra>
         </node>
-        <node id="骨架_leftRearLimp1" name="leftRearLimp1" sid="leftRearLimp1" type="JOINT">
-          <matrix sid="transform">0.9955724 -0.09399492 7.07913e-4 -3.287227 0.04486449 0.4817854 0.87514 0.007561579 -0.08259977 -0.8712335 0.4838693 6.532248 0 0 0 1</matrix>
-          <node id="骨架_leftRearLimp2" name="leftRearLimp2" sid="leftRearLimp2" type="JOINT">
-            <matrix sid="transform">0.885704 -0.4289804 0.1774943 -2.38419e-7 0.2937903 0.8139469 0.5011764 1.952206 -0.3594658 -0.3917478 0.8469462 0 0 0 0 1</matrix>
-            <node id="骨架_leftRearLimp3" name="leftRearLimp3" sid="leftRearLimp3" type="JOINT">
-              <matrix sid="transform">0.7659927 0.6428086 -0.007254595 -2.38419e-7 -0.6424775 0.7651165 -0.04265727 1.704267 -0.02186983 0.03733606 0.9990634 -5.96046e-8 0 0 0 1</matrix>
-              <extra>
-                <technique profile="blender">
-                  <connect sid="connect" type="bool">1</connect>
-                  <layer sid="layer" type="string">0</layer>
-                  <roll sid="roll" type="float">-0.02547717</roll>
-                  <tip_x sid="tip_x" type="float">0.5074167</tip_x>
-                  <tip_y sid="tip_y" type="float">-0.07749873</tip_y>
-                  <tip_z sid="tip_z" type="float">-2.971878</tip_z>
-                </technique>
-              </extra>
-            </node>
-            <extra>
-              <technique profile="blender">
-                <connect sid="connect" type="bool">1</connect>
-                <layer sid="layer" type="string">0</layer>
-                <roll sid="roll" type="float">0.6620927</roll>
-              </technique>
-            </extra>
-          </node>
-          <extra>
-            <technique profile="blender">
-              <layer sid="layer" type="string">0</layer>
-              <roll sid="roll" type="float">0.05625081</roll>
-            </technique>
-          </extra>
-        </node>
-        <node id="骨架_rightRearLimp1" name="rightRearLimp1" sid="rightRearLimp1" type="JOINT">
-          <matrix sid="transform">-0.8182148 -0.1078936 -0.5646974 -3.287227 0.5386087 -0.4873663 -0.687295 0.007561579 -0.2010598 -0.866506 0.456883 6.532248 0 0 0 1</matrix>
-          <node id="骨架_rightRearLimp2" name="rightRearLimp2" sid="rightRearLimp2" type="JOINT">
-            <matrix sid="transform">0.82459 0.5648324 0.03186511 0 -0.5648324 0.8188014 0.102609 2.034264 0.03186572 -0.1026088 0.9942113 2.38419e-7 0 0 0 1</matrix>
-            <node id="骨架_rightRearLimp3" name="rightRearLimp3" sid="rightRearLimp3" type="JOINT">
-              <matrix sid="transform">0.9035508 -0.4047701 -0.1405609 0 0.4233315 0.7925848 0.438862 1.718282 -0.06623189 -0.4560379 0.8874925 -2.38419e-7 0 0 0 1</matrix>
-              <extra>
-                <technique profile="blender">
-                  <connect sid="connect" type="bool">1</connect>
-                  <layer sid="layer" type="string">0</layer>
-                  <roll sid="roll" type="float">-2.54941</roll>
-                  <tip_x sid="tip_x" type="float">0.401187</tip_x>
-                  <tip_y sid="tip_y" type="float">0.072519</tip_y>
-                  <tip_z sid="tip_z" type="float">-2.872238</tip_z>
-                </technique>
-              </extra>
-            </node>
-            <extra>
-              <technique profile="blender">
-                <connect sid="connect" type="bool">1</connect>
-                <layer sid="layer" type="string">0</layer>
-                <roll sid="roll" type="float">-1.854197</roll>
-              </technique>
-            </extra>
-          </node>
-          <extra>
-            <technique profile="blender">
-              <layer sid="layer" type="string">0</layer>
-              <roll sid="roll" type="float">-2.353014</roll>
-            </technique>
-          </extra>
-        </node>
-        <node id="骨架_rearBone" name="rearBone" sid="rearBone" type="JOINT">
-          <matrix sid="transform">0.1906442 -0.8062992 0.5599432 -3.287227 0.9548132 0.01982085 -0.2965446 0.007561579 0.2280052 0.5911758 0.7736439 6.532248 0 0 0 1</matrix>
-          <node id="骨架_tailBone" name="tailBone" sid="tailBone" type="JOINT">
-            <matrix sid="transform">0.8888443 -0.3647232 0.2773674 5.96046e-8 -0.08032013 0.4719382 0.8779651 1.787656 -0.4511145 -0.8026525 0.3901852 2.38419e-7 0 0 0 1</matrix>
-            <extra>
-              <technique profile="blender">
-                <connect sid="connect" type="bool">1</connect>
-                <layer sid="layer" type="string">0</layer>
-                <roll sid="roll" type="float">-0.2733376</roll>
-                <tip_x sid="tip_x" type="float">-1.464309</tip_x>
-                <tip_y sid="tip_y" type="float">-0.1642019</tip_y>
-                <tip_z sid="tip_z" type="float">-0.6920743</tip_z>
-              </technique>
-            </extra>
-          </node>
-          <extra>
-            <technique profile="blender">
-              <layer sid="layer" type="string">0</layer>
-              <roll sid="roll" type="float">0.3315263</roll>
-            </technique>
-          </extra>
-        </node>
         <node id="grp1_2" name="grp1_2" type="NODE">
           <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
           <instance_controller url="#骨架_grp1_2-skin">
-            <skeleton>#骨架_mainBone</skeleton>
-            <skeleton>#骨架_leftRearLimp1</skeleton>
-            <skeleton>#骨架_rightRearLimp1</skeleton>
-            <skeleton>#骨架_rearBone</skeleton>
+            <skeleton>#骨架_main</skeleton>
           </instance_controller>
         </node>
       </node>

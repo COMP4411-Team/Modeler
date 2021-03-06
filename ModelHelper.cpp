@@ -1,5 +1,7 @@
 #include "ModelHelper.h"
 
+#include <iostream>
+
 using namespace Assimp;
 using namespace std;
 
@@ -37,7 +39,7 @@ bool ModelHelper::preprocess()
 		for (int j = 0; j < mesh->mNumBones; ++j)
 		{
 			auto* bone = mesh->mBones[j];
-			bone_map[string(bone->mName.data)] = j;
+			bone_map[Mesh::processBoneName(string(bone->mName.data))] = j;
 			bones[j].offset = bone->mOffsetMatrix;
 
 			for (int k = 0; k < bone->mNumWeights; ++k)
@@ -105,4 +107,25 @@ bool Mesh::applyMatrix(const std::string& bone_name, aiMatrix4x4t<float>& mat)
 	int index = bone_map[bone_name];
 	bones[index].local_transformation = mat * bones[index].local_transformation;
 	return true;
+}
+
+void Mesh::printBoneHierarchy(const aiNode* cur, int depth)
+{
+	string name = processBoneName(cur->mName.data);
+	if (bone_map.find(name) != bone_map.end())
+	{
+		string prefix(depth, '\t');
+		cout << prefix << name << endl;
+	}
+
+	for (int i = 0; i < cur->mNumChildren; ++i)
+		printBoneHierarchy(cur->mChildren[i], depth + 1);
+}
+
+std::string Mesh::processBoneName(const std::string name)
+{
+	int pos = name.find('_');
+	if (pos != name.npos)
+		return name.substr(pos + 1);
+	return name;
 }

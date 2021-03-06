@@ -54,7 +54,7 @@ void drawTriangle(const Vertex& v1, const Vertex& v2, const Vertex& v3)
 void traverseBoneHierarchy(Mesh& mesh, const aiNode* cur, const Matrix4f& parent_transformation)
 {
 	if (cur == nullptr) return;
-	string bone_name(cur->mName.data);
+	string bone_name(Mesh::processBoneName(cur->mName.data));
 
 	// cur->mTransformation transforms the node from its local space to its parent's space
 	Matrix4f cur_transformation = cur->mTransformation;
@@ -65,8 +65,10 @@ void traverseBoneHierarchy(Mesh& mesh, const aiNode* cur, const Matrix4f& parent
 	{
 		int bone_index = mesh.bone_map[bone_name];
 
+		global_transformation = global_transformation * mesh.bones[bone_index].local_transformation; 
+
 		// final_transformation is used to transform the vertices from local space to world space
-		// any other transformation should be inserted between cur_transformation and offset
+		// any other transformation should be right-multiplied to global_transformation
 		mesh.bones[bone_index].final_transformation = 
 			global_inverse * global_transformation * mesh.bones[bone_index].offset;
 	}
@@ -141,6 +143,15 @@ void SampleModel::draw()
 	auto& mesh = helper.meshes[0];
 	auto* scene = helper.scene;
 	global_inverse = scene->mRootNode->mTransformation.Inverse();
+
+
+	// Test the transformations
+	//mesh.restoreIndentity("main");
+	//mesh.applyRotationX("main", VAL(ROTATE));
+
+	mesh.restoreIndentity("neck");
+	mesh.applyRotationZ("neck", VAL(ROTATE));
+	
 	traverseBoneHierarchy(mesh, scene->mRootNode, Matrix4f());
 	processVertices(mesh);
 	renderMesh(mesh);
@@ -187,6 +198,7 @@ int main()
 	auto* scene = helper.scene;
 	std::cout << "import done\nmeshes: " << scene->mNumMeshes << std::endl;
 	std::cout << "bones: " << scene->mMeshes[0]->mNumBones << std::endl;
+	helper.meshes[0].printBoneHierarchy(scene->mRootNode, 0);	// print out the bones
 	
 	// Initialize the controls
 	// Constructor is ModelerControl(name, minimumvalue, maximumvalue, 

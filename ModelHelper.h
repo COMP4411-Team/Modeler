@@ -43,6 +43,10 @@ public:
 	bool applyScaling(const std::string& bone_name, aiVector3D& scale);
 	bool restoreIndentity(const std::string& bone_name);
 	bool applyMatrix(const std::string& bone_name, aiMatrix4x4t<float>& mat);
+
+	void printBoneHierarchy(const aiNode* cur, int depth);
+
+	static std::string processBoneName(const std::string name);
 };
 
 class ModelHelper
