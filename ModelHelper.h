@@ -20,9 +20,14 @@ public:
 class Bone
 {
 public:
+	// Matrices used for rendering the mesh
 	aiMatrix4x4t<float> final_transformation;	// final matrix applied to vertices
 	aiMatrix4x4t<float> local_transformation;	// all the user specified transformations
 	aiMatrix4x4t<float> offset;					// transform vertex from local to bone space
+
+	// Info for rendering the bone
+	aiVector3D start, end;			// world space coords for end points
+	aiVector3D spherical_coords;		// spherical coordinates of the end point
 };
 
 class Mesh
@@ -45,16 +50,21 @@ public:
 	bool applyMatrix(const std::string& bone_name, aiMatrix4x4t<float>& mat);
 
 	void printBoneHierarchy(const aiNode* cur, int depth);
-
+	Bone& getBone(const std::string& name);
+	
 	static std::string processBoneName(const std::string& name);
 };
 
 class ModelHelper
 {
 public:
+	void loadModel(const char* model, const char* bone);
+	void preprocess();
+	void calBoneTransformation(const aiMatrix4x4t<float>& transformation, const aiNode* cur);
+	void parseBoneInfo(Mesh& mesh, const char* filename);
 
-	bool loadModel(const char* filename);
-	bool preprocess();
+	static aiVector3D calSphericalCoords(const aiVector3D& vec);
+	static aiMatrix4x4t<float> calTrafoMatrix(const aiVector3D& vec);
 	
 	Assimp::Importer importer;
 	const aiScene* scene{nullptr};

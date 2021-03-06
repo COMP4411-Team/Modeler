@@ -1,24 +1,28 @@
 #include "ModelHelper.h"
 
 #include <iostream>
+#include <fstream>
+#include <cmath>
 
 using namespace Assimp;
 using namespace std;
 
-bool ModelHelper::loadModel(const char* filename)
+void ModelHelper::loadModel(const char* model, const char* bone)
 {
-	auto* new_scene = importer.ReadFile(filename, aiProcess_CalcTangentSpace | aiProcess_Triangulate |
+	auto* new_scene = importer.ReadFile(model, aiProcess_CalcTangentSpace | aiProcess_Triangulate |
 	                                    aiProcess_JoinIdenticalVertices | aiProcess_SortByPType);
 
 	if (new_scene == nullptr)
-		return false;
+		throw runtime_error("failed to parse model file");
 	
 	delete scene;
 	scene = new_scene;
-	return preprocess();
+	preprocess();
+	parseBoneInfo(meshes[0], bone);
+	calBoneTransformation(aiMatrix4x4t<float>(), scene->mRootNode);
 }
 
-bool ModelHelper::preprocess()
+void ModelHelper::preprocess()
 {
 	meshes.resize(scene->mNumMeshes);
 	for (int i = 0; i < scene->mNumMeshes; ++i)
@@ -50,7 +54,70 @@ bool ModelHelper::preprocess()
 			}
 		}
 	}
-	return true;
+}
+
+void ModelHelper::calBoneTransformation(const aiMatrix4x4t<float>& transformation, const aiNode* cur)
+{
+	string name = Mesh::processBoneName(cur->mName.data);
+	auto cur_transformation = transformation;
+
+	for (auto& mesh : meshes)
+	{
+		if (mesh.bone_map.find(name) == mesh.bone_map.end())
+			continue;
+
+		auto& bone = mesh.bones[mesh.bone_map[name]];
+
+		aiVector3D vec_world = bone.end - bone.start;			// the bone in world space
+		aiVector3D vec_local = transformation * vec_world;		// the bone in parent's space
+		
+		bone.spherical_coords = calSphericalCoords(vec_local);
+		cur_transformation = calTrafoMatrix(vec_world);
+	}
+
+	for (int i = 0; i < cur->mNumChildren; ++i)
+		calBoneTransformation(cur_transformation, cur->mChildren[i]);
+}
+
+void ModelHelper::parseBoneInfo(Mesh& mesh, const char* filename)
+{
+	ifstream fs(filename);
+	if (!fs.is_open())
+		throw runtime_error("failed to open bone info");
+
+	string bone_name;
+	while (fs >> bone_name)
+	{
+		if (mesh.bone_map.find(bone_name) == mesh.bone_map.end())
+			throw runtime_error("bone info file contains unknown bone names");
+
+		Bone& bone = mesh.getBone(bone_name);
+		
+		float x, y, z;
+		fs >> x >> y >> z;
+		bone.start = {x, y, z};
+
+		fs >> x >> y >> z;
+		bone.end = {x, y, z};
+	}
+}
+
+aiVector3D ModelHelper::calSphericalCoords(const aiVector3D& vec)
+{
+	float rho = vec.Length();
+	float theta = atan2(vec.y, vec.x);
+	float phi = acos(vec.z / rho);
+	return aiVector3D(theta, phi, rho);
+}
+
+aiMatrix4x4t<float> ModelHelper::calTrafoMatrix(const aiVector3D& vec)
+{
+	float alpha = atan2(vec.y, vec.x) - AI_MATH_PI_F / 2.f;
+	float beta = -acos(vec.z / vec.Length());
+	aiMatrix4x4t<float> out1, out2;
+	aiMatrix4x4t<float>::RotationZ(alpha, out1);
+	aiMatrix4x4t<float>::RotationX(beta, out2);
+	return out2 * out1;
 }
 
 bool Mesh::applyTranslate(const std::string& bone_name, aiVector3D& translation)
@@ -120,6 +187,14 @@ void Mesh::printBoneHierarchy(const aiNode* cur, int depth)
 
 	for (int i = 0; i < cur->mNumChildren; ++i)
 		printBoneHierarchy(cur->mChildren[i], depth + 1);
+}
+
+Bone& Mesh::getBone(const std::string& name)
+{
+	if (bone_map.find(name) != bone_map.end())
+		return bones[bone_map[name]];
+
+	throw invalid_argument("bone does not exist");
 }
 
 std::string Mesh::processBoneName(const std::string& name)

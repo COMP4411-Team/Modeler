@@ -38,6 +38,17 @@ ModelerView* createSampleModel(int x, int y, int w, int h, char *label)
 }
 
 
+inline float degree2Radian(float degree)
+{
+	return degree / 180.f * AI_MATH_PI_F;
+}
+
+inline float radian2Degree(float radian)
+{
+	return radian / AI_MATH_PI_F * 180.f;
+}
+
+
 void drawTriangle(const aiVector3D& v1, const aiVector3D& v2, const aiVector3D& v3)
 {
 	drawTriangle(v1.x, v1.y, v1.z, v2.x, v2.y, v2.z, v3.x, v3.y, v3.z);
@@ -115,6 +126,41 @@ void renderMesh(Mesh& mesh)
 }
 
 
+void renderBones(Mesh& mesh, const aiNode* cur)
+{
+	glPushMatrix();
+
+	string name = Mesh::processBoneName(cur->mName.data);
+	if (mesh.bone_map.find(name) != mesh.bone_map.end())
+	{
+		Bone& bone = mesh.getBone(name);
+
+		float theta = radian2Degree(bone.spherical_coords.x);
+		float phi = radian2Degree(bone.spherical_coords.y);
+
+		string p_name = Mesh::processBoneName(cur->mParent->mName.data);
+
+		try
+		{
+			Bone& p = mesh.getBone(p_name);
+			if (p.end == bone.start)
+				glTranslatef(0, 0, p.spherical_coords.z);
+			
+		} catch (...) { }
+
+		glRotatef(theta, 0, 0, 1);
+		glRotatef(phi, 0, 1, 0);
+		
+		drawCylinder(bone.spherical_coords.z, 0.3, 0.01);	// cylinder for now
+	}
+
+	for (int i = 0; i < cur->mNumChildren; ++i)
+		renderBones(mesh, cur->mChildren[i]);
+
+	glPopMatrix();
+}
+
+
 // We are going to override (is that the right word?) the draw()
 // method of ModelerView to draw out SampleModel
 void SampleModel::draw()
@@ -151,6 +197,11 @@ void SampleModel::draw()
 
 	mesh.restoreIdentity("neck");
 	mesh.applyRotationZ("neck", VAL(ROTATE));
+
+	renderBones(mesh, scene->mRootNode);
+
+	glTranslated(0, 5, 0);
+	glRotated(90, 1, 0, 0);
 	
 	traverseBoneHierarchy(mesh, scene->mRootNode, Matrix4f());
 	processVertices(mesh);
@@ -193,7 +244,7 @@ void SampleModel::draw()
 int main()
 {
 	// Test assimp
-	helper.loadModel("./models/lowpolydeer.dae");
+	helper.loadModel("./models/lowpolydeer.dae", "./models/lowpolydeer_bone.txt");
 
 	auto* scene = helper.scene;
 	std::cout << "import done\nmeshes: " << scene->mNumMeshes << std::endl;
