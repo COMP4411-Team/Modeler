@@ -146,10 +146,10 @@ void SampleModel::draw()
 
 
 	// Test the transformations
-	//mesh.restoreIndentity("main");
+	//mesh.restoreIdentity("main");
 	//mesh.applyRotationX("main", VAL(ROTATE));
 
-	mesh.restoreIndentity("neck");
+	mesh.restoreIdentity("neck");
 	mesh.applyRotationZ("neck", VAL(ROTATE));
 	
 	traverseBoneHierarchy(mesh, scene->mRootNode, Matrix4f());

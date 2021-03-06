@@ -91,7 +91,7 @@ bool Mesh::applyScaling(const std::string& bone_name, aiVector3D& scale)
 	return applyMatrix(bone_name, mat);
 }
 
-bool Mesh::restoreIndentity(const std::string& bone_name)
+bool Mesh::restoreIdentity(const std::string& bone_name)
 {
 	if (bone_map.find(bone_name) == bone_map.end())
 		return false;
@@ -122,7 +122,7 @@ void Mesh::printBoneHierarchy(const aiNode* cur, int depth)
 		printBoneHierarchy(cur->mChildren[i], depth + 1);
 }
 
-std::string Mesh::processBoneName(const std::string name)
+std::string Mesh::processBoneName(const std::string& name)
 {
 	int pos = name.find('_');
 	if (pos != name.npos)
