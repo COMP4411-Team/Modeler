@@ -50,3 +50,59 @@ bool ModelHelper::preprocess()
 	}
 	return true;
 }
+
+bool Mesh::applyTranslate(const std::string& bone_name, aiVector3D& translation)
+{
+	aiMatrix4x4t<float> mat;
+	aiMatrix4x4t<float>::Translation(translation, mat);
+	return applyMatrix(bone_name, mat);
+}
+
+bool Mesh::applyRotationX(const std::string& bone_name, float angle)
+{
+	angle = AI_MATH_PI_F * angle / 180.f;
+	aiMatrix4x4t<float> mat;
+	aiMatrix4x4t<float>::RotationX(angle, mat);
+	return applyMatrix(bone_name, mat);
+}
+
+bool Mesh::applyRotationY(const std::string& bone_name, float angle)
+{
+	angle = AI_MATH_PI_F * angle / 180.f;
+	aiMatrix4x4t<float> mat;
+	aiMatrix4x4t<float>::RotationY(angle, mat);
+	return applyMatrix(bone_name, mat);
+}
+
+bool Mesh::applyRotationZ(const std::string& bone_name, float angle)
+{
+	angle = AI_MATH_PI_F * angle / 180.f;
+	aiMatrix4x4t<float> mat;
+	aiMatrix4x4t<float>::RotationZ(angle, mat);
+	return applyMatrix(bone_name, mat);
+}
+
+bool Mesh::applyScaling(const std::string& bone_name, aiVector3D& scale)
+{
+	aiMatrix4x4t<float> mat;
+	aiMatrix4x4t<float>::Scaling(scale, mat);
+	return applyMatrix(bone_name, mat);
+}
+
+bool Mesh::restoreIndentity(const std::string& bone_name)
+{
+	if (bone_map.find(bone_name) == bone_map.end())
+		return false;
+	int index = bone_map[bone_name];
+	bones[index].local_transformation = aiMatrix4x4t<float>();
+	return true;
+}
+
+bool Mesh::applyMatrix(const std::string& bone_name, aiMatrix4x4t<float>& mat)
+{
+	if (bone_map.find(bone_name) == bone_map.end())
+		return false;
+	int index = bone_map[bone_name];
+	bones[index].local_transformation = mat * bones[index].local_transformation;
+	return true;
+}

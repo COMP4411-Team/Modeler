@@ -1,6 +1,4 @@
-﻿// The sample model.  You should build a file
-// very similar to this for when you make your model.
-#include <iostream>
+﻿#include <iostream>
 
 #include "modelerview.h"
 #include "modelerapp.h"
@@ -18,8 +16,9 @@ using namespace std;
 using namespace Assimp;
 using Matrix4f = aiMatrix4x4t<float>;
 
-ModelHelper helper;		// simple use global variable for now
+ModelHelper helper;		// simply use global variable for now
 Matrix4f global_inverse;
+
 
 // To make a SampleModel, we inherit off of ModelerView
 class SampleModel : public ModelerView 
@@ -91,9 +90,9 @@ void processVertices(Mesh& mesh)
 		for (int i = 1; i < vertex.bone_index.size(); ++i)
 		{
 			auto& bone = mesh.bones[vertex.bone_index[i]];
-			transformation = transformation + bone.final_transformation * vertex.bone_weight[i]; // seems that += is not overloaded
+			transformation = transformation + bone.final_transformation * vertex.bone_weight[i];
 		}
-		vertex.world_pos = transformation * vertex.original_pos; // apply mat4 transformation to vec3 is possible in assimp
+		vertex.world_pos = transformation * vertex.original_pos;
 	}
 }
 

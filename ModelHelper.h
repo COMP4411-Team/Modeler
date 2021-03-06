@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include "mat.h"
 
 class Vertex
 {
@@ -19,8 +20,9 @@ public:
 class Bone
 {
 public:
-	aiMatrix4x4t<float> final_transformation;
-	aiMatrix4x4t<float> offset;
+	aiMatrix4x4t<float> final_transformation;	// final matrix applied to vertices
+	aiMatrix4x4t<float> local_transformation;	// all the user specified transformations
+	aiMatrix4x4t<float> offset;					// transform vertex from local to bone space
 };
 
 class Mesh
@@ -30,6 +32,17 @@ public:
 	std::vector<Vertex> vertices;
 	std::vector<Bone> bones;
 	std::map<std::string, int> bone_map;
+
+	bool applyTranslate(const std::string& bone_name, aiVector3D& translation);
+
+	// angle in degrees
+	bool applyRotationX(const std::string& bone_name, float angle);
+	bool applyRotationY(const std::string& bone_name, float angle);
+	bool applyRotationZ(const std::string& bone_name, float angle);
+	
+	bool applyScaling(const std::string& bone_name, aiVector3D& scale);
+	bool restoreIndentity(const std::string& bone_name);
+	bool applyMatrix(const std::string& bone_name, aiMatrix4x4t<float>& mat);
 };
 
 class ModelHelper
@@ -37,13 +50,10 @@ class ModelHelper
 public:
 
 	bool loadModel(const char* filename);
-
 	bool preprocess();
-
-	Assimp::Importer importer;
 	
+	Assimp::Importer importer;
 	const aiScene* scene{nullptr};
-
 	std::vector<Mesh> meshes;
 };
 
