@@ -69,10 +69,22 @@ void ModelHelper::calBoneTransformation(const aiMatrix4x4t<float>& transformatio
 		auto& bone = mesh.bones[mesh.bone_map[name]];
 
 		aiVector3D vec_world = bone.end - bone.start;			// the bone in world space
-		aiVector3D vec_local = transformation * vec_world;		// the bone in parent's space
+
+		try
+		{
+			Bone& p = mesh.getBone(cur->mParent->mName.data);
+			if (p.end == bone.start)
+			{
+				aiMatrix4x4t<float> translation;
+				aiMatrix4x4t<float>::Translation({0.f, 0.f, -p.spherical_coords.z}, translation);
+				cur_transformation = translation * transformation;
+			}
+		} catch (...) { }
+		
+		aiVector3D vec_local = cur_transformation * vec_world;		// the bone in parent's space
 		
 		bone.spherical_coords = calSphericalCoords(vec_local);
-		cur_transformation = calTrafoMatrix(vec_world);
+		cur_transformation = calTrafoMatrix(vec_local) * cur_transformation;
 	}
 
 	for (int i = 0; i < cur->mNumChildren; ++i)
@@ -112,12 +124,12 @@ aiVector3D ModelHelper::calSphericalCoords(const aiVector3D& vec)
 
 aiMatrix4x4t<float> ModelHelper::calTrafoMatrix(const aiVector3D& vec)
 {
-	float alpha = atan2(vec.y, vec.x) - AI_MATH_PI_F / 2.f;
-	float beta = -acos(vec.z / vec.Length());
+	float theta = -atan2(vec.y, vec.x);		// the inverse
+	float phi = -acos(vec.z / vec.Length());
 	aiMatrix4x4t<float> out1, out2;
-	aiMatrix4x4t<float>::RotationZ(alpha, out1);
-	aiMatrix4x4t<float>::RotationX(beta, out2);
-	return out2 * out1;
+	aiMatrix4x4t<float>::RotationZ(theta, out1);
+	aiMatrix4x4t<float>::RotationY(phi, out2);
+	return out2 * out1;		// the inverse
 }
 
 bool Mesh::applyTranslate(const std::string& bone_name, aiVector3D& translation)

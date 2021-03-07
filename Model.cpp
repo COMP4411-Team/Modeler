@@ -181,11 +181,13 @@ void SampleModel::draw()
 	printf("glu version %s\n", gluVersion);
 	 */
 
-	// draw the floor
+	// Setup
 	setAmbientColor(0.75f, 0.75f, 0.75f);
 	setDiffuseColor(0.75f, 0.75f, 0.75f);
 	glScaled(1.0, 1.0, 1.0);
 
+
+	// Initialization
 	auto& mesh = helper.meshes[0];
 	auto* scene = helper.scene;
 	global_inverse = scene->mRootNode->mTransformation.Inverse();
@@ -195,17 +197,22 @@ void SampleModel::draw()
 	//mesh.restoreIdentity("main");
 	//mesh.applyRotationX("main", VAL(ROTATE));
 
+	// Apply user controls to meshes here
 	mesh.restoreIdentity("neck");
 	mesh.applyRotationZ("neck", VAL(ROTATE));
 
+	// TODO: synchronize user controls to the bones' rendering
 	renderBones(mesh, scene->mRootNode);
 
+	// Avoid overlapping bones and meshes
 	glTranslated(0, 5, 0);
-	glRotated(90, 1, 0, 0);
-	
+	glRotated(180, 1, 0, 0);
+
+	// Render the meshes
 	traverseBoneHierarchy(mesh, scene->mRootNode, Matrix4f());
 	processVertices(mesh);
 	renderMesh(mesh);
+	
 	
 	//glPushMatrix();
 	//glTranslated(-5,0,-5);
