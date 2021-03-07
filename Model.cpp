@@ -59,6 +59,16 @@ void drawTriangle(const Vertex& v1, const Vertex& v2, const Vertex& v3)
 	drawTriangle(v1.world_pos, v2.world_pos, v3.world_pos);
 }
 
+void applyAiMatrix(const aiMatrix4x4t<float>& mat)
+{
+	float m[16];
+	m[0] = mat.a1; m[1] = mat.b1; m[2] = mat.c1; m[3] = mat.d1;
+	m[4] = mat.a2; m[5] = mat.b2; m[6] = mat.c2; m[7] = mat.d2;
+	m[8] = mat.a3; m[9] = mat.b3; m[10] = mat.c3; m[11] = mat.d3;
+	m[12] = mat.a4; m[13] = mat.b4; m[14] = mat.c4; m[15] = mat.d4;
+	glMultMatrixf(m);
+}
+
 
 // Apply all the user controls to meshes in one place
 void applyMeshControls()
@@ -231,6 +241,8 @@ void renderBones(Mesh& mesh, const aiNode* cur)
 				glTranslatef(0, 0, p.spherical_coords.z);
 			
 		} catch (...) { }
+
+		applyAiMatrix(bone.local_transformation);
 
 		glRotatef(theta, 0, 0, 1);
 		glRotatef(phi, 0, 1, 0);
