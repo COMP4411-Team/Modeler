@@ -60,6 +60,90 @@ void drawTriangle(const Vertex& v1, const Vertex& v2, const Vertex& v3)
 }
 
 
+// Apply all the user controls to meshes in one place
+void applyMeshControls()
+{
+	auto& mesh = helper.meshes[0];
+
+	mesh.restoreIdentity("main");
+	mesh.applyRotationZ("main", VAL(ROTATE_ALL));
+
+	float x = VAL(XPOS), y = VAL(YPOS), z = VAL(ZPOS);
+
+	mesh.applyTranslate("main", aiVector3D(x, y, z));
+
+	//===========================================================
+
+	mesh.restoreIdentity("neck");
+	mesh.applyRotationX("neck", VAL(NECK_PITCH));
+	mesh.applyRotationZ("neck", VAL(NECK_YAW));
+	mesh.applyRotationY("neck", VAL(NECK_ROLL));
+
+	mesh.restoreIdentity("head");
+	mesh.applyRotationZ("head", VAL(HEAD_PITCH));
+	mesh.applyRotationX("head", VAL(HEAD_YAW));
+	mesh.applyRotationY("head", VAL(HEAD_ROLL));
+
+	//============================================================
+
+	mesh.restoreIdentity("foreLimpLeft1");
+	mesh.applyRotationX("foreLimpLeft1", VAL(LEFT_FORELIMP_1));
+
+	mesh.restoreIdentity("foreLimpRight1");
+	mesh.applyRotationX("foreLimpRight1", VAL(RIGHT_FORELIMP_1));
+
+	mesh.restoreIdentity("rearLimpLeft1");
+	mesh.applyRotationZ("rearLimpLeft1", VAL(LEFT_REARLIMP_1));
+
+	mesh.restoreIdentity("rearLimpRight1");
+	mesh.applyRotationZ("rearLimpRight1", VAL(RIGHT_REARLIMP_1));
+
+	//============================================================
+
+	mesh.restoreIdentity("foreLimpLeft2");
+	mesh.applyRotationX("foreLimpLeft2", VAL(LEFT_FORELIMP_2));
+
+	mesh.restoreIdentity("foreLimpRight2");
+	mesh.applyRotationX("foreLimpRight2", VAL(RIGHT_FORELIMP_2));
+
+	mesh.restoreIdentity("rearLimpLeft2");
+	mesh.applyRotationZ("rearLimpLeft2", VAL(LEFT_REARLIMP_2));
+
+	mesh.restoreIdentity("rearLimpRight2");
+	mesh.applyRotationZ("rearLimpRight2", VAL(RIGHT_REARLIMP_2));
+
+	//=============================================================
+
+	mesh.applyRotationZ("foreLimpLeft2", VAL(LEFT_FORELIMP_2_YAW));
+
+	mesh.applyRotationZ("foreLimpRight2", VAL(RIGHT_FORELIMP_2_YAW));
+
+	mesh.applyRotationX("rearLimpLeft2", VAL(LEFT_REARLIMP_2_YAW));
+
+	mesh.applyRotationX("rearLimpRight2", VAL(RIGHT_REARLIMP_2_YAW));
+
+	//=============================================================
+
+	mesh.restoreIdentity("foreLimpLeft3");
+	mesh.applyRotationX("foreLimpLeft3", VAL(LEFT_FORELIMP_3));
+
+	mesh.restoreIdentity("foreLimpRight3");
+	mesh.applyRotationX("foreLimpRight3", VAL(RIGHT_FORELIMP_3));
+
+	mesh.restoreIdentity("rearLimpLeft3");
+	mesh.applyRotationZ("rearLimpLeft3", VAL(LEFT_REARLIMP_3));
+
+	mesh.restoreIdentity("rearLimpRight3");
+	mesh.applyRotationZ("rearLimpRight3", VAL(RIGHT_REARLIMP_3));
+
+	//==============================================================
+
+	mesh.restoreIdentity("tail");
+	mesh.applyRotationX("tail", VAL(TAIL_PITCH));
+	mesh.applyRotationZ("tail", VAL(TAIL_YAW));
+}
+
+
 // aiNode* is a node in the bone hierarchy, it contains the name, its own transformation, and
 // pointers to its parent and children
 void traverseBoneHierarchy(Mesh& mesh, const aiNode* cur, const Matrix4f& parent_transformation)
@@ -198,8 +282,7 @@ void SampleModel::draw()
 	//mesh.applyRotationX("main", VAL(ROTATE));
 
 	// Apply user controls to meshes here
-	mesh.restoreIdentity("neck");
-	mesh.applyRotationZ("neck", VAL(ROTATE));
+	applyMeshControls();
 
 	// TODO: synchronize user controls to the bones' rendering
 	renderBones(mesh, scene->mRootNode);
@@ -213,45 +296,12 @@ void SampleModel::draw()
 	processVertices(mesh);
 	renderMesh(mesh);
 	
-	
-	//glPushMatrix();
-	//glTranslated(-5,0,-5);
-	//drawBox(10,0.01f,10);
-	//glPopMatrix();
-
-	//// draw the sample model
-	//setAmbientColor(.1f,.1f,.1f);
-	//setDiffuseColor(COLOR_GREEN);
-	//glPushMatrix();
-	//glTranslated(VAL(XPOS), VAL(YPOS), VAL(ZPOS));
-
-	//	glPushMatrix();
-	//	glTranslated(-1.5, 0, -2);
-	//	glScaled(3, 1, 4);
-	//	drawBox(1,1,1);
-	//	glPopMatrix();
-
-	//	// draw cannon
-	//	glPushMatrix();
-	//	glRotated(VAL(ROTATE), 0.0, 1.0, 0.0);
-	//	glRotated(-90, 1.0, 0.0, 0.0);
-	//	drawCylinder(VAL(HEIGHT), 0.1, 0.1);
-
-	//	glTranslated(0.0, 0.0, VAL(HEIGHT));
-	//	drawCylinder(1, 1.0, 0.9);
-
-	//	glTranslated(0.0, 0.0, 0.5);
-	//	glRotated(90, 1.0, 0.0, 0.0);
-	//	drawCylinder(4, 0.1, 0.2);
-	//	glPopMatrix();
-
-	//glPopMatrix();
 }
 
 int main()
 {
 	// Test assimp
-	helper.loadModel("./models/lowpolydeer.dae", "./models/lowpolydeer_bone.txt");
+	helper.loadModel("./models/lowpolydeer_modified.dae", "./models/lowpolydeer_bone_modified.txt");
 
 	auto* scene = helper.scene;
 	std::cout << "import done\nmeshes: " << scene->mNumMeshes << std::endl;
@@ -265,8 +315,39 @@ int main()
     controls[XPOS] = ModelerControl("X Position", -5, 5, 0.1f, 0);
     controls[YPOS] = ModelerControl("Y Position", 0, 5, 0.1f, 0);
     controls[ZPOS] = ModelerControl("Z Position", -5, 5, 0.1f, 0);
-    controls[HEIGHT] = ModelerControl("Height", 1, 2.5, 0.1f, 1);
-	controls[ROTATE] = ModelerControl("Rotate", -135, 135, 1, 0);
+
+	controls[ROTATE_ALL] = ModelerControl("Rotate All", -180, 180, 1, 0);
+
+	controls[NECK_PITCH] = ModelerControl("Neck Pitch", -45, 45, 1, 0);
+	controls[NECK_YAW] = ModelerControl("Neck Yaw", -45, 45, 1, 0);
+	controls[NECK_ROLL] = ModelerControl("Neck Roll", -45, 45, 1, 0);
+
+	controls[HEAD_PITCH] = ModelerControl("Head Pitch", -45, 45, 1, 0);
+	controls[HEAD_YAW] = ModelerControl("Head Yaw", -30, 30, 1, 0);
+	controls[HEAD_ROLL] = ModelerControl("Head Roll", -30, 30, 1, 0);
+
+	controls[LEFT_FORELIMP_1] = ModelerControl("Left Fore Thigh", -30, 30, 1, 0);
+	controls[RIGHT_FORELIMP_1] = ModelerControl("Right Fore Thigh", -30, 30, 1, 0);
+	controls[LEFT_REARLIMP_1] = ModelerControl("Left Rear Thigh", -30, 30, 1, 0);
+	controls[RIGHT_REARLIMP_1] = ModelerControl("Right Rear Thigh", -30, 30, 1, 0);
+
+	controls[LEFT_FORELIMP_2] = ModelerControl("Left Fore Limp1 Pitch", -30, 30, 1, 0);
+	controls[RIGHT_FORELIMP_2] = ModelerControl("Right Fore Limp1 Pitch", -30, 30, 1, 0);
+	controls[LEFT_REARLIMP_2] = ModelerControl("Left Rear Limp1 Pitch", -30, 30, 1, 0);
+	controls[RIGHT_REARLIMP_2] = ModelerControl("Right Rear Limp1 Pitch", -30, 30, 1, 0);
+
+	controls[LEFT_FORELIMP_2_YAW] = ModelerControl("Left Fore Limp1 Yaw", -10, 10, 1, 0);
+	controls[RIGHT_FORELIMP_2_YAW] = ModelerControl("Right Fore Limp1 Yaw", -10, 10, 1, 0);
+	controls[LEFT_REARLIMP_2_YAW] = ModelerControl("Left Rear Limp1 Yaw", -10, 10, 1, 0);
+	controls[RIGHT_REARLIMP_2_YAW] = ModelerControl("Right Rear Limp1 Yaw", -10, 10, 1, 0);
+
+	controls[LEFT_FORELIMP_3] = ModelerControl("Left Fore Limp2", -30, 30, 1, 0);
+	controls[RIGHT_FORELIMP_3] = ModelerControl("Right Fore Limp2", -30, 30, 1, 0);
+	controls[LEFT_REARLIMP_3] = ModelerControl("Left Rear Limp2", -30, 30, 1, 0);
+	controls[RIGHT_REARLIMP_3] = ModelerControl("Right Rear Limp2", -30, 30, 1, 0);
+
+	controls[TAIL_PITCH] = ModelerControl("Tail Pitch", -30, 30, 1, 0);
+	controls[TAIL_YAW] = ModelerControl("Tail Yaw", -15, 15, 1, 0);
 
     ModelerApplication::Instance()->Init(&createSampleModel, controls, NUMCONTROLS);
     return ModelerApplication::Instance()->Run();
