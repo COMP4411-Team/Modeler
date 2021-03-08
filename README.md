@@ -10,7 +10,7 @@
 
 - [x] 1B Build a complex shape as a set of polygonal faces.
 
-- [ ] 1B Make an additional "animated" sequence your character can perform.
+- [x] 1B Make an additional "animated" sequence your character can perform.
 
 - [ ] 1B1W Add some widgets to create individual-looking instances of your character.
 

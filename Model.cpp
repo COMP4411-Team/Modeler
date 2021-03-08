@@ -19,8 +19,7 @@ using Matrix4f = aiMatrix4x4t<float>;
 
 ModelHelper helper;		// simply use global variable for now
 Matrix4f global_inverse;
-
-unsigned int texture_id = 9;
+float tick = 0.f;
 
 // To make a SampleModel, we inherit off of ModelerView
 class SampleModel : public ModelerView 
@@ -69,6 +68,50 @@ void applyAiMatrix(const aiMatrix4x4t<float>& mat)
 	m[8] = mat.a3; m[9] = mat.b3; m[10] = mat.c3; m[11] = mat.d3;
 	m[12] = mat.a4; m[13] = mat.b4; m[14] = mat.c4; m[15] = mat.d4;
 	glMultMatrixf(m);
+}
+
+
+// Animation
+void animate()
+{
+	auto& mesh = helper.meshes[0];
+	float left1 = cos(tick) * 15;
+	float right1 = sin(tick) * 15;
+	float left2 = cos(tick) * 30;
+	float right2 = sin(tick) * 30;
+	float left3 = -cos(cos(tick)) * 35;
+	float right3 = -sin(sin(tick)) * 35;
+	float head = sin(tick) * 2;
+	float neck = cos(tick) * 2;
+	float tail = cos(tick) * 2;
+	float main = sin(tick) * 0.1f;
+
+	mesh.applyTranslate("main", aiVector3D(0, 0, main));
+
+	mesh.applyRotationX("neck", neck);
+
+	mesh.applyRotationZ("head", head);
+
+	mesh.applyRotationX("tail", tail);
+	
+	mesh.applyRotationX("foreLimpLeft1", left1);
+	mesh.applyRotationX("foreLimpRight1", right1);
+	mesh.applyRotationZ("rearLimpLeft1", left1);
+	mesh.applyRotationZ("rearLimpRight1", right1);
+
+	mesh.applyRotationX("foreLimpLeft2", left2);
+	mesh.applyRotationX("foreLimpRight2", right2);
+	mesh.applyRotationZ("rearLimpLeft2", left2);
+	mesh.applyRotationZ("rearLimpRight2", right2);
+
+	mesh.applyRotationX("foreLimpLeft3", left3);
+	mesh.applyRotationX("foreLimpRight3", right3);
+	mesh.applyRotationZ("rearLimpLeft3", left3 * 0.5);
+	mesh.applyRotationZ("rearLimpRight3", right3 * 0.5);
+
+	tick += 0.5f;
+	if (tick > 1e4f * AI_MATH_PI_F)
+		tick = 0.f;
 }
 
 
@@ -283,6 +326,7 @@ void SampleModel::draw()
 	glEnable(GL_TEXTURE_2D);
 	if (!helper.tex_loaded)
 	{
+		unsigned int texture_id;
 		glGenTextures(1, &texture_id);
 		glBindTexture(GL_TEXTURE_2D, texture_id);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, helper.tex_width, helper.tex_height,
@@ -310,6 +354,9 @@ void SampleModel::draw()
 
 	// Apply user controls to meshes here
 	applyMeshControls();
+
+	if (ModelerApplication::Instance()->m_animating)
+		animate();
 
 	// Apply controls to bones and render them
 	renderBones(mesh, scene->mRootNode);
