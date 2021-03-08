@@ -6,7 +6,7 @@
 
 - [x] 1W Come up with another whistle and implement it.
 
-- [ ] 1B Use a texture map.
+- [x] 1B Use a texture map.
 
 - [x] 1B Build a complex shape as a set of polygonal faces.
 
