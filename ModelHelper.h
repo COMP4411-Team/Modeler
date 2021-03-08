@@ -13,6 +13,7 @@ class Vertex
 public:
 	aiVector3D original_pos;
 	aiVector3D world_pos;
+	aiVector3D tex_coords;
 	std::vector<int> bone_index;
 	std::vector<float> bone_weight;
 };
@@ -58,10 +59,11 @@ public:
 class ModelHelper
 {
 public:
-	void loadModel(const char* model, const char* bone);
+	void loadModel(const std::string& model, const std::string& bone);
 	void preprocess();
 	void calBoneTransformation(const aiMatrix4x4t<float>& transformation, const aiNode* cur);
-	void parseBoneInfo(Mesh& mesh, const char* filename);
+	void parseBoneInfo(Mesh& mesh, const std::string& filename);
+	void loadTexture(const std::string& filename);
 
 	static aiVector3D calSphericalCoords(const aiVector3D& vec);
 	static aiMatrix4x4t<float> calTrafoMatrix(const aiVector3D& vec);
@@ -69,5 +71,8 @@ public:
 	Assimp::Importer importer;
 	const aiScene* scene{nullptr};
 	std::vector<Mesh> meshes;
+	unsigned char* tex{nullptr};
+	int tex_height, tex_width;
+	bool tex_loaded{false};
 };
 

@@ -11,6 +11,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include "ModelHelper.h"
+#include "bitmap.h"
 
 using namespace std;
 using namespace Assimp;
@@ -19,6 +20,7 @@ using Matrix4f = aiMatrix4x4t<float>;
 ModelHelper helper;		// simply use global variable for now
 Matrix4f global_inverse;
 
+unsigned int texture_id = 9;
 
 // To make a SampleModel, we inherit off of ModelerView
 class SampleModel : public ModelerView 
@@ -210,12 +212,13 @@ void renderMesh(Mesh& mesh)
 	for (int i = 0; i < ai_mesh->mNumFaces; ++i)
 	{
 		const aiFace& face = ai_mesh->mFaces[i];
-		auto& vertices = mesh.vertices;
-		int v1 = face.mIndices[0];
-		int v2 = face.mIndices[1];
-		int v3 = face.mIndices[2];
+		//auto& vertices = mesh.vertices;
+		//int v1 = face.mIndices[0];
+		//int v2 = face.mIndices[1];
+		//int v3 = face.mIndices[2];
 		
-		drawTriangle(vertices[v1], vertices[v2], vertices[v3]);
+		// drawTriangle(vertices[v1], vertices[v2], vertices[v3]);
+		drawTriangle(mesh, face);
 	}
 }
 
@@ -266,37 +269,49 @@ void SampleModel::draw()
 	// projection matrix, don't bother with this ...
     ModelerView::draw();
 
-	/*
-	const auto* glVersion = glGetString(GL_VERSION);
-	const auto* glRenderer = glGetString(GL_RENDERER);
-	const auto* glVendor = glGetString(GL_VENDOR);
-	const auto* gluVersion = glGetString(GLU_VERSION);
-	printf("version %s\n", glVersion);
-	printf("renderer %s\n", glRenderer);
-	printf("vendor %s\n", glVendor);
-	printf("glu version %s\n", gluVersion);
-	 */
+	//const auto* glVersion = glGetString(GL_VERSION);
+	//const auto* glRenderer = glGetString(GL_RENDERER);
+	//const auto* glVendor = glGetString(GL_VENDOR);
+	//const auto* gluVersion = glGetString(GLU_VERSION);
+	//printf("version %s\n", glVersion);
+	//printf("renderer %s\n", glRenderer);
+	//printf("vendor %s\n", glVendor);
+	//printf("glu version %s\n", gluVersion);
 
-	// Setup
+
+	// Init texture
+	glEnable(GL_TEXTURE_2D);
+	if (!helper.tex_loaded)
+	{
+		glGenTextures(1, &texture_id);
+		glBindTexture(GL_TEXTURE_2D, texture_id);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, helper.tex_width, helper.tex_height,
+		0, GL_RGB, GL_UNSIGNED_BYTE, helper.tex);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		helper.tex_loaded = true;
+	}
+	
+	
+	// Setup env and pose
 	setAmbientColor(0.75f, 0.75f, 0.75f);
 	setDiffuseColor(0.75f, 0.75f, 0.75f);
-	glScaled(1.0, 1.0, 1.0);
-
+	glScaled(0.5, 0.5, 0.5);
+	glRotated(-90, 1, 0, 0);
+	glRotated(180, 0, 0, 1);
+	glTranslated(0, 0, -5);
 
 	// Initialization
 	auto& mesh = helper.meshes[0];
 	auto* scene = helper.scene;
 	global_inverse = scene->mRootNode->mTransformation.Inverse();
-
-
-	// Test the transformations
-	//mesh.restoreIdentity("main");
-	//mesh.applyRotationX("main", VAL(ROTATE));
+	
 
 	// Apply user controls to meshes here
 	applyMeshControls();
 
-	// TODO: synchronize user controls to the bones' rendering
+	// Apply controls to bones and render them
 	renderBones(mesh, scene->mRootNode);
 
 	// Avoid overlapping bones and meshes
@@ -312,13 +327,20 @@ void SampleModel::draw()
 
 int main()
 {
-	// Test assimp
-	helper.loadModel("./models/lowpolydeer_modified.dae", "./models/lowpolydeer_bone_modified.txt");
+	helper.loadModel("./models/lowpolydeer_uv.dae", "./models/lowpolydeer_bone_modified.txt");
 
+	helper.loadTexture("./models/wood_texture.bmp");
+	
 	auto* scene = helper.scene;
-	std::cout << "import done\nmeshes: " << scene->mNumMeshes << std::endl;
-	std::cout << "bones: " << scene->mMeshes[0]->mNumBones << std::endl;
+	std::cout << "import done, mNumMeshes: " << scene->mNumMeshes << std::endl;
+
+	std::cout << "mesh0 mNumVertices: " << scene->mMeshes[0]->mNumVertices
+		<< "\t mNumFaces: " << scene->mMeshes[0]->mNumFaces
+		<< "\t mNumBones: " << scene->mMeshes[0]->mNumBones << std::endl;
+	
 	helper.meshes[0].printBoneHierarchy(scene->mRootNode, 0);	// print out the bones
+
+	
 	
 	// Initialize the controls
 	// Constructor is ModelerControl(name, minimumvalue, maximumvalue, 

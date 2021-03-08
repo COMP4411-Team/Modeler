@@ -3,11 +3,12 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
+#include "bitmap.h"
 
 using namespace Assimp;
 using namespace std;
 
-void ModelHelper::loadModel(const char* model, const char* bone)
+void ModelHelper::loadModel(const string& model, const string& bone)
 {
 	auto* new_scene = importer.ReadFile(model, aiProcess_CalcTangentSpace | aiProcess_Triangulate |
 	                                    aiProcess_JoinIdenticalVertices | aiProcess_SortByPType);
@@ -18,7 +19,8 @@ void ModelHelper::loadModel(const char* model, const char* bone)
 	delete scene;
 	scene = new_scene;
 	preprocess();
-	parseBoneInfo(meshes[0], bone);
+	if (!bone.empty())
+		parseBoneInfo(meshes[0], bone);
 	calBoneTransformation(aiMatrix4x4t<float>(), scene->mRootNode);
 }
 
@@ -35,8 +37,12 @@ void ModelHelper::preprocess()
 
 		vertices.resize(mesh->mNumVertices);
 		for (int j = 0; j < mesh->mNumVertices; ++j)
-		{
 			vertices[j].original_pos = (mesh->mVertices[j]);
+
+		if (mesh->HasTextureCoords(0))
+		{
+			for (int j = 0; j < mesh->mNumVertices; ++j)
+				vertices[j].tex_coords = (mesh->mTextureCoords[0][j]);
 		}
 
 		bones.resize(mesh->mNumBones);
@@ -91,7 +97,7 @@ void ModelHelper::calBoneTransformation(const aiMatrix4x4t<float>& transformatio
 		calBoneTransformation(cur_transformation, cur->mChildren[i]);
 }
 
-void ModelHelper::parseBoneInfo(Mesh& mesh, const char* filename)
+void ModelHelper::parseBoneInfo(Mesh& mesh, const string& filename)
 {
 	ifstream fs(filename);
 	if (!fs.is_open())
@@ -112,6 +118,19 @@ void ModelHelper::parseBoneInfo(Mesh& mesh, const char* filename)
 		fs >> x >> y >> z;
 		bone.end = {x, y, z};
 	}
+}
+
+void ModelHelper::loadTexture(const std::string& filename)
+{
+	int height, width;
+	auto* new_tex = readBMP(const_cast<char*>(filename.c_str()), width, height);
+	if (new_tex == nullptr)
+		throw runtime_error("failed to load texture");
+	delete tex;
+	tex = new_tex;
+	tex_height = height;
+	tex_width = width;
+	tex_loaded = false;		// not loaded or updated in opengl
 }
 
 aiVector3D ModelHelper::calSphericalCoords(const aiVector3D& vec)

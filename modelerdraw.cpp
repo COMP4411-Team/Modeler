@@ -406,9 +406,10 @@ void drawTriangle( double x1, double y1, double z1,
         d = x3-x1;
         e = y3-y1;
         f = z3-z1;
-        
+
         glBegin( GL_TRIANGLES );
         glNormal3d( b*f - c*e, c*d - a*f, a*e - b*d );
+
         glVertex3d( x1, y1, z1 );
         glVertex3d( x2, y2, z2 );
         glVertex3d( x3, y3, z3 );
@@ -416,14 +417,60 @@ void drawTriangle( double x1, double y1, double z1,
     }
 }
 
+void drawTriangle(Mesh& mesh, const aiFace& face)
+{
+	ModelerDrawState *mds = ModelerDrawState::Instance();
 
+	_setupOpenGl();
 
+    float x1, x2, x3, y1, y2, y3, z1, z2, z3;
 
+	auto& v1 = mesh.vertices[face.mIndices[0]];
+	auto& v2 = mesh.vertices[face.mIndices[1]];
+	auto& v3 = mesh.vertices[face.mIndices[2]];
 
+    x1 = v1.world_pos.x;
+	x2 = v2.world_pos.x;
+	x3 = v3.world_pos.x;
 
+	y1 = v1.world_pos.y;
+	y2 = v2.world_pos.y;
+	y3 = v3.world_pos.y;
 
+	z1 = v1.world_pos.z;
+	z2 = v2.world_pos.z;
+	z3 = v3.world_pos.z;
 
+    if (mds->m_rayFile)
+    {
+        _dump_current_modelview();
+        fprintf(mds->m_rayFile, 
+            "polymesh { points=((%f,%f,%f),(%f,%f,%f),(%f,%f,%f)); faces=((0,1,2));\n", x1, y1, z1, x2, y2, z2, x3, y3, z3 );
+        _dump_current_material();
+        fprintf(mds->m_rayFile, "})\n" );
+    }
+    else
+    {
+        float a, b, c, d, e, f;
+        
+        /* the normal to the triangle is the cross product of two of its edges. */
+        a = x2-x1;
+        b = y2-y1;
+        c = z2-z1;
+        
+        d = x3-x1;
+        e = y3-y1;
+        f = z3-z1;
 
+        glBegin( GL_TRIANGLES );
+        glNormal3f( b*f - c*e, c*d - a*f, a*e - b*d );
 
-
-
+    		glTexCoord2f(v1.tex_coords.x, v1.tex_coords.y);
+        glVertex3f( x1, y1, z1 );
+    		glTexCoord2f(v2.tex_coords.x, v2.tex_coords.y);
+        glVertex3f( x2, y2, z2 );
+    		glTexCoord2f(v3.tex_coords.x, v3.tex_coords.y);
+        glVertex3f( x3, y3, z3 );
+        glEnd();
+    }
+}
