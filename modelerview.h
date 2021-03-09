@@ -19,8 +19,8 @@ class ModelerView : public Fl_Gl_Window
 {
 public:
     ModelerView(int x, int y, int w, int h, char *label=0);
-    void moveLight0(float x, float y, float z);
-    void moveLight1(float x, float y, float z);
+    //void moveLight0(float x, float y, float z);
+    //void moveLight1(float x, float y, float z);
     //void openLight0(float x);
     //void openLight1(float x);
 

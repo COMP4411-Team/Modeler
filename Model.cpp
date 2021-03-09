@@ -324,9 +324,26 @@ void SampleModel::draw()
 	// projection matrix, don't bother with this ...
 	//ModelerView::openLight0(VAL(LIGHT0_ENABLE));
 	//ModelerView::openLight1(VAL(LIGHT1_ENABLE));
-	ModelerView::moveLight0(VAL(LIGHTX_0), VAL(LIGHTY_0), VAL(LIGHTZ_0));
-	ModelerView::moveLight1(VAL(LIGHTX_1), VAL(LIGHTY_1), VAL(LIGHTZ_1));
+	//ModelerView::moveLight0(VAL(LIGHTX_0), VAL(LIGHTY_0), VAL(LIGHTZ_0));
+	//ModelerView::moveLight1(VAL(LIGHTX_1), VAL(LIGHTY_1), VAL(LIGHTZ_1));
     ModelerView::draw();
+	if (VAL(LIGHT0_ENABLE)) {
+		glEnable(GL_LIGHT0);
+		GLfloat changedLightPosition0[] = { VAL(LIGHTX_0), VAL(LIGHTY_0), VAL(LIGHTZ_0),0 };
+		glLightfv(GL_LIGHT0, GL_POSITION, changedLightPosition0);
+	}
+	else {
+		glDisable(GL_LIGHT0);
+	}
+
+	if (VAL(LIGHT1_ENABLE)) {
+		glEnable(GL_LIGHT1);
+		GLfloat changedLightPosition1[] = { VAL(LIGHTX_1), VAL(LIGHTY_1), VAL(LIGHTZ_1),0 };
+		glLightfv(GL_LIGHT1, GL_POSITION, changedLightPosition1);
+	}
+	else {
+		glDisable(GL_LIGHT1);
+	}
 
 	//const auto* glVersion = glGetString(GL_VERSION);
 	//const auto* glRenderer = glGetString(GL_RENDERER);
@@ -413,12 +430,12 @@ int main()
     controls[YPOS] = ModelerControl("Y Position", 0, 5, 0.1f, 0);
     controls[ZPOS] = ModelerControl("Z Position", -5, 5, 0.1f, 0);
 
-	//controls[LIGHT0_ENABLE] = ModelerControl("Open Light source 0?", 0, 1, 1, 1);
+	controls[LIGHT0_ENABLE] = ModelerControl("Open Light source 0?", 0, 1, 1, 1);
 	controls[LIGHTX_0] = ModelerControl("Light0 X Position", 0, 8, 0.1f, 4);
 	controls[LIGHTY_0] = ModelerControl("Light0 Y Position", -2, 6, 0.1f, 2);
 	controls[LIGHTZ_0] = ModelerControl("Light0 Z Position", -8, 0, 0.1f,-4);
 
-	//controls[LIGHT1_ENABLE] = ModelerControl("Open Light source 1?", 0, 1, 1, 1);
+	controls[LIGHT1_ENABLE] = ModelerControl("Open Light source 1?", 0, 1, 1, 1);
 	controls[LIGHTX_1] = ModelerControl("Light1 X Position", -6, 2, 0.1f, -2);
 	controls[LIGHTY_1] = ModelerControl("Light1 Y Position", -3, 5, 0.1f, 1);
 	controls[LIGHTZ_1] = ModelerControl("Light1 Z Position", 0, 10, 0.1f, 5);
