@@ -3,6 +3,8 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+#include <assimp/vector3.h>
+
 #include "vec.h"
 #include "mat.h"
 
@@ -11,12 +13,16 @@
 typedef enum { kActionNone, kActionTranslate, kActionRotate, kActionZoom, kActionTwist,} MouseAction_t;
 
 class Camera {
-    
+	
+    friend void frameAll();
+	friend void adjustCameraPos(aiVector3D center, Camera* camera, float radius);
+
 protected:
     
     float		mElevation;
     float		mAzimuth;
     float		mDolly;
+	float minDolly;
     float		mTwist; // Not implemented yet
     
     Vec3f		mLookAt;

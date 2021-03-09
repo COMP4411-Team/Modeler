@@ -15,6 +15,7 @@ const float kMouseRotationSensitivity		= 1.0f/90.0f;
 const float kMouseTranslationXSensitivity	= 0.03f;
 const float kMouseTranslationYSensitivity	= 0.03f;
 const float kMouseZoomSensitivity			= 0.08f;
+const float kMouseTwistSensitivity = 0.01f;
 
 void MakeDiagonal(Mat4f &m, float k)
 {
@@ -84,7 +85,7 @@ void Camera::calculateViewingTransformParameters()
 	MakeHTrans(dollyXform, Vec3f(0,0,mDolly));
 	MakeHRotY(azimXform, mAzimuth);
 	MakeHRotX(elevXform, mElevation);
-	MakeDiagonal(twistXform, 1.0f);
+	MakeHRotZ(twistXform, mTwist);
 	MakeHTrans(originXform, mLookAt);
 	
 	mPosition = Vec3f(0,0,0);
@@ -96,15 +97,18 @@ void Camera::calculateViewingTransformParameters()
 	else
 		mUpVector= Vec3f(0,1,0);
 
+	mUpVector = twistXform * mUpVector;
+	
 	mDirtyTransform = false;
 }
 
 Camera::Camera() 
 {
 	mElevation = mAzimuth = mTwist = 0.0f;
-	mDolly = -20.0f;
+	mDolly = minDolly = -20.0f;
 	mElevation = 0.2f;
 	mAzimuth = (float)M_PI;
+	mTwist = 0.0f;
 
 	mLookAt = Vec3f( 0, 0, 0 );
 	mCurrentMouseAction = kActionNone;
@@ -159,7 +163,8 @@ void Camera::dragMouse( int x, int y )
 			break;
 		}
 	case kActionTwist:
-		// Not implemented
+		setTwist(getTwist() + mouseDelta[0] * kMouseTwistSensitivity);
+		break;
 	default:
 		break;
 	}

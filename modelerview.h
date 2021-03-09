@@ -28,6 +28,9 @@ public:
     virtual int handle(int event);
     virtual void draw();
 
+    bool l_button_pressed{false};
+	bool r_button_pressed{false};
+	
     Camera *m_camera;
 };
 

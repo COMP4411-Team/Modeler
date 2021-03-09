@@ -35,12 +35,24 @@ int ModelerView::handle(int event)
 			switch(eventButton)
 			{
 			case kMouseRotationButton:
+				l_button_pressed = true;
+				if (l_button_pressed && r_button_pressed)
+				{
+					m_camera->clickMouse(kActionTwist, eventCoordX, eventCoordY);
+					break;
+				}
 				m_camera->clickMouse(kActionRotate, eventCoordX, eventCoordY );
 				break;
 			case kMouseTranslationButton:
 				m_camera->clickMouse(kActionTranslate, eventCoordX, eventCoordY );
 				break;
 			case kMouseZoomButton:
+				r_button_pressed = true;
+				if (l_button_pressed && r_button_pressed)
+				{
+					m_camera->clickMouse(kActionTwist, eventCoordX, eventCoordY);
+					break;
+				}
 				m_camera->clickMouse(kActionZoom, eventCoordX, eventCoordY );
 				break;
 			}
@@ -58,9 +70,14 @@ int ModelerView::handle(int event)
 			switch(eventButton)
 			{
 			case kMouseRotationButton:
+				m_camera->releaseMouse(eventCoordX, eventCoordY );
+				r_button_pressed = false;
+				break;
 			case kMouseTranslationButton:
+				break;
 			case kMouseZoomButton:
 				m_camera->releaseMouse(eventCoordX, eventCoordY );
+				l_button_pressed = false;
 				break;
 			}
           //  printf("release %d %d\n", eventCoordX, eventCoordY);
