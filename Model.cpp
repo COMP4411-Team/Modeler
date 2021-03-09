@@ -29,6 +29,8 @@ public:
         : ModelerView(x,y,w,h,label) { }
 
     virtual void draw();
+	//void ChangeLight0();
+	//void ChangeLight1();
 };
 
 // We need to make a creator function, mostly because of
@@ -69,6 +71,15 @@ void applyAiMatrix(const aiMatrix4x4t<float>& mat)
 	m[12] = mat.a4; m[13] = mat.b4; m[14] = mat.c4; m[15] = mat.d4;
 	glMultMatrixf(m);
 }
+
+//control of light 0 and 1
+//void SampleModel::ChangeLight0() {
+	
+//}
+
+//void SampleModel::ChangeLight1() {
+//	ModelerView::moveLight1(VAL(LIGHTX_1), VAL(LIGHTY_1), VAL(LIGHTZ_1));
+//}
 
 
 // Animation
@@ -302,6 +313,7 @@ void renderBones(Mesh& mesh, const aiNode* cur)
 	glPopMatrix();
 }
 
+//void adjustLight
 
 // We are going to override (is that the right word?) the draw()
 // method of ModelerView to draw out SampleModel
@@ -310,6 +322,10 @@ void SampleModel::draw()
     // This call takes care of a lot of the nasty projection 
     // matrix stuff.  Unless you want to fudge directly with the 
 	// projection matrix, don't bother with this ...
+	//ModelerView::openLight0(VAL(LIGHT0_ENABLE));
+	//ModelerView::openLight1(VAL(LIGHT1_ENABLE));
+	ModelerView::moveLight0(VAL(LIGHTX_0), VAL(LIGHTY_0), VAL(LIGHTZ_0));
+	ModelerView::moveLight1(VAL(LIGHTX_1), VAL(LIGHTY_1), VAL(LIGHTZ_1));
     ModelerView::draw();
 
 	//const auto* glVersion = glGetString(GL_VERSION);
@@ -396,6 +412,16 @@ int main()
     controls[XPOS] = ModelerControl("X Position", -5, 5, 0.1f, 0);
     controls[YPOS] = ModelerControl("Y Position", 0, 5, 0.1f, 0);
     controls[ZPOS] = ModelerControl("Z Position", -5, 5, 0.1f, 0);
+
+	//controls[LIGHT0_ENABLE] = ModelerControl("Open Light source 0?", 0, 1, 1, 1);
+	controls[LIGHTX_0] = ModelerControl("Light0 X Position", 0, 8, 0.1f, 4);
+	controls[LIGHTY_0] = ModelerControl("Light0 Y Position", -2, 6, 0.1f, 2);
+	controls[LIGHTZ_0] = ModelerControl("Light0 Z Position", -8, 0, 0.1f,-4);
+
+	//controls[LIGHT1_ENABLE] = ModelerControl("Open Light source 1?", 0, 1, 1, 1);
+	controls[LIGHTX_1] = ModelerControl("Light1 X Position", -6, 2, 0.1f, -2);
+	controls[LIGHTY_1] = ModelerControl("Light1 Y Position", -3, 5, 0.1f, 1);
+	controls[LIGHTZ_1] = ModelerControl("Light1 Z Position", 0, 10, 0.1f, 5);
 
 	controls[ROTATE_ALL] = ModelerControl("Rotate All", -180, 180, 1, 0);
 
