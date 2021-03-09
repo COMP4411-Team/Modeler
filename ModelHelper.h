@@ -7,6 +7,7 @@
 #include <string>
 #include <map>
 #include "mat.h"
+#include "vec.h"
 
 class Vertex
 {
@@ -38,6 +39,7 @@ public:
 	std::vector<Vertex> vertices;
 	std::vector<Bone> bones;
 	std::map<std::string, int> bone_map;
+	aiVector3D aabb_min, aabb_max;
 
 	bool applyTranslate(const std::string& bone_name, aiVector3D& translation);
 
@@ -67,10 +69,12 @@ public:
 
 	static aiVector3D calSphericalCoords(const aiVector3D& vec);
 	static aiMatrix4x4t<float> calTrafoMatrix(const aiVector3D& vec);
+	static aiMatrix4x4t<float> calViewingTransformation(Vec3f& eye, Vec3f& at, Vec3f& up);
 	
 	Assimp::Importer importer;
 	const aiScene* scene{nullptr};
 	std::vector<Mesh> meshes;
+	
 	unsigned char* tex{nullptr};
 	int tex_height, tex_width;
 	bool tex_loaded{false};

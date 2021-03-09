@@ -151,6 +151,47 @@ aiMatrix4x4t<float> ModelHelper::calTrafoMatrix(const aiVector3D& vec)
 	return out2 * out1;		// the inverse
 }
 
+aiMatrix4x4t<float> ModelHelper::calViewingTransformation(Vec3f& eye, Vec3f& at, Vec3f& up)
+{
+	
+	Vec3f viewDir = eye - at, upDir = up - eye;
+	viewDir.normalize();
+	upDir.normalize();
+
+	// up cross view, somehow the vec header does not implement cross product
+	float x = upDir[1] * viewDir[2] - upDir[2] * viewDir[1];
+	float y = -(upDir[0] * viewDir[2] - upDir[2] * viewDir[0]);
+	float z = upDir[0] * viewDir[1] - upDir[1] * viewDir[0];
+	Vec3f leftNormal(x, y, z);
+	leftNormal.normalize();
+
+	// recalculate up by viewDir cross leftNormal
+	x = viewDir[1] * leftNormal[2] - viewDir[2] * leftNormal[1];
+	y = -(viewDir[0] * leftNormal[2] - viewDir[2] * leftNormal[0]);
+	z = viewDir[0] * leftNormal[1] - viewDir[1] * leftNormal[0];
+
+	upDir = {x, y, z};
+	aiMatrix4x4t<float> mat;
+
+	mat.a1 = leftNormal[0];
+	mat.b1 = leftNormal[1];
+	mat.c1 = leftNormal[2];
+	
+	mat.a2 = upDir[0];
+	mat.b2 = upDir[1];
+	mat.c2 = upDir[2];
+
+	mat.a3 = viewDir[0];
+	mat.b3 = viewDir[1];
+	mat.c3 = viewDir[2];
+	
+	mat.a4 = -(leftNormal * Vec3f(eye[0], eye[1], eye[2]));
+	mat.b4 = -(upDir * Vec3f(eye[0], eye[1], eye[2]));
+	mat.c4 = -(viewDir * Vec3f(eye[0], eye[1], eye[2]));
+	mat.d4 = 1.f;
+	return mat;
+}
+
 bool Mesh::applyTranslate(const std::string& bone_name, aiVector3D& translation)
 {
 	aiMatrix4x4t<float> mat;

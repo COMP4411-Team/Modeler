@@ -33,6 +33,7 @@ class Fl_Value_Slider;
 // the purpose of which is to only allow one instance of it.
 class ModelerApplication
 {
+	friend void frameAll();
 public:
 	~ModelerApplication();
 

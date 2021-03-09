@@ -12,6 +12,8 @@
 #include <assimp/postprocess.h>
 #include "ModelHelper.h"
 #include "bitmap.h"
+#include "camera.h"
+#include "modelerui.h"
 
 using namespace std;
 using namespace Assimp;
@@ -20,6 +22,8 @@ using Matrix4f = aiMatrix4x4t<float>;
 ModelHelper helper;		// simply use global variable for now
 Matrix4f global_inverse;
 float tick = 0.f;
+float cur_fov = 30.f;
+float cur_zfar = 100.f;
 
 // To make a SampleModel, we inherit off of ModelerView
 class SampleModel : public ModelerView 
@@ -70,6 +74,103 @@ void applyAiMatrix(const aiMatrix4x4t<float>& mat)
 	glMultMatrixf(m);
 }
 
+// column to row order
+aiMatrix4x4t<float> array2Mat(float* a)
+{
+	aiMatrix4x4t<float> mat;
+	mat.a1 = a[0]; mat.b1 = a[1]; mat.c1 = a[2]; mat.d1 = a[3];
+	mat.a2 = a[4]; mat.b2 = a[5]; mat.c2 = a[6]; mat.d2 = a[7];
+	mat.a3 = a[8]; mat.b3 = a[9]; mat.c3 = a[10]; mat.d3 = a[11];
+	mat.a4 = a[12]; mat.b4 = a[13]; mat.c4 = a[14]; mat.d4 = a[15];
+	return mat;
+}
+
+
+void adjustCameraPos(aiVector3D center, Camera* camera, float radius)
+{
+	camera->minDolly = -radius;
+	Vec3f at{center.x, center.y, center.z};
+	float cur_len = (at - camera->mPosition).length();
+
+	if (cur_len < radius)
+	{
+		camera->mDolly = -radius * 2;
+		Vec3f dir = camera->mPosition - camera->mLookAt;
+		dir.normalize();
+		dir *= radius;
+		camera->mUpVector += dir;
+		camera->mPosition += dir;
+	}
+}
+
+
+// If current point is not visible, adjust fov
+void adjustCamera(aiVector3D point, float aspect)
+{
+	if (point.z < 0)
+		return;
+	
+	float fov_needed = atan(abs(point.y / point.z)) / AI_MATH_PI_F * 180.f;
+	fov_needed = max(fov_needed, atan(abs(point.x * aspect / point.z)) / AI_MATH_PI_F * 180.f);
+
+	fov_needed = max(fov_needed, 30.f);
+	fov_needed = max(cur_fov, fov_needed);
+	float zfar_needed = max(abs(point.z), cur_zfar);
+
+	glPushMatrix();
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective(fov_needed, aspect,1.0,zfar_needed);
+				
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();
+}
+
+// Frame all
+void frameAll()
+{
+	ModelerView* view = ModelerApplication::Instance()->m_ui->m_modelerView;
+	auto* camera = view->m_camera;
+	float aspect = (float)view->w() / view->h();
+	
+	float modelview[16];
+	glGetFloatv(GL_MODELVIEW_MATRIX, modelview);
+
+	auto mat = array2Mat(modelview);
+	auto aabb_max = mat * helper.meshes[0].aabb_max;
+	auto aabb_min = mat * helper.meshes[0].aabb_min;
+	auto mid = (helper.meshes[0].aabb_max + helper.meshes[0].aabb_min) / 2.f;
+
+	camera->setLookAt({mid.x, mid.y, mid.z});
+	camera->applyViewingTransform();
+	// adjustCameraPos((aabb_min + aabb_max) / 2.f, camera, (aabb_min - aabb_max).Length() / 2);
+	
+	auto point = aabb_max;
+	adjustCamera(point, aspect);
+
+	point = aabb_min;
+	adjustCamera(point, aspect);
+
+	point = aiVector3D{aabb_min.x, aabb_max.y, aabb_max.z};
+	adjustCamera(point, aspect);
+
+	point = aiVector3D{aabb_max.x, aabb_min.y, aabb_max.z};
+	adjustCamera(point, aspect);
+
+	point = aiVector3D{aabb_max.x, aabb_max.y, aabb_min.z};
+	adjustCamera(point, aspect);
+
+	point = aiVector3D{aabb_min.x, aabb_min.y, aabb_max.z};
+	adjustCamera(point, aspect);
+
+	point = aiVector3D{aabb_min.x, aabb_max.y, aabb_min.z};
+	adjustCamera(point, aspect);
+
+	point = aiVector3D{aabb_max.x, aabb_min.y, aabb_min.z};
+	adjustCamera(point, aspect);
+
+	camera->applyViewingTransform();
+}
 
 // Animation
 void animate()
@@ -263,6 +364,20 @@ void renderMesh(Mesh& mesh)
 		// drawTriangle(vertices[v1], vertices[v2], vertices[v3]);
 		drawTriangle(mesh, face);
 	}
+
+	// Recalculate aabb for the mesh
+	mesh.aabb_min = mesh.aabb_max = mesh.vertices[0].world_pos;
+	for (auto& vt : mesh.vertices)
+	{
+		aiVector3D& pos = vt.world_pos;
+		mesh.aabb_min.x = min(mesh.aabb_min.x, pos.x);
+		mesh.aabb_min.y = min(mesh.aabb_min.y, pos.y);
+		mesh.aabb_min.z = min(mesh.aabb_min.z, pos.z);
+
+		mesh.aabb_max.x = max(mesh.aabb_max.x, pos.x);
+		mesh.aabb_max.y = max(mesh.aabb_max.y, pos.y);
+		mesh.aabb_max.z = max(mesh.aabb_max.z, pos.z);
+	}
 }
 
 
@@ -306,7 +421,8 @@ void renderBones(Mesh& mesh, const aiNode* cur)
 // We are going to override (is that the right word?) the draw()
 // method of ModelerView to draw out SampleModel
 void SampleModel::draw()
-{	
+{
+	// frameAll();
     // This call takes care of a lot of the nasty projection 
     // matrix stuff.  Unless you want to fudge directly with the 
 	// projection matrix, don't bother with this ...
@@ -321,7 +437,9 @@ void SampleModel::draw()
 	//printf("vendor %s\n", glVendor);
 	//printf("glu version %s\n", gluVersion);
 
-
+	drawSphere(0.1);
+	drawCylinder(1, 0.1, 0.01);
+	
 	// Init texture
 	glEnable(GL_TEXTURE_2D);
 	if (!helper.tex_loaded)
@@ -350,7 +468,6 @@ void SampleModel::draw()
 	auto& mesh = helper.meshes[0];
 	auto* scene = helper.scene;
 	global_inverse = scene->mRootNode->mTransformation.Inverse();
-	
 
 	// Apply user controls to meshes here
 	applyMeshControls();
@@ -362,6 +479,7 @@ void SampleModel::draw()
 	renderBones(mesh, scene->mRootNode);
 
 	// Avoid overlapping bones and meshes
+
 	glTranslated(0, 5, 0);
 	glRotated(180, 1, 0, 0);
 
@@ -369,7 +487,6 @@ void SampleModel::draw()
 	traverseBoneHierarchy(mesh, scene->mRootNode, Matrix4f());
 	processVertices(mesh);
 	renderMesh(mesh);
-	
 }
 
 int main()
