@@ -439,6 +439,7 @@ void SampleModel::draw()
 	//printf("vendor %s\n", glVendor);
 	//printf("glu version %s\n", gluVersion);
 
+
 	if (VAL(L_SYSTEM_ENABLE))
 	{
 		glPushMatrix();
