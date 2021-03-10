@@ -93,9 +93,11 @@ int ModelerView::handle(int event)
 }
 
 static GLfloat lightPosition0[] = { 4, 2, -4, 0 };
-static GLfloat lightDiffuse0[]  = { 1,1,1,1 };
+static GLfloat lightDiffuse0[] = { 1,1,1,1 };
 static GLfloat lightPosition1[] = { -2, 1, 5, 0 };
-static GLfloat lightDiffuse1[]  = { 1, 1, 1, 1 };
+static GLfloat lightDiffuse1[] = { 1, 1, 1, 1 };
+//static bool enableLight0 = TRUE;
+//static bool enableLight1 = TRUE;
 
 void ModelerView::draw()
 {
@@ -119,8 +121,32 @@ void ModelerView::draw()
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     m_camera->applyViewingTransform();
 
-    glLightfv( GL_LIGHT0, GL_POSITION, lightPosition0 );
-    glLightfv( GL_LIGHT0, GL_DIFFUSE, lightDiffuse0 );
-    glLightfv( GL_LIGHT1, GL_POSITION, lightPosition1 );
-    glLightfv( GL_LIGHT1, GL_DIFFUSE, lightDiffuse1 );
+	//if (enableLight0) {
+	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition0);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse0);
+	//}
+	//if (enableLight1) {
+	glLightfv(GL_LIGHT1, GL_POSITION, lightPosition1);
+	glLightfv( GL_LIGHT1, GL_DIFFUSE, lightDiffuse1 );
+	//}
 }
+
+void ModelerView::moveLight0(float x, float y, float z) {
+	lightPosition0[0] = x;
+	lightPosition0[1] = y;
+	lightPosition0[2] = z;
+}
+
+void ModelerView::moveLight1(float x, float y, float z) {
+	lightPosition1[0] = x;
+	lightPosition1[1] = y;
+	lightPosition1[2] = z;
+}
+
+//void ModelerView::openLight0(float x) {
+//	enableLight0 = x;
+//}
+
+//void ModelerView::openLight1(float x) {
+	//enableLight1 = x;
+//}
