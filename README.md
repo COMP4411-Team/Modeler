@@ -1,6 +1,6 @@
 # Modeler
 
-- [ ] 1W Change the default light source.
+- [x] 1W Change the default light source.
 
 - [ ] 1W Adjustable levels of detail.
 
