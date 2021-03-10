@@ -20,7 +20,7 @@
 
 - [ ] 2B Add a function in your model file for drawing a new type of primitive. 1) Extruded surface 2) Surfaces of rotation 3) Torus.
 
-- [x] 2B (Variable) Procedural modeling. Controllable by the user via control widgets.
+- [ ] 2B (Variable) Procedural modeling. Controllable by the user via control widgets.
 
 - [ ] 2B Mood.
 
