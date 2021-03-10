@@ -155,6 +155,7 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="LSystem.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="modelerapp.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -191,6 +192,7 @@
   <ItemGroup>
     <ClInclude Include="bitmap.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="LSystem.h" />
     <ClInclude Include="mat.h" />
     <ClInclude Include="modelerapp.h" />
     <ClInclude Include="modelerdraw.h" />
