@@ -14,6 +14,7 @@
 #include "bitmap.h"
 #include "camera.h"
 #include "modelerui.h"
+#include "LSystem.h"
 
 using namespace std;
 using namespace Assimp;
@@ -24,6 +25,7 @@ Matrix4f global_inverse;
 float tick = 0.f;
 float cur_fov = 30.f;
 float cur_zfar = 100.f;
+LSystem l_system;
 
 // To make a SampleModel, we inherit off of ModelerView
 class SampleModel : public ModelerView 
@@ -470,8 +472,23 @@ void SampleModel::draw()
 	//printf("vendor %s\n", glVendor);
 	//printf("glu version %s\n", gluVersion);
 
-	drawSphere(0.1);
-	drawCylinder(1, 0.1, 0.01);
+	if (VAL(L_SYSTEM_ENABLE))
+	{
+		glPushMatrix();
+		glRotated(-90, 1, 0, 0);
+		if (l_system.pitch_angle != VAL(L_SYSTEM_ANGLE) || l_system.forward_dist != VAL(L_SYSTEM_BRANCH_LENGTH))
+		{
+			l_system.pitch_angle = l_system.yaw_angle = l_system.roll_angle = VAL(L_SYSTEM_ANGLE);
+			l_system.forward_dist = VAL(L_SYSTEM_BRANCH_LENGTH);
+			l_system.need_regenerate = true;
+		}
+		l_system.draw();
+		glPopMatrix();
+	}
+	
+
+	// drawSphere(0.1);
+	// drawCylinder(1, 0.1, 0.01);
 	
 	// Init texture
 	glEnable(GL_TEXTURE_2D);
@@ -589,6 +606,10 @@ int main()
 
 	controls[TAIL_PITCH] = ModelerControl("Tail Pitch", -30, 30, 1, 0);
 	controls[TAIL_YAW] = ModelerControl("Tail Yaw", -15, 15, 1, 0);
+
+	controls[L_SYSTEM_ENABLE] = ModelerControl("L-system Enable", 0, 1, 1, 0);
+	controls[L_SYSTEM_ANGLE] = ModelerControl("L-system Angle", 0, 60, 1, 22.5);
+	controls[L_SYSTEM_BRANCH_LENGTH] = ModelerControl("L-system Branch Length", 0, 1, 0.001, 0.1);
 
     ModelerApplication::Instance()->Init(&createSampleModel, controls, NUMCONTROLS);
     return ModelerApplication::Instance()->Run();
