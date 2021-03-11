@@ -265,7 +265,7 @@ void applyMeshControls()
 	mesh.applyRotationZ("rearLimpLeft1", VAL(LEFT_REARLIMP_1));
 
 	mesh.restoreIdentity("rearLimpRight1");
-	mesh.applyRotationZ("rearLimpRight1", VAL(RIGHT_REARLIMP_1));
+	mesh.applyRotationX("rearLimpRight1", VAL(RIGHT_REARLIMP_1));
 
 	//============================================================
 

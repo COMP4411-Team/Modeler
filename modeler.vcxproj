@@ -155,6 +155,7 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="IKSolver.cpp" />
     <ClCompile Include="LSystem.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="modelerapp.cpp">
@@ -192,6 +193,7 @@
   <ItemGroup>
     <ClInclude Include="bitmap.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="IKSolver.h" />
     <ClInclude Include="LSystem.h" />
     <ClInclude Include="mat.h" />
     <ClInclude Include="modelerapp.h" />

@@ -183,10 +183,10 @@ void Camera::applyViewingTransform() {
 
 	// Place the camera at mPosition, aim the camera at
 	// mLookAt, and twist the camera such that mUpVector is up
-	gluLookAt(	mPosition[0], mPosition[1], mPosition[2],
-				mLookAt[0],   mLookAt[1],   mLookAt[2],
-				mUpVector[0], mUpVector[1], mUpVector[2]);
-	// lookAt(mPosition, mLookAt, mUpVector);
+	//gluLookAt(	mPosition[0], mPosition[1], mPosition[2],
+	//			mLookAt[0],   mLookAt[1],   mLookAt[2],
+	//			mUpVector[0], mUpVector[1], mUpVector[2]);
+	lookAt(mPosition, mLookAt, mUpVector);
 }
 
 void Camera::lookAt(Vec3f eye, Vec3f at, Vec3f up)
@@ -194,23 +194,16 @@ void Camera::lookAt(Vec3f eye, Vec3f at, Vec3f up)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	Vec3f viewDir = eye - at, upDir = up - eye;
+	Vec3f viewDir = eye - at, upDir = up;
 	viewDir.normalize();
 	upDir.normalize();
 
-	// up cross view, somehow the vec header does not implement cross product
-	float x = upDir[1] * viewDir[2] - upDir[2] * viewDir[1];
-	float y = -(upDir[0] * viewDir[2] - upDir[2] * viewDir[0]);
-	float z = upDir[0] * viewDir[1] - upDir[1] * viewDir[0];
-	Vec3f leftNormal(x, y, z);
+	// up cross view
+	Vec3f leftNormal = upDir ^ viewDir;
 	leftNormal.normalize();
 
 	// recalculate up by viewDir cross leftNormal
-	x = viewDir[1] * leftNormal[2] - viewDir[2] * leftNormal[1];
-	y = -(viewDir[0] * leftNormal[2] - viewDir[2] * leftNormal[0]);
-	z = viewDir[0] * leftNormal[1] - viewDir[1] * leftNormal[0];
-
-	upDir = {x, y, z};
+	upDir = viewDir ^ leftNormal;
 
 	float mat[16];
 	for (int i = 0; i < 16; ++i)
