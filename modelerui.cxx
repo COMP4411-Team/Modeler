@@ -174,6 +174,14 @@ void ModelerUserInterface::cb_Exit(Fl_Menu_* o, void* v) {
   ((ModelerUserInterface*)(o->parent()->user_data()))->cb_Exit_i(o,v);
 }
 
+inline void ModelerUserInterface::cb_FrameAll_i(Fl_Menu_* o, void* v) {
+	m_modelerView->enableFrame = TRUE;
+	m_modelerView->redraw();
+}
+void ModelerUserInterface::cb_FrameAll(Fl_Menu_* o, void* v) {
+	((ModelerUserInterface*)(o->parent()->user_data()))->cb_FrameAll_i(o, v);
+}
+
 inline void ModelerUserInterface::cb_Normal_i(Fl_Menu_*, void*) {
   setDrawMode(NORMAL);
 m_modelerView->redraw();
@@ -248,6 +256,7 @@ void ModelerUserInterface::cb_m_controlsAnimOnMenu(Fl_Menu_* o, void* v) {
 
 Fl_Menu_Item ModelerUserInterface::menu_m_controlsMenuBar[] = {
  {"File", 0,  0, 0, 64, 0, 0, 14, 0},
+ {"Frame All", 0,  (Fl_Callback*)ModelerUserInterface::cb_FrameAll, 0, 0, 0, 0, 14, 0},
  {"Save Raytracer File", 0,  (Fl_Callback*)ModelerUserInterface::cb_Save, 0, 0, 0, 0, 14, 0},
  {"Save Bitmap File", 0,  (Fl_Callback*)ModelerUserInterface::cb_Save1, 0, 128, 0, 0, 14, 0},
  {"Open Position File", 0, (Fl_Callback*)ModelerUserInterface::cb_OpenPos, 0, 0, 0, 0, 14, 0},
