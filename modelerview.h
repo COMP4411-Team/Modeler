@@ -30,6 +30,8 @@ public:
 
     bool l_button_pressed{false};
 	bool r_button_pressed{false};
+
+    bool enableFrame{ false };
 	
     Camera *m_camera;
 };

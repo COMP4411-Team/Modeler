@@ -32,6 +32,9 @@ private:
   static void cb_Save1(Fl_Menu_*, void*);
 // IANLI - 10/9/2001
 // callback functions for saving the position of the model.
+  inline void cb_FrameAll_i(Fl_Menu_*, void*);
+  static void cb_FrameAll(Fl_Menu_*, void*);
+
   inline void cb_SavePos_i(Fl_Menu_*, void*);
   static void cb_SavePos(Fl_Menu_*, void*);
   inline void cb_OpenPos_i(Fl_Menu_*, void*);
@@ -39,6 +42,8 @@ private:
 
   inline void cb_Exit_i(Fl_Menu_*, void*);
   static void cb_Exit(Fl_Menu_*, void*);
+
+
   inline void cb_Normal_i(Fl_Menu_*, void*);
   static void cb_Normal(Fl_Menu_*, void*);
   inline void cb_Flat_i(Fl_Menu_*, void*);

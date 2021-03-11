@@ -120,8 +120,8 @@ void adjustCameraPos(aiVector3D center, Camera* camera, float radius)
 // If current point is not visible, adjust fov
 void adjustCamera(aiVector3D point, float aspect)
 {
-	if (point.z < 0)
-		return;
+	//if (point.z < 0)
+		//return;
 	
 	float fov_needed = atan(abs(point.y / point.z)) / AI_MATH_PI_F * 180.f;
 	fov_needed = max(fov_needed, atan(abs(point.x * aspect / point.z)) / AI_MATH_PI_F * 180.f);
@@ -150,8 +150,9 @@ void frameAll()
 	glGetFloatv(GL_MODELVIEW_MATRIX, modelview);
 
 	auto mat = array2Mat(modelview);
-	auto aabb_max = mat * helper.meshes[0].aabb_max;
-	auto aabb_min = mat * helper.meshes[0].aabb_min;
+	auto aabb_max = mat*helper.meshes[0].aabb_max;
+	auto aabb_min = mat*helper.meshes[0].aabb_min;
+
 	auto mid = (helper.meshes[0].aabb_max + helper.meshes[0].aabb_min) / 2.f;
 
 	camera->setLookAt({mid.x, mid.y, mid.z});
@@ -183,6 +184,7 @@ void frameAll()
 	adjustCamera(point, aspect);
 
 	camera->applyViewingTransform();
+	
 }
 
 // Animation
@@ -436,7 +438,10 @@ void renderBones(Mesh& mesh, const aiNode* cur)
 // method of ModelerView to draw out SampleModel
 void SampleModel::draw()
 {
-	// frameAll();
+	if (enableFrame) {
+		frameAll();
+		enableFrame = FALSE;
+	}
     // This call takes care of a lot of the nasty projection 
     // matrix stuff.  Unless you want to fudge directly with the 
 	// projection matrix, don't bother with this ...
@@ -573,6 +578,8 @@ int main()
 	controls[LIGHTX_1] = ModelerControl("Light1 X Position", -6, 2, 0.1f, -2);
 	controls[LIGHTY_1] = ModelerControl("Light1 Y Position", -3, 5, 0.1f, 1);
 	controls[LIGHTZ_1] = ModelerControl("Light1 Z Position", 0, 10, 0.1f, 5);
+
+	controls[INSTANCES] = ModelerControl("Different Instances", 1, 3, 1, 1);
 
 	controls[ROTATE_ALL] = ModelerControl("Rotate All", -180, 180, 1, 0);
 
