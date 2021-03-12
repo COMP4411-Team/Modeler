@@ -29,7 +29,8 @@ public:
 
 	// Info for rendering the bone
 	aiVector3D start, end;			// world space coords for end points
-	aiVector3D spherical_coords;		// spherical coordinates of the end point
+	aiVector3D spherical_coords;		// spherical coordinates of the end point, OBSOLETED
+	aiQuaternion rotation;			// rotation from parent to local space
 };
 
 class Mesh

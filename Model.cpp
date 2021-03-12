@@ -398,6 +398,11 @@ void renderMesh(Mesh& mesh)
 
 void renderBones(Mesh& mesh, const aiNode* cur)
 {
+	// z -> y, y -> x, x -> z
+	Matrix4f permutation{0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1};
+	Matrix4f inverse_permutation = permutation;
+	inverse_permutation.Inverse();
+	
 	glPushMatrix();
 
 	string name = Mesh::processBoneName(cur->mName.data);
@@ -405,8 +410,8 @@ void renderBones(Mesh& mesh, const aiNode* cur)
 	{
 		Bone& bone = mesh.getBone(name);
 
-		float theta = radian2Degree(bone.spherical_coords.x);
-		float phi = radian2Degree(bone.spherical_coords.y);
+		// float theta = radian2Degree(bone.spherical_coords.x);
+		// float phi = radian2Degree(bone.spherical_coords.y);
 
 		string p_name = Mesh::processBoneName(cur->mParent->mName.data);
 
@@ -417,11 +422,23 @@ void renderBones(Mesh& mesh, const aiNode* cur)
 				glTranslatef(0, 0, p.spherical_coords.z);
 			
 		} catch (...) { }
+		
+		// glRotatef(theta, 0, 0, 1);
+		// glRotatef(phi, 0, 1, 0);
 
-		applyAiMatrix(bone.local_transformation);
+		// Use quaternion calculated from the mTransformation now
+		aiQuaternion rotation = bone.rotation;
+		float theta = acos(rotation.w) * 2;
+		float factor = sin(theta / 2);
+		aiVector3D axis{rotation.x, rotation.y, rotation.z};
+		axis = (axis / factor).Normalize();		// convert to angle-axis form
 
-		glRotatef(theta, 0, 0, 1);
-		glRotatef(phi, 0, 1, 0);
+		// Note that the bone in the model is on y axis and here we draw on z axis
+		// so we need to rotate the order of xyz
+		glRotatef(theta * 180.f / AI_MATH_PI_F, axis.z, axis.x, axis.y);
+
+		// Apply user controls, after change of coordinates
+		applyAiMatrix(inverse_permutation * bone.local_transformation * permutation);
 		
 		drawCylinder(bone.spherical_coords.z, 0.3, 0.01);	// cylinder for now
 	}
@@ -531,10 +548,13 @@ void SampleModel::draw()
 		animate();
 
 	// Apply controls to bones and render them
+	glPushMatrix();
+	glRotated(-90, 1, 0, 0);
+	glRotated(-90, 0, 0, 1);
 	renderBones(mesh, scene->mRootNode);
-
+	glPopMatrix();
+	
 	// Avoid overlapping bones and meshes
-
 	glTranslated(0, 5, 0);
 	glRotated(180, 1, 0, 0);
 

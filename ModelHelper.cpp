@@ -75,8 +75,14 @@ void ModelHelper::calBoneTransformation(const aiMatrix4x4t<float>& transformatio
 
 		auto& bone = mesh.bones[mesh.bone_map[name]];
 
-		aiVector3D vec_world = bone.end - bone.start;			// the bone in world space
+		// aiVector3D vec_world = bone.end - bone.start;			// the bone in world space
 
+		auto trafo = cur->mTransformation;
+		aiQuaternion rotation;
+		aiVector3D position;
+		trafo.DecomposeNoScaling(rotation, position);
+		aiVector3D axis = rotation.Rotate({0, 1, 0});
+		
 		try
 		{
 			Bone& p = mesh.getBone(cur->mParent->mName.data);
@@ -88,10 +94,12 @@ void ModelHelper::calBoneTransformation(const aiMatrix4x4t<float>& transformatio
 			}
 		} catch (...) { }
 		
-		aiVector3D vec_local = cur_transformation * vec_world;		// the bone in parent's space
+		// aiVector3D vec_local = cur_transformation * vec_world;		// the bone in parent's space
 		
-		bone.spherical_coords = calSphericalCoords(vec_local);
-		cur_transformation = calTrafoMatrix(vec_local) * cur_transformation;
+		// bone.spherical_coords = calSphericalCoords(vec_local);
+		bone.rotation = rotation;
+		bone.spherical_coords.z = (bone.end - bone.start).Length();
+		// cur_transformation = calTrafoMatrix(vec_local) * cur_transformation;
 	}
 
 	for (int i = 0; i < cur->mNumChildren; ++i)
