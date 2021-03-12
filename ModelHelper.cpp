@@ -66,6 +66,7 @@ void ModelHelper::preprocess()
 void ModelHelper::calBoneTransformation(const aiQuaternion& global_rotation, const aiNode* cur)
 {
 	string name = Mesh::processBoneName(cur->mName.data);
+	aiQuaternion new_global_rotation = global_rotation;
 	
 	for (auto& mesh : meshes)
 	{
@@ -73,20 +74,22 @@ void ModelHelper::calBoneTransformation(const aiQuaternion& global_rotation, con
 			continue;
 
 		auto& bone = mesh.bones[mesh.bone_map[name]];
+		bone.node = cur;
+		bone.name = name;
 
 		auto trafo = cur->mTransformation;
 		aiQuaternion rotation;
 		aiVector3D position;
 		trafo.DecomposeNoScaling(rotation, position);
-		aiVector3D axis = rotation.Rotate({0, 1, 0});
 		
 		bone.rotation = rotation;
-		bone.global_rotation = rotation * global_rotation;
+		bone.global_rotation = global_rotation * rotation;
+		new_global_rotation = bone.global_rotation;
 		bone.length = (bone.end - bone.start).Length();
 	}
 
 	for (int i = 0; i < cur->mNumChildren; ++i)
-		calBoneTransformation(global_rotation, cur->mChildren[i]);
+		calBoneTransformation(new_global_rotation, cur->mChildren[i]);
 }
 
 void ModelHelper::parseBoneInfo(Mesh& mesh, const string& filename)

@@ -22,6 +22,9 @@ public:
 class Bone
 {
 public:
+	const aiNode* node;
+	std::string name;
+	
 	// Matrices used for rendering the mesh
 	aiMatrix4x4t<float> final_transformation;	// final matrix applied to vertices
 	aiMatrix4x4t<float> local_transformation;	// all the user specified transformations

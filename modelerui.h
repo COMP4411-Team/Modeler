@@ -14,17 +14,32 @@
 #include <FL/Fl_Scroll.H>
 #include <FL/Fl_Pack.H>
 #include "modelerapp.h"
+#include <FL/Fl_Value_Input.H>
 
 class ModelerUserInterface {
 public:
   ModelerUserInterface();
   Fl_Window *m_controlsWindow;
+
+	Fl_Window* m_ikDialog;
+	Fl_Value_Input* m_xPosInput;
+	Fl_Value_Input* m_yPosInput;
+	Fl_Value_Input* m_zPosInput;
+	Fl_Button* m_solveIkButton;
+	Fl_Choice* m_endEffectorChoice;
+
 private:
   inline void cb_m_controlsWindow_i(Fl_Window*, void*);
   static void cb_m_controlsWindow(Fl_Window*, void*);
 public:
   Fl_Menu_Bar *m_controlsMenuBar;
   static Fl_Menu_Item menu_m_controlsMenuBar[];
+
+	static Fl_Menu_Item m_endEffectorMenu[];
+	static void cb_chooseEndEffector(Fl_Widget*, void*);
+	static void cb_solveIk(Fl_Widget*, void*);
+	static void cb_closeIkDialog(Fl_Window*, void*);
+
 private:
   inline void cb_Save_i(Fl_Menu_*, void*);
   static void cb_Save(Fl_Menu_*, void*);
@@ -34,6 +49,8 @@ private:
 // callback functions for saving the position of the model.
   inline void cb_FrameAll_i(Fl_Menu_*, void*);
   static void cb_FrameAll(Fl_Menu_*, void*);
+
+	static void cb_showIkDialog(Fl_Menu_*, void*);
 
   inline void cb_SavePos_i(Fl_Menu_*, void*);
   static void cb_SavePos(Fl_Menu_*, void*);

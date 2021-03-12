@@ -15,6 +15,7 @@
 #include "camera.h"
 #include "modelerui.h"
 #include "LSystem.h"
+#include "IKSolver.h"
 
 using namespace std;
 using namespace Assimp;
@@ -26,6 +27,7 @@ float tick = 0.f;
 float cur_fov = 30.f;
 float cur_zfar = 100.f;
 LSystem l_system;
+IKSolver solver;
 
 // To make a SampleModel, we inherit off of ModelerView
 class SampleModel : public ModelerView 
@@ -537,7 +539,7 @@ void SampleModel::draw()
 	// Apply user controls to meshes here
 	applyMeshControls();
 
-	if (ModelerApplication::Instance()->m_animating)
+	if (ModelerApplication::Instance()->m_animating && !solver.showIkResult)
 		animate();
 
 	// Apply controls to bones and render them
@@ -551,6 +553,10 @@ void SampleModel::draw()
 	glTranslated(0, 5, 0);
 	glRotated(180, 1, 0, 0);
 
+	// Apply the solution of IKSolver
+	if (solver.showIkResult)
+		solver.applyRotation(mesh);
+
 	// Render the meshes
 	traverseBoneHierarchy(mesh, scene->mRootNode, Matrix4f());
 	processVertices(mesh);
@@ -559,6 +565,7 @@ void SampleModel::draw()
 
 int main()
 {
+	// Load the model and init IK solver
 	helper.loadModel("./models/lowpolydeer_uv_modified.dae", "./models/lowpolydeer_bone_modified.txt");
 
 	helper.loadTexture("./models/wood_texture.bmp");
@@ -572,7 +579,9 @@ int main()
 	
 	helper.meshes[0].printBoneHierarchy(scene->mRootNode, 0);	// print out the bones
 
-	
+	Mesh& mesh = helper.meshes[0];
+	solver.scene = scene;
+	solver.mesh = &mesh;
 	
 	// Initialize the controls
 	// Constructor is ModelerControl(name, minimumvalue, maximumvalue, 

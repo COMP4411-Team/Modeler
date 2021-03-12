@@ -3,6 +3,7 @@
 
 #include "modelerui.h"
 #include "modelerapp.h"
+#include "IKSolver.h"
 
 #include "camera.h"
 
@@ -20,11 +21,38 @@
 #include <fstream>
 using namespace std;
 
+extern IKSolver solver;
+
 inline void ModelerUserInterface::cb_m_controlsWindow_i(Fl_Window*, void*) {
   0;;
 }
 void ModelerUserInterface::cb_m_controlsWindow(Fl_Window* o, void* v) {
   ((ModelerUserInterface*)(o->user_data()))->cb_m_controlsWindow_i(o,v);
+}
+
+void ModelerUserInterface::cb_chooseEndEffector(Fl_Widget* o, void* v)
+{
+	int value = (int)v;
+	solver.setBoneChain(static_cast<IKSolver::EndEffector>((int)v));
+	
+}
+
+void ModelerUserInterface::cb_solveIk(Fl_Widget* o, void*)
+{
+	auto* ui = ((ModelerUserInterface*)(o->user_data()));
+	solver.showIkResult = true;
+	solver.offset = aiVector3D(ui->m_xPosInput->value(), ui->m_yPosInput->value(), ui->m_zPosInput->value());
+	solver.setContext();
+	solver.solve();
+	ui->m_modelerView->redraw();
+}
+
+void ModelerUserInterface::cb_closeIkDialog(Fl_Window* o, void* v)
+{
+	solver.showIkResult = false;
+	auto* ui = ((ModelerUserInterface*)(o->user_data()));
+	ui->m_modelerView->redraw();
+	Fl_Window::default_callback(o, v);
 }
 
 inline void ModelerUserInterface::cb_Save_i(Fl_Menu_*, void*) {
@@ -182,6 +210,11 @@ void ModelerUserInterface::cb_FrameAll(Fl_Menu_* o, void* v) {
 	((ModelerUserInterface*)(o->parent()->user_data()))->cb_FrameAll_i(o, v);
 }
 
+void ModelerUserInterface::cb_showIkDialog(Fl_Menu_* o, void*)
+{
+	((ModelerUserInterface*)(o->parent()->user_data()))->m_ikDialog->show();
+}
+
 inline void ModelerUserInterface::cb_Normal_i(Fl_Menu_*, void*) {
   setDrawMode(NORMAL);
 m_modelerView->redraw();
@@ -276,8 +309,22 @@ Fl_Menu_Item ModelerUserInterface::menu_m_controlsMenuBar[] = {
  {"Animate", 0,  0, 0, 64, 0, 0, 14, 0},
  {"Enable", 0,  (Fl_Callback*)ModelerUserInterface::cb_m_controlsAnimOnMenu, 0, 2, 0, 0, 14, 0},
  {0},
+	{"IK Solver", 0, (Fl_Callback*)ModelerUserInterface::cb_showIkDialog, 0, 0},
+	{0},
  {0}
 };
+
+using EndEffector = IKSolver::EndEffector;
+Fl_Menu_Item ModelerUserInterface::m_endEffectorMenu[] =
+{
+	{"Head", 0, (Fl_Callback*)ModelerUserInterface::cb_chooseEndEffector, (void*)EndEffector::HEAD},
+	{"Left Fore Foot", 0, (Fl_Callback*)ModelerUserInterface::cb_chooseEndEffector, (void*)EndEffector::LEFT_FORE_FOOT},
+	{"Right Fore Foot", 0, (Fl_Callback*)ModelerUserInterface::cb_chooseEndEffector, (void*)EndEffector::RIGHT_FORE_FOOT},
+	{"Left Rear Foot", 0, (Fl_Callback*)ModelerUserInterface::cb_chooseEndEffector, (void*)EndEffector::LEFT_REAR_FOOT},
+	{"Right Rear Foot", 0, (Fl_Callback*)ModelerUserInterface::cb_chooseEndEffector, (void*)EndEffector::RIGHT_REAR_FOOT},
+	{0}
+};
+
 // 11-01-2001: fixed bug that caused animation problems
 Fl_Menu_Item* ModelerUserInterface::m_controlsAnimOnMenu = ModelerUserInterface::menu_m_controlsMenuBar + 19;
 
@@ -334,6 +381,33 @@ ModelerUserInterface::ModelerUserInterface() {
     }
     o->end();
   }
+
+	m_ikDialog = new Fl_Window(500, 300, "Inverse Kinetics");
+	m_ikDialog->user_data(this);
+	m_ikDialog->callback((Fl_Callback*)cb_closeIkDialog);
+	
+	m_endEffectorChoice = new Fl_Choice(100, 30, 150, 25, "End Effector");
+	m_endEffectorChoice->user_data(this);
+	m_endEffectorChoice->menu(m_endEffectorMenu);
+	m_endEffectorChoice->callback(cb_chooseEndEffector);
+
+	m_xPosInput = new Fl_Value_Input(70, 70, 100, 25, "X Pos");
+	m_xPosInput->range(-20, 20);
+	m_xPosInput->step(0.01);
+
+	m_yPosInput = new Fl_Value_Input(220, 70, 100, 25, "Y Pos");
+	m_yPosInput->range(-20, 20);
+	m_yPosInput->step(0.01);
+
+	m_zPosInput = new Fl_Value_Input(370, 70, 100, 25, "Z Pos");
+	m_zPosInput->range(-20, 20);
+	m_zPosInput->step(0.01);
+
+	m_solveIkButton = new Fl_Button(200, 200, 100, 30, "Solve");
+	m_solveIkButton->user_data(this);
+	m_solveIkButton->callback(cb_solveIk);
+
+	m_ikDialog->end();
 }
 
 void ModelerUserInterface::show() {
