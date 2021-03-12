@@ -409,24 +409,17 @@ void renderBones(Mesh& mesh, const aiNode* cur)
 	if (mesh.bone_map.find(name) != mesh.bone_map.end())
 	{
 		Bone& bone = mesh.getBone(name);
-
-		// float theta = radian2Degree(bone.spherical_coords.x);
-		// float phi = radian2Degree(bone.spherical_coords.y);
-
 		string p_name = Mesh::processBoneName(cur->mParent->mName.data);
 
 		try
 		{
 			Bone& p = mesh.getBone(p_name);
 			if (p.end == bone.start)
-				glTranslatef(0, 0, p.spherical_coords.z);
+				glTranslatef(0, 0, p.length);
 			
 		} catch (...) { }
-		
-		// glRotatef(theta, 0, 0, 1);
-		// glRotatef(phi, 0, 1, 0);
 
-		// Use quaternion calculated from the mTransformation now
+		// Use quaternion calculated from the mTransformation
 		aiQuaternion rotation = bone.rotation;
 		float theta = acos(rotation.w) * 2;
 		float factor = sin(theta / 2);
@@ -440,7 +433,7 @@ void renderBones(Mesh& mesh, const aiNode* cur)
 		// Apply user controls, after change of coordinates
 		applyAiMatrix(inverse_permutation * bone.local_transformation * permutation);
 		
-		drawCylinder(bone.spherical_coords.z, 0.3, 0.01);	// cylinder for now
+		drawCylinder(bone.length, 0.3, 0.01);	// cylinder for now
 	}
 
 	for (int i = 0; i < cur->mNumChildren; ++i)

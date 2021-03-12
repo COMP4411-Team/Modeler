@@ -21,7 +21,7 @@ void ModelHelper::loadModel(const string& model, const string& bone)
 	preprocess();
 	if (!bone.empty())
 		parseBoneInfo(meshes[0], bone);
-	calBoneTransformation(aiMatrix4x4t<float>(), scene->mRootNode);
+	calBoneTransformation(aiQuaternion(), scene->mRootNode);
 }
 
 void ModelHelper::preprocess()
@@ -63,11 +63,10 @@ void ModelHelper::preprocess()
 }
 
 // transformation can transform bones from world space to parent space
-void ModelHelper::calBoneTransformation(const aiMatrix4x4t<float>& transformation, const aiNode* cur)
+void ModelHelper::calBoneTransformation(const aiQuaternion& global_rotation, const aiNode* cur)
 {
 	string name = Mesh::processBoneName(cur->mName.data);
-	auto cur_transformation = transformation;
-
+	
 	for (auto& mesh : meshes)
 	{
 		if (mesh.bone_map.find(name) == mesh.bone_map.end())
@@ -75,35 +74,19 @@ void ModelHelper::calBoneTransformation(const aiMatrix4x4t<float>& transformatio
 
 		auto& bone = mesh.bones[mesh.bone_map[name]];
 
-		// aiVector3D vec_world = bone.end - bone.start;			// the bone in world space
-
 		auto trafo = cur->mTransformation;
 		aiQuaternion rotation;
 		aiVector3D position;
 		trafo.DecomposeNoScaling(rotation, position);
 		aiVector3D axis = rotation.Rotate({0, 1, 0});
 		
-		try
-		{
-			Bone& p = mesh.getBone(cur->mParent->mName.data);
-			if (p.end == bone.start)
-			{
-				aiMatrix4x4t<float> translation;
-				aiMatrix4x4t<float>::Translation({0.f, 0.f, -p.spherical_coords.z}, translation);
-				cur_transformation = translation * transformation;
-			}
-		} catch (...) { }
-		
-		// aiVector3D vec_local = cur_transformation * vec_world;		// the bone in parent's space
-		
-		// bone.spherical_coords = calSphericalCoords(vec_local);
 		bone.rotation = rotation;
-		bone.spherical_coords.z = (bone.end - bone.start).Length();
-		// cur_transformation = calTrafoMatrix(vec_local) * cur_transformation;
+		bone.global_rotation = rotation * global_rotation;
+		bone.length = (bone.end - bone.start).Length();
 	}
 
 	for (int i = 0; i < cur->mNumChildren; ++i)
-		calBoneTransformation(cur_transformation, cur->mChildren[i]);
+		calBoneTransformation(global_rotation, cur->mChildren[i]);
 }
 
 void ModelHelper::parseBoneInfo(Mesh& mesh, const string& filename)

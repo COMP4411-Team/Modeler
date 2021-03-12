@@ -27,10 +27,11 @@ public:
 	aiMatrix4x4t<float> local_transformation;	// all the user specified transformations
 	aiMatrix4x4t<float> offset;					// transform vertex from local to bone space
 
-	// Info for rendering the bone
+	// Info for rendering the bone and IK
+	float length;
 	aiVector3D start, end;			// world space coords for end points
-	aiVector3D spherical_coords;		// spherical coordinates of the end point, OBSOLETED
 	aiQuaternion rotation;			// rotation from parent to local space
+	aiQuaternion global_rotation;	// from world to bone space, for IK
 };
 
 class Mesh
@@ -64,12 +65,12 @@ class ModelHelper
 public:
 	void loadModel(const std::string& model, const std::string& bone);
 	void preprocess();
-	void calBoneTransformation(const aiMatrix4x4t<float>& transformation, const aiNode* cur);
+	void calBoneTransformation(const aiQuaternion& global_rotation, const aiNode* cur);
 	void parseBoneInfo(Mesh& mesh, const std::string& filename);
 	void loadTexture(const std::string& filename);
 
-	static aiVector3D calSphericalCoords(const aiVector3D& vec);
-	static aiMatrix4x4t<float> calTrafoMatrix(const aiVector3D& vec);
+	static aiVector3D calSphericalCoords(const aiVector3D& vec);		// unused
+	static aiMatrix4x4t<float> calTrafoMatrix(const aiVector3D& vec);	// unused
 	static aiMatrix4x4t<float> calViewingTransformation(Vec3f& eye, Vec3f& at, Vec3f& up);
 	
 	Assimp::Importer importer;
