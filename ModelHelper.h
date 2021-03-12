@@ -41,16 +41,16 @@ public:
 	std::map<std::string, int> bone_map;
 	aiVector3D aabb_min, aabb_max;
 
-	bool applyTranslate(const std::string& bone_name, aiVector3D& translation);
+	bool applyTranslate(const std::string& bone_name, const aiVector3D& translation);
 
 	// angle in degrees
 	bool applyRotationX(const std::string& bone_name, float angle);
 	bool applyRotationY(const std::string& bone_name, float angle);
 	bool applyRotationZ(const std::string& bone_name, float angle);
 	
-	bool applyScaling(const std::string& bone_name, aiVector3D& scale);
+	bool applyScaling(const std::string& bone_name, const aiVector3D& scale);
 	bool restoreIdentity(const std::string& bone_name);
-	bool applyMatrix(const std::string& bone_name, aiMatrix4x4t<float>& mat);
+	bool applyMatrix(const std::string& bone_name, const aiMatrix4x4t<float>& mat);
 
 	void printBoneHierarchy(const aiNode* cur, int depth);
 	Bone& getBone(const std::string& name);

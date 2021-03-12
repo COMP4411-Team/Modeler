@@ -62,6 +62,7 @@ void ModelHelper::preprocess()
 	}
 }
 
+// transformation can transform bones from world space to parent space
 void ModelHelper::calBoneTransformation(const aiMatrix4x4t<float>& transformation, const aiNode* cur)
 {
 	string name = Mesh::processBoneName(cur->mName.data);
@@ -192,7 +193,7 @@ aiMatrix4x4t<float> ModelHelper::calViewingTransformation(Vec3f& eye, Vec3f& at,
 	return mat;
 }
 
-bool Mesh::applyTranslate(const std::string& bone_name, aiVector3D& translation)
+bool Mesh::applyTranslate(const std::string& bone_name, const aiVector3D& translation)
 {
 	aiMatrix4x4t<float> mat;
 	aiMatrix4x4t<float>::Translation(translation, mat);
@@ -223,7 +224,7 @@ bool Mesh::applyRotationZ(const std::string& bone_name, float angle)
 	return applyMatrix(bone_name, mat);
 }
 
-bool Mesh::applyScaling(const std::string& bone_name, aiVector3D& scale)
+bool Mesh::applyScaling(const std::string& bone_name, const aiVector3D& scale)
 {
 	aiMatrix4x4t<float> mat;
 	aiMatrix4x4t<float>::Scaling(scale, mat);
@@ -239,7 +240,7 @@ bool Mesh::restoreIdentity(const std::string& bone_name)
 	return true;
 }
 
-bool Mesh::applyMatrix(const std::string& bone_name, aiMatrix4x4t<float>& mat)
+bool Mesh::applyMatrix(const std::string& bone_name, const aiMatrix4x4t<float>& mat)
 {
 	if (bone_map.find(bone_name) == bone_map.end())
 		return false;

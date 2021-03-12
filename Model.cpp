@@ -199,29 +199,29 @@ void animate()
 	float right3 = -sin(sin(tick)) * 35;
 	float head = sin(tick) * 2;
 	float neck = cos(tick) * 2;
-	float tail = cos(tick) * 2;
+	float tail = cos(tick) * 4;
 	float main = sin(tick) * 0.1f;
 
 	mesh.applyTranslate("main", aiVector3D(0, 0, main));
 
-	mesh.applyRotationX("neck", neck);
+	mesh.applyRotationZ("neck", neck);
 
 	mesh.applyRotationZ("head", head);
 
-	mesh.applyRotationX("tail", tail);
+	mesh.applyRotationZ("tail", tail);
 	
-	mesh.applyRotationX("foreLimpLeft1", left1);
-	mesh.applyRotationX("foreLimpRight1", right1);
+	mesh.applyRotationZ("foreLimpLeft1", left1);
+	mesh.applyRotationZ("foreLimpRight1", right1);
 	mesh.applyRotationZ("rearLimpLeft1", left1);
 	mesh.applyRotationZ("rearLimpRight1", right1);
 
-	mesh.applyRotationX("foreLimpLeft2", left2);
-	mesh.applyRotationX("foreLimpRight2", right2);
+	mesh.applyRotationZ("foreLimpLeft2", left2);
+	mesh.applyRotationZ("foreLimpRight2", right2);
 	mesh.applyRotationZ("rearLimpLeft2", left2);
 	mesh.applyRotationZ("rearLimpRight2", right2);
 
-	mesh.applyRotationX("foreLimpLeft3", left3);
-	mesh.applyRotationX("foreLimpRight3", right3);
+	mesh.applyRotationZ("foreLimpLeft3", left3);
+	mesh.applyRotationZ("foreLimpRight3", right3);
 	mesh.applyRotationZ("rearLimpLeft3", left3 * 0.5);
 	mesh.applyRotationZ("rearLimpRight3", right3 * 0.5);
 
@@ -246,8 +246,8 @@ void applyMeshControls()
 	//===========================================================
 
 	mesh.restoreIdentity("neck");
-	mesh.applyRotationX("neck", VAL(NECK_PITCH));
-	mesh.applyRotationZ("neck", VAL(NECK_YAW));
+	mesh.applyRotationZ("neck", VAL(NECK_PITCH));
+	mesh.applyRotationX("neck", VAL(NECK_YAW));
 	mesh.applyRotationY("neck", VAL(NECK_ROLL));
 
 	mesh.restoreIdentity("head");
@@ -258,24 +258,24 @@ void applyMeshControls()
 	//============================================================
 
 	mesh.restoreIdentity("foreLimpLeft1");
-	mesh.applyRotationX("foreLimpLeft1", VAL(LEFT_FORELIMP_1));
+	mesh.applyRotationZ("foreLimpLeft1", VAL(LEFT_FORELIMP_1));
 
 	mesh.restoreIdentity("foreLimpRight1");
-	mesh.applyRotationX("foreLimpRight1", VAL(RIGHT_FORELIMP_1));
+	mesh.applyRotationZ("foreLimpRight1", VAL(RIGHT_FORELIMP_1));
 
 	mesh.restoreIdentity("rearLimpLeft1");
 	mesh.applyRotationZ("rearLimpLeft1", VAL(LEFT_REARLIMP_1));
 
 	mesh.restoreIdentity("rearLimpRight1");
-	mesh.applyRotationX("rearLimpRight1", VAL(RIGHT_REARLIMP_1));
+	mesh.applyRotationZ("rearLimpRight1", VAL(RIGHT_REARLIMP_1));
 
 	//============================================================
 
 	mesh.restoreIdentity("foreLimpLeft2");
-	mesh.applyRotationX("foreLimpLeft2", VAL(LEFT_FORELIMP_2));
+	mesh.applyRotationZ("foreLimpLeft2", VAL(LEFT_FORELIMP_2));
 
 	mesh.restoreIdentity("foreLimpRight2");
-	mesh.applyRotationX("foreLimpRight2", VAL(RIGHT_FORELIMP_2));
+	mesh.applyRotationZ("foreLimpRight2", VAL(RIGHT_FORELIMP_2));
 
 	mesh.restoreIdentity("rearLimpLeft2");
 	mesh.applyRotationZ("rearLimpLeft2", VAL(LEFT_REARLIMP_2));
@@ -285,9 +285,9 @@ void applyMeshControls()
 
 	//=============================================================
 
-	mesh.applyRotationZ("foreLimpLeft2", VAL(LEFT_FORELIMP_2_YAW));
+	mesh.applyRotationX("foreLimpLeft2", VAL(LEFT_FORELIMP_2_YAW));
 
-	mesh.applyRotationZ("foreLimpRight2", VAL(RIGHT_FORELIMP_2_YAW));
+	mesh.applyRotationX("foreLimpRight2", VAL(RIGHT_FORELIMP_2_YAW));
 
 	mesh.applyRotationX("rearLimpLeft2", VAL(LEFT_REARLIMP_2_YAW));
 
@@ -296,10 +296,10 @@ void applyMeshControls()
 	//=============================================================
 
 	mesh.restoreIdentity("foreLimpLeft3");
-	mesh.applyRotationX("foreLimpLeft3", VAL(LEFT_FORELIMP_3));
+	mesh.applyRotationZ("foreLimpLeft3", VAL(LEFT_FORELIMP_3));
 
 	mesh.restoreIdentity("foreLimpRight3");
-	mesh.applyRotationX("foreLimpRight3", VAL(RIGHT_FORELIMP_3));
+	mesh.applyRotationZ("foreLimpRight3", VAL(RIGHT_FORELIMP_3));
 
 	mesh.restoreIdentity("rearLimpLeft3");
 	mesh.applyRotationZ("rearLimpLeft3", VAL(LEFT_REARLIMP_3));
@@ -310,8 +310,8 @@ void applyMeshControls()
 	//==============================================================
 
 	mesh.restoreIdentity("tail");
-	mesh.applyRotationX("tail", VAL(TAIL_PITCH));
-	mesh.applyRotationZ("tail", VAL(TAIL_YAW));
+	mesh.applyRotationZ("tail", VAL(TAIL_PITCH));
+	mesh.applyRotationX("tail", VAL(TAIL_YAW));
 }
 
 
@@ -546,7 +546,7 @@ void SampleModel::draw()
 
 int main()
 {
-	helper.loadModel("./models/lowpolydeer_uv.dae", "./models/lowpolydeer_bone_modified.txt");
+	helper.loadModel("./models/lowpolydeer_uv_modified.dae", "./models/lowpolydeer_bone_modified.txt");
 
 	helper.loadTexture("./models/wood_texture.bmp");
 	
