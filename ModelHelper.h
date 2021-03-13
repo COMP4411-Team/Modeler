@@ -41,6 +41,7 @@ class Mesh
 {
 public:
 	const aiMesh* data;
+	std::string name;
 	std::vector<Vertex> vertices;
 	std::vector<Bone> bones;
 	std::map<std::string, int> bone_map;
@@ -71,6 +72,7 @@ public:
 	void calBoneTransformation(const aiQuaternion& global_rotation, const aiNode* cur);
 	void parseBoneInfo(Mesh& mesh, const std::string& filename);
 	void loadTexture(const std::string& filename);
+	void printMeshInfo(bool showBoneHierarchy = true);
 
 	static aiVector3D calSphericalCoords(const aiVector3D& vec);		// unused
 	static aiMatrix4x4t<float> calTrafoMatrix(const aiVector3D& vec);	// unused
@@ -79,7 +81,8 @@ public:
 	Assimp::Importer importer;
 	const aiScene* scene{nullptr};
 	std::vector<Mesh> meshes;
-	
+
+	int active_index{0};
 	unsigned char* tex{nullptr};
 	int tex_height, tex_width;
 	bool tex_loaded{false};

@@ -152,8 +152,8 @@ void frameAll()
 	glGetFloatv(GL_MODELVIEW_MATRIX, modelview);
 
 	auto mat = array2Mat(modelview);
-	auto aabb_max = mat*helper.meshes[0].aabb_max;
-	auto aabb_min = mat*helper.meshes[0].aabb_min;
+	auto aabb_max = mat*helper.meshes[helper.active_index].aabb_max;
+	auto aabb_min = mat*helper.meshes[helper.active_index].aabb_min;
 
 	auto mid = (helper.meshes[0].aabb_max + helper.meshes[0].aabb_min) / 2.f;
 
@@ -192,7 +192,7 @@ void frameAll()
 // Animation
 void animate()
 {
-	auto& mesh = helper.meshes[0];
+	auto& mesh = helper.meshes[helper.active_index];
 	float left1 = cos(tick) * 15;
 	float right1 = sin(tick) * 15;
 	float left2 = cos(tick) * 30;
@@ -236,7 +236,7 @@ void animate()
 // Apply all the user controls to meshes in one place
 void applyMeshControls()
 {
-	auto& mesh = helper.meshes[0];
+	auto& mesh = helper.meshes[helper.active_index];
 
 	mesh.restoreIdentity("main");
 	mesh.applyRotationZ("main", VAL(ROTATE_ALL));
@@ -450,18 +450,33 @@ void renderBones(Mesh& mesh, const aiNode* cur)
 // method of ModelerView to draw out SampleModel
 void SampleModel::draw()
 {
+	// Switch between instances
+	int instance = VAL(INSTANCES);
+	switch (instance)
+	{
+	case 1: case 3:
+		helper.active_index = 0;
+		break;
+	case 2:
+		helper.active_index = 4;
+		break;
+	}
+	
 	if (enableFrame) {
 		frameAll();
 		enableFrame = FALSE;
 	}
-    // This call takes care of a lot of the nasty projection 
-    // matrix stuff.  Unless you want to fudge directly with the 
-	// projection matrix, don't bother with this ...
+    
 	//ModelerView::openLight0(VAL(LIGHT0_ENABLE));
 	//ModelerView::openLight1(VAL(LIGHT1_ENABLE));
 	//ModelerView::moveLight0(VAL(LIGHTX_0), VAL(LIGHTY_0), VAL(LIGHTZ_0));
 	//ModelerView::moveLight1(VAL(LIGHTX_1), VAL(LIGHTY_1), VAL(LIGHTZ_1));
+
+	// This call takes care of a lot of the nasty projection 
+    // matrix stuff.  Unless you want to fudge directly with the 
+	// projection matrix, don't bother with this ...
     ModelerView::draw();
+	
 	if (VAL(LIGHT0_ENABLE)) {
 		glEnable(GL_LIGHT0);
 		GLfloat changedLightPosition0[] = { VAL(LIGHTX_0), VAL(LIGHTY_0), VAL(LIGHTZ_0),0 };
@@ -502,7 +517,6 @@ void SampleModel::draw()
 		l_system.draw();
 		glPopMatrix();
 	}
-	
 
 	// drawSphere(0.1);
 	// drawCylinder(1, 0.1, 0.01);
@@ -522,7 +536,6 @@ void SampleModel::draw()
 		helper.tex_loaded = true;
 	}
 	
-	
 	// Setup env and pose
 	setAmbientColor(0.75f, 0.75f, 0.75f);
 	setDiffuseColor(0.75f, 0.75f, 0.75f);
@@ -532,7 +545,7 @@ void SampleModel::draw()
 	glTranslated(0, 0, -5);
 
 	// Initialization
-	auto& mesh = helper.meshes[0];
+	auto& mesh = helper.meshes[helper.active_index];
 	auto* scene = helper.scene;
 	global_inverse = scene->mRootNode->mTransformation.Inverse();
 
@@ -561,25 +574,32 @@ void SampleModel::draw()
 	traverseBoneHierarchy(mesh, scene->mRootNode, Matrix4f());
 	processVertices(mesh);
 	renderMesh(mesh);
+
+	if (instance == 3)	// render wreath
+	{
+		for (int i = 1; i <= 3; ++i)
+		{
+			helper.active_index = i;
+			applyMeshControls();
+			traverseBoneHierarchy(helper.meshes[i], scene->mRootNode, Matrix4f());
+			processVertices(helper.meshes[i]);
+			renderMesh(helper.meshes[i]);
+		}
+	}
 }
 
 int main()
 {
 	// Load the model and init IK solver
-	helper.loadModel("./models/lowpolydeer_uv_modified.dae", "./models/lowpolydeer_bone_modified.txt");
+	helper.loadModel("./models/lowpolydeer_1.1.dae", "./models/lowpolydeer_bone_1.1.txt");
 
 	helper.loadTexture("./models/wood_texture.bmp");
 	
 	auto* scene = helper.scene;
-	std::cout << "import done, mNumMeshes: " << scene->mNumMeshes << std::endl;
+	std::cout << "Import done, mNumMeshes: " << scene->mNumMeshes << std::endl;
+	helper.printMeshInfo();
 
-	std::cout << "mesh0 mNumVertices: " << scene->mMeshes[0]->mNumVertices
-		<< "\t mNumFaces: " << scene->mMeshes[0]->mNumFaces
-		<< "\t mNumBones: " << scene->mMeshes[0]->mNumBones << std::endl;
-	
-	helper.meshes[0].printBoneHierarchy(scene->mRootNode, 0);	// print out the bones
-
-	Mesh& mesh = helper.meshes[0];
+	Mesh& mesh = helper.meshes[helper.active_index];
 	solver.scene = scene;
 	solver.mesh = &mesh;
 	

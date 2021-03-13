@@ -10,9 +10,8 @@ using namespace std;
 
 void ModelHelper::loadModel(const string& model, const string& bone)
 {
-	auto* new_scene = importer.ReadFile(model, aiProcess_CalcTangentSpace | aiProcess_Triangulate |
+	const auto* new_scene = importer.ReadFile(model, aiProcess_CalcTangentSpace | aiProcess_Triangulate |
 	                                    aiProcess_JoinIdenticalVertices | aiProcess_SortByPType);
-
 	if (new_scene == nullptr)
 		throw runtime_error("failed to parse model file");
 	
@@ -20,7 +19,10 @@ void ModelHelper::loadModel(const string& model, const string& bone)
 	scene = new_scene;
 	preprocess();
 	if (!bone.empty())
-		parseBoneInfo(meshes[0], bone);
+	{
+		for (auto& mesh : meshes)
+			parseBoneInfo(mesh, bone);
+	}
 	calBoneTransformation(aiQuaternion(), scene->mRootNode);
 }
 
@@ -31,6 +33,7 @@ void ModelHelper::preprocess()
 	{
 		auto* mesh = scene->mMeshes[i];
 		meshes[i].data = mesh;
+		meshes[i].name = mesh->mName.data;
 		auto& vertices = meshes[i].vertices;
 		auto& bones = meshes[i].bones;
 		auto& bone_map = meshes[i].bone_map;
@@ -92,6 +95,7 @@ void ModelHelper::calBoneTransformation(const aiQuaternion& global_rotation, con
 		calBoneTransformation(new_global_rotation, cur->mChildren[i]);
 }
 
+// TODO: Combine bones info in different meshes
 void ModelHelper::parseBoneInfo(Mesh& mesh, const string& filename)
 {
 	ifstream fs(filename);
@@ -101,17 +105,17 @@ void ModelHelper::parseBoneInfo(Mesh& mesh, const string& filename)
 	string bone_name;
 	while (fs >> bone_name)
 	{
-		if (mesh.bone_map.find(bone_name) == mesh.bone_map.end())
-			throw runtime_error("bone info file contains unknown bone names");
+		if (mesh.bone_map.find(bone_name) != mesh.bone_map.end())
+		{
+			Bone& bone = mesh.getBone(bone_name);
+			float x, y, z;
+			
+			fs >> x >> y >> z;
+			bone.start = {x, y, z};
 
-		Bone& bone = mesh.getBone(bone_name);
-		
-		float x, y, z;
-		fs >> x >> y >> z;
-		bone.start = {x, y, z};
-
-		fs >> x >> y >> z;
-		bone.end = {x, y, z};
+			fs >> x >> y >> z;
+			bone.end = {x, y, z};	
+		}
 	}
 }
 
@@ -126,6 +130,23 @@ void ModelHelper::loadTexture(const std::string& filename)
 	tex_height = height;
 	tex_width = width;
 	tex_loaded = false;		// not loaded or updated in opengl
+}
+
+void ModelHelper::printMeshInfo(bool showBoneHierarchy)
+{
+	for (int i = 0; i < meshes.size(); ++i)
+	{
+		std::cout << "mesh " << i << ": " << meshes[i].name << std::endl
+			<< "mNumVertices: " << scene->mMeshes[i]->mNumVertices << std::endl
+			<< "mNumFaces: " << scene->mMeshes[i]->mNumFaces << std::endl
+			<< "mNumBones: " << scene->mMeshes[i]->mNumBones << std::endl;
+	
+		if (showBoneHierarchy)
+		{
+			meshes[i].printBoneHierarchy(scene->mRootNode, 0);
+			cout << endl;
+		}
+	}
 }
 
 aiVector3D ModelHelper::calSphericalCoords(const aiVector3D& vec)
@@ -266,7 +287,7 @@ Bone& Mesh::getBone(const std::string& name)
 
 std::string Mesh::processBoneName(const std::string& name)
 {
-	int pos = name.find('_');
+	int pos = name.find_last_of('_');
 	if (pos != name.npos)
 		return name.substr(pos + 1);
 	return name;
