@@ -12,7 +12,7 @@
 
 - [x] 1B Make an additional "animated" sequence your character can perform.
 
-- [ ] 1B1W Add some widgets to create individual-looking instances of your character.
+- [x] 1B1W Add some widgets to create individual-looking instances of your character.
 
 - [ ] 1B Add a "Frame All" feature
 
@@ -26,4 +26,6 @@
 
 - [ ] 4B Skinning with metaballs.
 
-- [ ] 8B Inverse kinematics. Additional 4B Make sure that all angle constraints are satisfied as well.
+- [x] 8B Inverse kinematics. 
+
+- [ ] 4B (Additional) Make sure that all angle constraints are satisfied as well.
