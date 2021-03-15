@@ -95,7 +95,6 @@ void ModelHelper::calBoneTransformation(const aiQuaternion& global_rotation, con
 		calBoneTransformation(new_global_rotation, cur->mChildren[i]);
 }
 
-// TODO: Combine bones info in different meshes
 void ModelHelper::parseBoneInfo(Mesh& mesh, const string& filename)
 {
 	ifstream fs(filename);

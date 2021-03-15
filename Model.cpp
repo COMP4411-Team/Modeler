@@ -239,7 +239,7 @@ void applyMeshControls()
 	auto& mesh = helper.meshes[helper.active_index];
 
 	mesh.restoreIdentity("main");
-	mesh.applyRotationZ("main", VAL(ROTATE_ALL));
+	mesh.applyRotationX("main", VAL(ROTATE_ALL));
 
 	float x = VAL(XPOS), y = VAL(YPOS), z = VAL(ZPOS);
 
@@ -775,6 +775,8 @@ void applyJumpDoneMood() {
 	mesh.applyRotationZ("tail", 23);
 	mesh.applyRotationX("tail", 0);
 }
+
+
 // aiNode* is a node in the bone hierarchy, it contains the name, its own transformation, and
 // pointers to its parent and children
 void traverseBoneHierarchy(Mesh& mesh, const aiNode* cur, const Matrix4f& parent_transformation)
@@ -797,6 +799,12 @@ void traverseBoneHierarchy(Mesh& mesh, const aiNode* cur, const Matrix4f& parent
 		// any other transformation should be right-multiplied to global_transformation
 		mesh.bones[bone_index].final_transformation = 
 			global_inverse * global_transformation * mesh.bones[bone_index].offset;
+	}
+	else if (mesh.parent != nullptr)
+	{
+		Mesh& p = *(mesh.parent);
+		if (p.bone_map.find(bone_name) != p.bone_map.end())
+			global_transformation = global_transformation * p.bones[p.bone_map[bone_name]].local_transformation;
 	}
 
 	// Recursively visit its children
@@ -1008,30 +1016,33 @@ void SampleModel::draw()
 	global_inverse = scene->mRootNode->mTransformation.Inverse();
 
 	// Apply user controls to meshes here
+
+	auto applyMethod = applyMeshControls;
+	
 	switch (int(VAL(MOODS)))
 	{
 	case 1:
-		applyPeaceMood();
+		applyMethod = applyPeaceMood;
 		break;
 	case 2:
-		applyWatchMood();
+		applyMethod = applyWatchMood;
 		break;
 	case 3:
-		applyPreJumpMood();
+		applyMethod = applyPreJumpMood;
 		break;
 	case 4:
-		applyJumpMood();
+		applyMethod = applyJumpMood;
 		break;
 	case 5:
-		applyJumpDoneMood();
+		applyMethod = applyJumpDoneMood;
 		break;
 	default: 
-		applyMeshControls();
 		if (ModelerApplication::Instance()->m_animating && !solver.showIkResult)
 			animate();
 		break;
 	}
 
+	applyMethod();
 
 	// Apply controls to bones and render them
 	glPushMatrix();
@@ -1058,7 +1069,7 @@ void SampleModel::draw()
 		for (int i = 1; i <= 3; ++i)
 		{
 			helper.active_index = i;
-			applyMeshControls();
+			applyMethod();
 			traverseBoneHierarchy(helper.meshes[i], scene->mRootNode, Matrix4f());
 			processVertices(helper.meshes[i]);
 			renderMesh(helper.meshes[i]);
@@ -1076,6 +1087,8 @@ int main()
 	auto* scene = helper.scene;
 	std::cout << "Import done, mNumMeshes: " << scene->mNumMeshes << std::endl;
 	helper.printMeshInfo();
+
+	helper.meshes[1].parent = helper.meshes[2].parent = helper.meshes[3].parent = &helper.meshes[0];
 
 	Mesh& mesh = helper.meshes[helper.active_index];
 	solver.scene = scene;

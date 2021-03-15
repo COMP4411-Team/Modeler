@@ -41,6 +41,7 @@ class Mesh
 {
 public:
 	const aiMesh* data;
+	Mesh* parent{nullptr};
 	std::string name;
 	std::vector<Vertex> vertices;
 	std::vector<Bone> bones;
