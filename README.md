@@ -22,7 +22,7 @@
 
 - [x] 2B (Variable) Procedural modeling. Controllable by the user via control widgets.
 
-- [ ] 2B Mood.
+- [x] 2B Mood.
 
 - [ ] 4B Skinning with metaballs.
 
