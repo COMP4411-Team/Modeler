@@ -20,10 +20,9 @@ void ModelHelper::loadModel(const string& model, const string& bone)
 	preprocess();
 	if (!bone.empty())
 	{
-		for (auto& mesh : meshes)
-			parseBoneInfo(mesh, bone);
+		parseBoneInfo(bone);
+		calBoneTransformation(aiQuaternion(), scene->mRootNode);
 	}
-	calBoneTransformation(aiQuaternion(), scene->mRootNode);
 }
 
 void ModelHelper::preprocess()
@@ -32,11 +31,10 @@ void ModelHelper::preprocess()
 	for (int i = 0; i < scene->mNumMeshes; ++i)
 	{
 		auto* mesh = scene->mMeshes[i];
+		auto& vertices = meshes[i].vertices;
 		meshes[i].data = mesh;
 		meshes[i].name = mesh->mName.data;
-		auto& vertices = meshes[i].vertices;
-		auto& bones = meshes[i].bones;
-		auto& bone_map = meshes[i].bone_map;
+		meshes[i].parent = this;
 
 		vertices.resize(mesh->mNumVertices);
 		for (int j = 0; j < mesh->mNumVertices; ++j)
@@ -48,17 +46,24 @@ void ModelHelper::preprocess()
 				vertices[j].tex_coords = (mesh->mTextureCoords[0][j]);
 		}
 
-		bones.resize(mesh->mNumBones);
 		for (int j = 0; j < mesh->mNumBones; ++j)
 		{
 			auto* bone = mesh->mBones[j];
-			bone_map[Mesh::processBoneName(string(bone->mName.data))] = j;
-			bones[j].offset = bone->mOffsetMatrix;
+			string name = processBoneName(string(bone->mName.data));
 
+			if (bone_map.find(name) == bone_map.end())
+			{
+				bones.emplace_back();
+				bone_map[name] = bones.size() - 1;
+				meshes[i].offset_map[name] = bone->mOffsetMatrix;
+			}
+
+			int bone_id = bone_map[name];
+			
 			for (int k = 0; k < bone->mNumWeights; ++k)
 			{
 				int vertex_id = bone->mWeights[k].mVertexId;
-				vertices[vertex_id].bone_index.push_back(j);
+				vertices[vertex_id].bone_index.push_back(bone_id);
 				vertices[vertex_id].bone_weight.push_back(bone->mWeights[k].mWeight);
 			}
 		}
@@ -68,15 +73,12 @@ void ModelHelper::preprocess()
 // transformation can transform bones from world space to parent space
 void ModelHelper::calBoneTransformation(const aiQuaternion& global_rotation, const aiNode* cur)
 {
-	string name = Mesh::processBoneName(cur->mName.data);
+	string name = processBoneName(cur->mName.data);
 	aiQuaternion new_global_rotation = global_rotation;
 	
-	for (auto& mesh : meshes)
+	if (bone_map.find(name) != bone_map.end())
 	{
-		if (mesh.bone_map.find(name) == mesh.bone_map.end())
-			continue;
-
-		auto& bone = mesh.bones[mesh.bone_map[name]];
+		auto& bone = bones[bone_map[name]];
 		bone.node = cur;
 		bone.name = name;
 
@@ -95,8 +97,7 @@ void ModelHelper::calBoneTransformation(const aiQuaternion& global_rotation, con
 		calBoneTransformation(new_global_rotation, cur->mChildren[i]);
 }
 
-// TODO: Combine bones info in different meshes
-void ModelHelper::parseBoneInfo(Mesh& mesh, const string& filename)
+void ModelHelper::parseBoneInfo(const string& filename)
 {
 	ifstream fs(filename);
 	if (!fs.is_open())
@@ -105,9 +106,9 @@ void ModelHelper::parseBoneInfo(Mesh& mesh, const string& filename)
 	string bone_name;
 	while (fs >> bone_name)
 	{
-		if (mesh.bone_map.find(bone_name) != mesh.bone_map.end())
+		if (bone_map.find(bone_name) != bone_map.end())
 		{
-			Bone& bone = mesh.getBone(bone_name);
+			Bone& bone = getBone(bone_name);
 			float x, y, z;
 			
 			fs >> x >> y >> z;
@@ -140,12 +141,6 @@ void ModelHelper::printMeshInfo(bool showBoneHierarchy)
 			<< "mNumVertices: " << scene->mMeshes[i]->mNumVertices << std::endl
 			<< "mNumFaces: " << scene->mMeshes[i]->mNumFaces << std::endl
 			<< "mNumBones: " << scene->mMeshes[i]->mNumBones << std::endl;
-	
-		if (showBoneHierarchy)
-		{
-			meshes[i].printBoneHierarchy(scene->mRootNode, 0);
-			cout << endl;
-		}
 	}
 }
 
@@ -208,14 +203,14 @@ aiMatrix4x4t<float> ModelHelper::calViewingTransformation(Vec3f& eye, Vec3f& at,
 	return mat;
 }
 
-bool Mesh::applyTranslate(const std::string& bone_name, const aiVector3D& translation)
+bool ModelHelper::applyTranslate(const std::string& bone_name, const aiVector3D& translation)
 {
 	aiMatrix4x4t<float> mat;
 	aiMatrix4x4t<float>::Translation(translation, mat);
 	return applyMatrix(bone_name, mat);
 }
 
-bool Mesh::applyRotationX(const std::string& bone_name, float angle)
+bool ModelHelper::applyRotationX(const std::string& bone_name, float angle)
 {
 	angle = AI_MATH_PI_F * angle / 180.f;
 	aiMatrix4x4t<float> mat;
@@ -223,7 +218,7 @@ bool Mesh::applyRotationX(const std::string& bone_name, float angle)
 	return applyMatrix(bone_name, mat);
 }
 
-bool Mesh::applyRotationY(const std::string& bone_name, float angle)
+bool ModelHelper::applyRotationY(const std::string& bone_name, float angle)
 {
 	angle = AI_MATH_PI_F * angle / 180.f;
 	aiMatrix4x4t<float> mat;
@@ -231,7 +226,7 @@ bool Mesh::applyRotationY(const std::string& bone_name, float angle)
 	return applyMatrix(bone_name, mat);
 }
 
-bool Mesh::applyRotationZ(const std::string& bone_name, float angle)
+bool ModelHelper::applyRotationZ(const std::string& bone_name, float angle)
 {
 	angle = AI_MATH_PI_F * angle / 180.f;
 	aiMatrix4x4t<float> mat;
@@ -239,14 +234,14 @@ bool Mesh::applyRotationZ(const std::string& bone_name, float angle)
 	return applyMatrix(bone_name, mat);
 }
 
-bool Mesh::applyScaling(const std::string& bone_name, const aiVector3D& scale)
+bool ModelHelper::applyScaling(const std::string& bone_name, const aiVector3D& scale)
 {
 	aiMatrix4x4t<float> mat;
 	aiMatrix4x4t<float>::Scaling(scale, mat);
 	return applyMatrix(bone_name, mat);
 }
 
-bool Mesh::restoreIdentity(const std::string& bone_name)
+bool ModelHelper::restoreIdentity(const std::string& bone_name)
 {
 	if (bone_map.find(bone_name) == bone_map.end())
 		return false;
@@ -255,7 +250,7 @@ bool Mesh::restoreIdentity(const std::string& bone_name)
 	return true;
 }
 
-bool Mesh::applyMatrix(const std::string& bone_name, const aiMatrix4x4t<float>& mat)
+bool ModelHelper::applyMatrix(const std::string& bone_name, const aiMatrix4x4t<float>& mat)
 {
 	if (bone_map.find(bone_name) == bone_map.end())
 		return false;
@@ -264,7 +259,7 @@ bool Mesh::applyMatrix(const std::string& bone_name, const aiMatrix4x4t<float>& 
 	return true;
 }
 
-void Mesh::printBoneHierarchy(const aiNode* cur, int depth)
+void ModelHelper::printBoneHierarchy(const aiNode* cur, int depth)
 {
 	string name = processBoneName(cur->mName.data);
 	if (bone_map.find(name) != bone_map.end())
@@ -277,7 +272,7 @@ void Mesh::printBoneHierarchy(const aiNode* cur, int depth)
 		printBoneHierarchy(cur->mChildren[i], depth + 1);
 }
 
-Bone& Mesh::getBone(const std::string& name)
+Bone& ModelHelper::getBone(const std::string& name)
 {
 	if (bone_map.find(name) != bone_map.end())
 		return bones[bone_map[name]];
@@ -285,7 +280,7 @@ Bone& Mesh::getBone(const std::string& name)
 	throw invalid_argument("bone does not exist");
 }
 
-std::string Mesh::processBoneName(const std::string& name)
+std::string ModelHelper::processBoneName(const std::string& name)
 {
 	int pos = name.find_last_of('_');
 	if (pos != name.npos)

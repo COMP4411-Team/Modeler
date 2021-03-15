@@ -22,7 +22,7 @@ public:
 	void applyRotation(Mesh& mesh);
 
 	const aiScene* scene;
-	Mesh* mesh;
+	ModelHelper* helper;
 	std::string start, end;
 	std::vector<Bone> bones;
 	aiVector3D offset;

@@ -9,16 +9,16 @@ IKSolver::IKSolver()
 void IKSolver::setContext()
 {
 	bones.clear();
-	target = mesh->getBone(end).end + offset;
+	target = helper->getBone(end).end + offset;
 	traverseBones(scene->mRootNode);
 }
 
 bool IKSolver::traverseBones(const aiNode* cur)
 {
-	string name(Mesh::processBoneName(cur->mName.data));
+	string name(ModelHelper::processBoneName(cur->mName.data));
 	if (name == end)
 	{
-		bones.push_back(mesh->getBone(name));
+		bones.push_back(helper->getBone(name));
 		return true;
 	}
 
@@ -26,7 +26,7 @@ bool IKSolver::traverseBones(const aiNode* cur)
 	{
 		if (traverseBones(cur->mChildren[i]))
 		{
-			bones.push_back(mesh->getBone(name));
+			bones.push_back(helper->getBone(name));
 			if (name != start) return true;
 			else return false;
 		}
@@ -99,7 +99,7 @@ void IKSolver::applyRotation(Mesh& mesh)
 {
 	aiVector3D scaling(1, 1, 1), position(0, 0, 0);		// dummy
 	for (auto& bone : bones)
-		for (auto& ori_bone : mesh.bones)
+		for (auto& ori_bone : helper->bones)
 		{
 			if (bone.name != ori_bone.name)
 				continue;

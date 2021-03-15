@@ -192,7 +192,6 @@ void frameAll()
 // Animation
 void animate()
 {
-	auto& mesh = helper.meshes[helper.active_index];
 	float left1 = cos(tick) * 15;
 	float right1 = sin(tick) * 15;
 	float left2 = cos(tick) * 30;
@@ -204,28 +203,28 @@ void animate()
 	float tail = cos(tick) * 4;
 	float main = sin(tick) * 0.1f;
 
-	mesh.applyTranslate("main", aiVector3D(0, 0, main));
+	helper.applyTranslate("main", aiVector3D(0, 0, main));
 
-	mesh.applyRotationZ("neck", neck);
+	helper.applyRotationZ("neck", neck);
 
-	mesh.applyRotationZ("head", head);
+	helper.applyRotationZ("head", head);
 
-	mesh.applyRotationZ("tail", tail);
+	helper.applyRotationZ("tail", tail);
 	
-	mesh.applyRotationZ("foreLimpLeft1", left1);
-	mesh.applyRotationZ("foreLimpRight1", right1);
-	mesh.applyRotationZ("rearLimpLeft1", left1);
-	mesh.applyRotationZ("rearLimpRight1", right1);
+	helper.applyRotationZ("foreLimpLeft1", left1);
+	helper.applyRotationZ("foreLimpRight1", right1);
+	helper.applyRotationZ("rearLimpLeft1", left1);
+	helper.applyRotationZ("rearLimpRight1", right1);
 
-	mesh.applyRotationZ("foreLimpLeft2", left2);
-	mesh.applyRotationZ("foreLimpRight2", right2);
-	mesh.applyRotationZ("rearLimpLeft2", left2);
-	mesh.applyRotationZ("rearLimpRight2", right2);
+	helper.applyRotationZ("foreLimpLeft2", left2);
+	helper.applyRotationZ("foreLimpRight2", right2);
+	helper.applyRotationZ("rearLimpLeft2", left2);
+	helper.applyRotationZ("rearLimpRight2", right2);
 
-	mesh.applyRotationZ("foreLimpLeft3", left3);
-	mesh.applyRotationZ("foreLimpRight3", right3);
-	mesh.applyRotationZ("rearLimpLeft3", left3 * 0.5);
-	mesh.applyRotationZ("rearLimpRight3", right3 * 0.5);
+	helper.applyRotationZ("foreLimpLeft3", left3);
+	helper.applyRotationZ("foreLimpRight3", right3);
+	helper.applyRotationZ("rearLimpLeft3", left3 * 0.5);
+	helper.applyRotationZ("rearLimpRight3", right3 * 0.5);
 
 	tick += 0.5f;
 	if (tick > 1e4f * AI_MATH_PI_F)
@@ -236,116 +235,111 @@ void animate()
 // Apply all the user controls to meshes in one place
 void applyMeshControls()
 {
-	auto& mesh = helper.meshes[helper.active_index];
-
-	mesh.restoreIdentity("main");
-	mesh.applyRotationZ("main", VAL(ROTATE_ALL));
+	helper.restoreIdentity("main");
+	helper.applyRotationX("main", VAL(ROTATE_ALL));
 
 	float x = VAL(XPOS), y = VAL(YPOS), z = VAL(ZPOS);
 
-	mesh.applyTranslate("main", aiVector3D(x, y, z));
+	helper.applyTranslate("main", aiVector3D(x, y, z));
 
 	//===========================================================
 
-	mesh.restoreIdentity("neck");
-	mesh.applyRotationZ("neck", VAL(NECK_PITCH));
-	mesh.applyRotationX("neck", VAL(NECK_YAW));
-	mesh.applyRotationY("neck", VAL(NECK_ROLL));
+	helper.restoreIdentity("neck");
+	helper.applyRotationZ("neck", VAL(NECK_PITCH));
+	helper.applyRotationX("neck", VAL(NECK_YAW));
+	helper.applyRotationY("neck", VAL(NECK_ROLL));
 
-	mesh.restoreIdentity("head");
-	mesh.applyRotationZ("head", VAL(HEAD_PITCH));
-	mesh.applyRotationX("head", VAL(HEAD_YAW));
-	mesh.applyRotationY("head", VAL(HEAD_ROLL));
-
-	//============================================================
-
-	mesh.restoreIdentity("foreLimpLeft1");
-	mesh.applyRotationZ("foreLimpLeft1", VAL(LEFT_FORELIMP_1));
-
-	mesh.restoreIdentity("foreLimpRight1");
-	mesh.applyRotationZ("foreLimpRight1", VAL(RIGHT_FORELIMP_1));
-
-	mesh.restoreIdentity("rearLimpLeft1");
-	mesh.applyRotationZ("rearLimpLeft1", VAL(LEFT_REARLIMP_1));
-
-	mesh.restoreIdentity("rearLimpRight1");
-	mesh.applyRotationZ("rearLimpRight1", VAL(RIGHT_REARLIMP_1));
+	helper.restoreIdentity("head");
+	helper.applyRotationZ("head", VAL(HEAD_PITCH));
+	helper.applyRotationX("head", VAL(HEAD_YAW));
+	helper.applyRotationY("head", VAL(HEAD_ROLL));
 
 	//============================================================
 
-	mesh.restoreIdentity("foreLimpLeft2");
-	mesh.applyRotationZ("foreLimpLeft2", VAL(LEFT_FORELIMP_2));
+	helper.restoreIdentity("foreLimpLeft1");
+	helper.applyRotationZ("foreLimpLeft1", VAL(LEFT_FORELIMP_1));
 
-	mesh.restoreIdentity("foreLimpRight2");
-	mesh.applyRotationZ("foreLimpRight2", VAL(RIGHT_FORELIMP_2));
+	helper.restoreIdentity("foreLimpRight1");
+	helper.applyRotationZ("foreLimpRight1", VAL(RIGHT_FORELIMP_1));
 
-	mesh.restoreIdentity("rearLimpLeft2");
-	mesh.applyRotationZ("rearLimpLeft2", VAL(LEFT_REARLIMP_2));
+	helper.restoreIdentity("rearLimpLeft1");
+	helper.applyRotationZ("rearLimpLeft1", VAL(LEFT_REARLIMP_1));
 
-	mesh.restoreIdentity("rearLimpRight2");
-	mesh.applyRotationZ("rearLimpRight2", VAL(RIGHT_REARLIMP_2));
+	helper.restoreIdentity("rearLimpRight1");
+	helper.applyRotationZ("rearLimpRight1", VAL(RIGHT_REARLIMP_1));
+
+	//============================================================
+
+	helper.restoreIdentity("foreLimpLeft2");
+	helper.applyRotationZ("foreLimpLeft2", VAL(LEFT_FORELIMP_2));
+
+	helper.restoreIdentity("foreLimpRight2");
+	helper.applyRotationZ("foreLimpRight2", VAL(RIGHT_FORELIMP_2));
+
+	helper.restoreIdentity("rearLimpLeft2");
+	helper.applyRotationZ("rearLimpLeft2", VAL(LEFT_REARLIMP_2));
+
+	helper.restoreIdentity("rearLimpRight2");
+	helper.applyRotationZ("rearLimpRight2", VAL(RIGHT_REARLIMP_2));
 
 	//=============================================================
 
-	mesh.applyRotationX("foreLimpLeft2", VAL(LEFT_FORELIMP_2_YAW));
+	helper.applyRotationX("foreLimpLeft2", VAL(LEFT_FORELIMP_2_YAW));
 
-	mesh.applyRotationX("foreLimpRight2", VAL(RIGHT_FORELIMP_2_YAW));
+	helper.applyRotationX("foreLimpRight2", VAL(RIGHT_FORELIMP_2_YAW));
 
-	mesh.applyRotationX("rearLimpLeft2", VAL(LEFT_REARLIMP_2_YAW));
+	helper.applyRotationX("rearLimpLeft2", VAL(LEFT_REARLIMP_2_YAW));
 
-	mesh.applyRotationX("rearLimpRight2", VAL(RIGHT_REARLIMP_2_YAW));
+	helper.applyRotationX("rearLimpRight2", VAL(RIGHT_REARLIMP_2_YAW));
 
 	//=============================================================
 
-	mesh.restoreIdentity("foreLimpLeft3");
-	mesh.applyRotationZ("foreLimpLeft3", VAL(LEFT_FORELIMP_3));
+	helper.restoreIdentity("foreLimpLeft3");
+	helper.applyRotationZ("foreLimpLeft3", VAL(LEFT_FORELIMP_3));
 
-	mesh.restoreIdentity("foreLimpRight3");
-	mesh.applyRotationZ("foreLimpRight3", VAL(RIGHT_FORELIMP_3));
+	helper.restoreIdentity("foreLimpRight3");
+	helper.applyRotationZ("foreLimpRight3", VAL(RIGHT_FORELIMP_3));
 
-	mesh.restoreIdentity("rearLimpLeft3");
-	mesh.applyRotationZ("rearLimpLeft3", VAL(LEFT_REARLIMP_3));
+	helper.restoreIdentity("rearLimpLeft3");
+	helper.applyRotationZ("rearLimpLeft3", VAL(LEFT_REARLIMP_3));
 
-	mesh.restoreIdentity("rearLimpRight3");
-	mesh.applyRotationZ("rearLimpRight3", VAL(RIGHT_REARLIMP_3));
+	helper.restoreIdentity("rearLimpRight3");
+	helper.applyRotationZ("rearLimpRight3", VAL(RIGHT_REARLIMP_3));
 
 	//==============================================================
 
-	mesh.restoreIdentity("tail");
-	mesh.applyRotationZ("tail", VAL(TAIL_PITCH));
-	mesh.applyRotationX("tail", VAL(TAIL_YAW));
+	helper.restoreIdentity("tail");
+	helper.applyRotationZ("tail", VAL(TAIL_PITCH));
+	helper.applyRotationX("tail", VAL(TAIL_YAW));
 }
 
 
 // aiNode* is a node in the bone hierarchy, it contains the name, its own transformation, and
 // pointers to its parent and children
-void traverseBoneHierarchy(Mesh& mesh, const aiNode* cur, const Matrix4f& parent_transformation)
+void traverseBoneHierarchy(const aiNode* cur, const Matrix4f& parent_transformation)
 {
 	if (cur == nullptr) return;
-	string bone_name(Mesh::processBoneName(cur->mName.data));
+	string bone_name(ModelHelper::processBoneName(cur->mName.data));
 
 	// cur->mTransformation transforms the node from its local space to its parent's space
 	Matrix4f cur_transformation = cur->mTransformation;
 	Matrix4f global_transformation = parent_transformation * cur_transformation;
 
 	// In case some node doesn't represent a bone, we check whether we can find the bone_name in the map
-	if (mesh.bone_map.find(bone_name) != mesh.bone_map.end())
+	if (helper.bone_map.find(bone_name) != helper.bone_map.end())
 	{
-		int bone_index = mesh.bone_map[bone_name];
+		int bone_index = helper.bone_map[bone_name];
 
-		global_transformation = global_transformation * mesh.bones[bone_index].local_transformation; 
+		global_transformation = global_transformation * helper.bones[bone_index].local_transformation; 
 
-		// final_transformation is used to transform the vertices from local space to world space
+		// final_transformation is used to transform the vertices from bone space to world space
 		// any other transformation should be right-multiplied to global_transformation
-		mesh.bones[bone_index].final_transformation = 
-			global_inverse * global_transformation * mesh.bones[bone_index].offset;
+		helper.bones[bone_index].final_transformation = global_inverse * global_transformation;
 	}
 
 	// Recursively visit its children
 	for (int i = 0; i < cur->mNumChildren; ++i)
-	{
-		traverseBoneHierarchy(mesh, cur->mChildren[i], global_transformation);
-	}
+		traverseBoneHierarchy(cur->mChildren[i], global_transformation);
 }
 
 
@@ -354,13 +348,13 @@ void processVertices(Mesh& mesh)
 {
 	for (auto& vertex : mesh.vertices)
 	{
-		auto& bone = mesh.bones[vertex.bone_index[0]];
-		Matrix4f transformation = bone.final_transformation * vertex.bone_weight[0];
+		auto& bone = helper.bones[vertex.bone_index[0]];
+		Matrix4f transformation = bone.final_transformation * mesh.offset_map[bone.name] * vertex.bone_weight[0];
 
 		for (int i = 1; i < vertex.bone_index.size(); ++i)
 		{
-			auto& bone = mesh.bones[vertex.bone_index[i]];
-			transformation = transformation + bone.final_transformation * vertex.bone_weight[i];
+			auto& bone = helper.bones[vertex.bone_index[i]];
+			transformation = transformation + bone.final_transformation * mesh.offset_map[bone.name] * vertex.bone_weight[i];
 		}
 		vertex.world_pos = transformation * vertex.original_pos;
 	}
@@ -407,15 +401,15 @@ void renderBones(Mesh& mesh, const aiNode* cur)
 	
 	glPushMatrix();
 
-	string name = Mesh::processBoneName(cur->mName.data);
-	if (mesh.bone_map.find(name) != mesh.bone_map.end())
+	string name = ModelHelper::processBoneName(cur->mName.data);
+	if (helper.bone_map.find(name) != helper.bone_map.end())
 	{
-		Bone& bone = mesh.getBone(name);
-		string p_name = Mesh::processBoneName(cur->mParent->mName.data);
+		Bone& bone = helper.getBone(name);
+		string p_name = ModelHelper::processBoneName(cur->mParent->mName.data);
 
 		try
 		{
-			Bone& p = mesh.getBone(p_name);
+			Bone& p = helper.getBone(p_name);
 			if (p.end == bone.start)
 				glTranslatef(0, 0, p.length);
 			
@@ -571,7 +565,7 @@ void SampleModel::draw()
 		solver.applyRotation(mesh);
 
 	// Render the meshes
-	traverseBoneHierarchy(mesh, scene->mRootNode, Matrix4f());
+	traverseBoneHierarchy(scene->mRootNode, Matrix4f());
 	processVertices(mesh);
 	renderMesh(mesh);
 
@@ -580,8 +574,6 @@ void SampleModel::draw()
 		for (int i = 1; i <= 3; ++i)
 		{
 			helper.active_index = i;
-			applyMeshControls();
-			traverseBoneHierarchy(helper.meshes[i], scene->mRootNode, Matrix4f());
 			processVertices(helper.meshes[i]);
 			renderMesh(helper.meshes[i]);
 		}
@@ -601,7 +593,7 @@ int main()
 
 	Mesh& mesh = helper.meshes[helper.active_index];
 	solver.scene = scene;
-	solver.mesh = &mesh;
+	solver.helper = &helper;
 	
 	// Initialize the controls
 	// Constructor is ModelerControl(name, minimumvalue, maximumvalue, 
