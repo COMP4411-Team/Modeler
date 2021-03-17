@@ -1037,7 +1037,7 @@ void SampleModel::draw()
 		applyMethod = applyJumpDoneMood;
 		break;
 	default: 
-		if (ModelerApplication::Instance()->m_animating && !solver.showIkResult)
+		if (ModelerApplication::Instance()->m_animating && !solver.show_ik_result)
 			animate();
 		break;
 	}
@@ -1056,7 +1056,7 @@ void SampleModel::draw()
 	glRotated(180, 1, 0, 0);
 
 	// Apply the solution of IKSolver
-	if (solver.showIkResult)
+	if (solver.show_ik_result)
 		solver.applyRotation(mesh);
 
 	// Render the meshes

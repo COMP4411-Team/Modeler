@@ -34,13 +34,12 @@ void ModelerUserInterface::cb_chooseEndEffector(Fl_Widget* o, void* v)
 {
 	int value = (int)v;
 	solver.setBoneChain(static_cast<IKSolver::EndEffector>((int)v));
-	
 }
 
 void ModelerUserInterface::cb_solveIk(Fl_Widget* o, void*)
 {
 	auto* ui = ((ModelerUserInterface*)(o->user_data()));
-	solver.showIkResult = true;
+	solver.show_ik_result = true;
 	solver.offset = aiVector3D(ui->m_xPosInput->value(), ui->m_yPosInput->value(), ui->m_zPosInput->value());
 	solver.setContext();
 	solver.solve();
@@ -49,10 +48,109 @@ void ModelerUserInterface::cb_solveIk(Fl_Widget* o, void*)
 
 void ModelerUserInterface::cb_closeIkDialog(Fl_Window* o, void* v)
 {
-	solver.showIkResult = false;
+	solver.show_ik_result = false;
 	auto* ui = ((ModelerUserInterface*)(o->user_data()));
 	ui->m_modelerView->redraw();
 	Fl_Window::default_callback(o, v);
+}
+
+void ModelerUserInterface::cb_jointChoice(Fl_Widget* o, void* v)
+{
+	auto* ui = ((ModelerUserInterface*)(o->user_data()));
+	int choice = solver.constraints.size() - 1 - (int)v;
+	choice = max(0, choice);
+	ui->jointChoice = choice;
+
+	auto& constraint = solver.constraints[choice];
+	ui->m_yawMaxSlider->value(constraint.max_yaw_angle);
+	ui->m_yawMinSlider->value(constraint.min_yaw_angle);
+	ui->m_pitchMaxSlider->value(constraint.max_pitch_angle);
+	ui->m_pitchMinSlider->value(constraint.min_pitch_angle);
+	ui->m_rollMaxSlider->value(constraint.max_roll_angle);
+	ui->m_rollMinSlider->value(constraint.min_roll_angle);
+
+	ui->m_enablePitch->value(constraint.enable_pitch);
+	ui->m_enableRoll->value(constraint.enable_roll);
+	ui->m_enableYaw->value(constraint.enable_yaw);
+}
+
+void ModelerUserInterface::cb_yawMax(Fl_Widget* o, void* v)
+{
+	auto* ui = ((ModelerUserInterface*)(o->user_data()));
+	auto* slider = (Fl_Slider*)o;
+	auto& constraint = solver.constraints[ui->jointChoice];
+	constraint.max_yaw_angle = slider->value();
+}
+
+void ModelerUserInterface::cb_yawMin(Fl_Widget* o, void* v)
+{
+	auto* ui = ((ModelerUserInterface*)(o->user_data()));
+	auto* slider = (Fl_Slider*)o;
+	auto& constraint = solver.constraints[ui->jointChoice];
+	constraint.min_yaw_angle = slider->value();
+}
+
+void ModelerUserInterface::cb_pitchMax(Fl_Widget* o, void* v)
+{
+	auto* ui = ((ModelerUserInterface*)(o->user_data()));
+	auto* slider = (Fl_Slider*)o;
+	auto& constraint = solver.constraints[ui->jointChoice];
+	constraint.max_pitch_angle = slider->value();
+}
+
+void ModelerUserInterface::cb_pitchMin(Fl_Widget* o, void* v)
+{
+	auto* ui = ((ModelerUserInterface*)(o->user_data()));
+	auto* slider = (Fl_Slider*)o;
+	auto& constraint = solver.constraints[ui->jointChoice];
+	constraint.min_pitch_angle = slider->value();
+}
+
+void ModelerUserInterface::cb_rollMax(Fl_Widget* o, void* v)
+{
+	auto* ui = ((ModelerUserInterface*)(o->user_data()));
+	auto* slider = (Fl_Slider*)o;
+	auto& constraint = solver.constraints[ui->jointChoice];
+	constraint.max_roll_angle = slider->value();
+}
+
+void ModelerUserInterface::cb_rollMin(Fl_Widget* o, void* v)
+{
+	auto* ui = ((ModelerUserInterface*)(o->user_data()));
+	auto* slider = (Fl_Slider*)o;
+	auto& constraint = solver.constraints[ui->jointChoice];
+	constraint.min_roll_angle = slider->value();
+}
+
+void ModelerUserInterface::cb_enableConstraints(Fl_Widget* o, void* v)
+{
+	auto* ui = ((ModelerUserInterface*)(o->user_data()));
+	auto* check_box = (Fl_Check_Button*)o;
+	solver.enable_constraints = check_box->value();
+}
+
+void ModelerUserInterface::cb_enableYaw(Fl_Widget* o, void* v)
+{
+	auto* ui = ((ModelerUserInterface*)(o->user_data()));
+	auto* check_box = (Fl_Check_Button*)o;
+	auto& constraint = solver.constraints[ui->jointChoice];
+	constraint.enable_yaw = check_box->value();
+}
+
+void ModelerUserInterface::cb_enablePitch(Fl_Widget* o, void* v)
+{
+	auto* ui = ((ModelerUserInterface*)(o->user_data()));
+	auto* check_box = (Fl_Check_Button*)o;
+	auto& constraint = solver.constraints[ui->jointChoice];
+	constraint.enable_pitch = check_box->value();
+}
+
+void ModelerUserInterface::cb_enableRoll(Fl_Widget* o, void* v)
+{
+	auto* ui = ((ModelerUserInterface*)(o->user_data()));
+	auto* check_box = (Fl_Check_Button*)o;
+	auto& constraint = solver.constraints[ui->jointChoice];
+	constraint.enable_roll = check_box->value();
 }
 
 inline void ModelerUserInterface::cb_Save_i(Fl_Menu_*, void*) {
@@ -325,6 +423,14 @@ Fl_Menu_Item ModelerUserInterface::m_endEffectorMenu[] =
 	{0}
 };
 
+Fl_Menu_Item ModelerUserInterface::m_jointMenu[] =
+{
+	{"Root Joint", 0, (Fl_Callback*)ModelerUserInterface::cb_jointChoice, (void*)0},
+	{"Second Joint", 0, (Fl_Callback*)ModelerUserInterface::cb_jointChoice, (void*)1},
+	{"Third Joint", 0, (Fl_Callback*)ModelerUserInterface::cb_jointChoice, (void*)2},
+	{0}
+};
+
 // 11-01-2001: fixed bug that caused animation problems
 Fl_Menu_Item* ModelerUserInterface::m_controlsAnimOnMenu = ModelerUserInterface::menu_m_controlsMenuBar + 19;
 
@@ -382,7 +488,7 @@ ModelerUserInterface::ModelerUserInterface() {
     o->end();
   }
 
-	m_ikDialog = new Fl_Window(500, 300, "Inverse Kinetics");
+	m_ikDialog = new Fl_Window(700, 300, "Inverse Kinetics");
 	m_ikDialog->user_data(this);
 	m_ikDialog->callback((Fl_Callback*)cb_closeIkDialog);
 	
@@ -403,9 +509,84 @@ ModelerUserInterface::ModelerUserInterface() {
 	m_zPosInput->range(-20, 20);
 	m_zPosInput->step(0.01);
 
-	m_solveIkButton = new Fl_Button(200, 200, 100, 30, "Solve");
+	m_solveIkButton = new Fl_Button(300, 250, 100, 30, "Solve");
 	m_solveIkButton->user_data(this);
 	m_solveIkButton->callback(cb_solveIk);
+
+
+	m_jointChoice = new Fl_Choice(300, 30, 150, 25, "Joint");
+	m_jointChoice->user_data(this);
+	m_jointChoice->menu(m_jointMenu);
+	m_jointChoice->callback(cb_jointChoice);
+	
+	m_yawMaxSlider = new Fl_Value_Slider(430, 110, 250, 20, "Max Yaw Angle");
+	m_yawMaxSlider->range(0, 180);
+	m_yawMaxSlider->step(0.01);
+	m_yawMaxSlider->user_data(this);
+	m_yawMaxSlider->callback(cb_yawMax);
+	m_yawMaxSlider->value(180);
+	m_yawMaxSlider->type(FL_HORIZONTAL);
+
+    m_yawMinSlider = new Fl_Value_Slider(150, 110, 250, 20, "Min Yaw Angle");
+    m_yawMinSlider->range(-180, 0);
+    m_yawMinSlider->step(0.01);
+    m_yawMinSlider->user_data(this);
+    m_yawMinSlider->callback(cb_yawMin);
+	m_yawMinSlider->value(-180);
+	m_yawMinSlider->type(FL_HORIZONTAL);
+
+	m_pitchMaxSlider = new Fl_Value_Slider(430, 150, 250, 20, "Max Pitch Angle");
+	m_pitchMaxSlider->range(0, 180);
+	m_pitchMaxSlider->step(0.01);
+	m_pitchMaxSlider->user_data(this);
+	m_pitchMaxSlider->callback(cb_pitchMax);
+	m_pitchMaxSlider->value(180);
+	m_pitchMaxSlider->type(FL_HORIZONTAL);
+
+    m_pitchMinSlider = new Fl_Value_Slider(150, 150, 250, 20, "Min Pitch Angle");
+    m_pitchMinSlider->range(-180, 0);
+    m_pitchMinSlider->step(0.01);
+    m_pitchMinSlider->user_data(this);
+    m_pitchMinSlider->callback(cb_pitchMin);
+	m_pitchMinSlider->value(-180);
+	m_pitchMinSlider->type(FL_HORIZONTAL);
+
+	m_rollMaxSlider = new Fl_Value_Slider(430, 190, 250, 20, "Max Roll Angle");
+	m_rollMaxSlider->range(0, 180);
+	m_rollMaxSlider->step(0.01);
+	m_rollMaxSlider->user_data(this);
+	m_rollMaxSlider->callback(cb_rollMax);
+	m_rollMaxSlider->value(180);
+	m_rollMaxSlider->type(FL_HORIZONTAL);
+
+    m_rollMinSlider = new Fl_Value_Slider(150, 190, 250, 20, "Min Roll Angle");
+    m_rollMinSlider->range(-180, 0);
+    m_rollMinSlider->step(0.01);
+    m_rollMinSlider->user_data(this);
+    m_rollMinSlider->callback(cb_rollMin);
+	m_rollMinSlider->value(-180);
+	m_rollMinSlider->type(FL_HORIZONTAL);
+
+
+	m_enableConstraints = new Fl_Check_Button(480, 30, 60, 25, "Enable Constraints");
+	m_enableConstraints->user_data(this);
+	m_enableConstraints->callback(cb_enableConstraints);
+	m_enableConstraints->value(0);
+	
+	m_enableYaw = new Fl_Check_Button(30, 110, 70, 25, "Enable Yaw");
+	m_enableYaw->user_data(this);
+	m_enableYaw->callback(cb_enableYaw);
+	m_enableYaw->value(1);
+	
+	m_enablePitch = new Fl_Check_Button(30, 150, 70, 25, "Enable Pitch");
+	m_enablePitch->user_data(this);
+	m_enablePitch->callback(cb_enablePitch);
+	m_enablePitch->value(1);
+
+	m_enableRoll = new Fl_Check_Button(30, 190, 70, 25, "Enable Roll");
+	m_enableRoll->user_data(this);
+	m_enableRoll->callback(cb_enableRoll);
+	m_enableRoll->value(1);
 
 	m_ikDialog->end();
 }

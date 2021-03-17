@@ -15,18 +15,31 @@
 #include <FL/Fl_Pack.H>
 #include "modelerapp.h"
 #include <FL/Fl_Value_Input.H>
+#include <FL/Fl_Value_Slider.H>
 
 class ModelerUserInterface {
 public:
   ModelerUserInterface();
   Fl_Window *m_controlsWindow;
 
+	int jointChoice{0};
 	Fl_Window* m_ikDialog;
 	Fl_Value_Input* m_xPosInput;
 	Fl_Value_Input* m_yPosInput;
 	Fl_Value_Input* m_zPosInput;
 	Fl_Button* m_solveIkButton;
 	Fl_Choice* m_endEffectorChoice;
+	Fl_Choice* m_jointChoice;
+	Fl_Value_Slider* m_yawMaxSlider;
+	Fl_Value_Slider* m_yawMinSlider;
+	Fl_Value_Slider* m_pitchMaxSlider;
+	Fl_Value_Slider* m_pitchMinSlider;
+	Fl_Value_Slider* m_rollMaxSlider;
+	Fl_Value_Slider* m_rollMinSlider;
+	Fl_Check_Button* m_enableConstraints;
+	Fl_Check_Button* m_enableYaw;
+	Fl_Check_Button* m_enableRoll;
+	Fl_Check_Button* m_enablePitch;
 
 private:
   inline void cb_m_controlsWindow_i(Fl_Window*, void*);
@@ -36,9 +49,21 @@ public:
   static Fl_Menu_Item menu_m_controlsMenuBar[];
 
 	static Fl_Menu_Item m_endEffectorMenu[];
+	static Fl_Menu_Item m_jointMenu[];
 	static void cb_chooseEndEffector(Fl_Widget*, void*);
 	static void cb_solveIk(Fl_Widget*, void*);
 	static void cb_closeIkDialog(Fl_Window*, void*);
+	static void cb_jointChoice(Fl_Widget* o, void* v);
+	static void cb_yawMax(Fl_Widget* o, void* v);
+	static void cb_yawMin(Fl_Widget* o, void* v);
+	static void cb_pitchMax(Fl_Widget* o, void* v);
+	static void cb_pitchMin(Fl_Widget* o, void* v);
+	static void cb_rollMax(Fl_Widget* o, void* v);
+	static void cb_rollMin(Fl_Widget* o, void* v);
+	static void cb_enableConstraints(Fl_Widget* o, void* v);
+	static void cb_enableYaw(Fl_Widget* o, void* v);
+	static void cb_enablePitch(Fl_Widget* o, void* v);
+	static void cb_enableRoll(Fl_Widget* o, void* v);
 
 private:
   inline void cb_Save_i(Fl_Menu_*, void*);
