@@ -1037,12 +1037,12 @@ void SampleModel::draw()
 		applyMethod = applyJumpDoneMood;
 		break;
 	default: 
-		if (ModelerApplication::Instance()->m_animating && !solver.show_ik_result)
-			animate();
 		break;
 	}
 
 	applyMethod();
+	if (ModelerApplication::Instance()->m_animating && !solver.showIkResult && int(VAL(MOODS)) == 0)
+		animate();
 
 	// Apply controls to bones and render them
 	glPushMatrix();
@@ -1069,6 +1069,7 @@ void SampleModel::draw()
 		for (int i = 1; i <= 3; ++i)
 		{
 			helper.active_index = i;
+			applyMeshControls();
 			applyMethod();
 			traverseBoneHierarchy(helper.meshes[i], scene->mRootNode, Matrix4f());
 			processVertices(helper.meshes[i]);
