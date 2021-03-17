@@ -89,3 +89,14 @@ public:
 	bool tex_loaded{false};
 };
 
+void applyMeshControls();
+
+void applyPeaceMood();
+
+void applyWatchMood();
+
+void applyPreJumpMood();
+
+void applyJumpMood();
+
+void applyJumpDoneMood();

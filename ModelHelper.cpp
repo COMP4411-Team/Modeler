@@ -5,8 +5,27 @@
 #include <cmath>
 #include "bitmap.h"
 
+#include "modelerview.h"
+#include "modelerapp.h"
+#include "modelerdraw.h"
+#include <FL/gl.h>
+#include <gl/GLU.h>
+
+#include "modelerglobals.h"
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+#include "ModelHelper.h"
+#include "bitmap.h"
+#include "camera.h"
+#include "modelerui.h"
+#include "LSystem.h"
+#include "IKSolver.h"
+
 using namespace Assimp;
 using namespace std;
+
+extern ModelHelper helper;
 
 void ModelHelper::loadModel(const string& model, const string& bone)
 {
@@ -290,4 +309,567 @@ std::string Mesh::processBoneName(const std::string& name)
 	if (pos != name.npos)
 		return name.substr(pos + 1);
 	return name;
+}
+
+
+// Apply all the user controls to meshes in one place
+void applyMeshControls()
+{
+	auto& mesh = helper.meshes[helper.active_index];
+
+	mesh.restoreIdentity("main");
+	mesh.applyRotationX("main", VAL(ROTATE_ALL));
+
+	float x = VAL(XPOS), y = VAL(YPOS), z = VAL(ZPOS);
+
+	mesh.applyTranslate("main", aiVector3D(x, y, z));
+
+	//===========================================================
+		mesh.restoreIdentity("neck");
+
+
+		mesh.applyRotationZ("neck", VAL(NECK_PITCH));
+		mesh.applyRotationX("neck", VAL(NECK_YAW));
+		mesh.applyRotationY("neck", VAL(NECK_ROLL));
+
+		mesh.restoreIdentity("head");
+		mesh.applyRotationZ("head", VAL(HEAD_PITCH));
+		mesh.applyRotationX("head", VAL(HEAD_YAW));
+		mesh.applyRotationY("head", VAL(HEAD_ROLL));
+
+		//============================================================
+
+		mesh.restoreIdentity("foreLimpLeft1");
+		mesh.applyRotationZ("foreLimpLeft1", VAL(LEFT_FORELIMP_1));
+		mesh.applyRotationX("foreLimpLeft1", VAL(LEFT_FORELIMP_1_YAW));
+
+		mesh.restoreIdentity("foreLimpRight1");
+		mesh.applyRotationZ("foreLimpRight1", VAL(RIGHT_FORELIMP_1));
+		mesh.applyRotationX("foreLimpRight1", VAL(RIGHT_FORELIMP_1_YAW));
+
+		mesh.restoreIdentity("rearLimpLeft1");
+		mesh.applyRotationZ("rearLimpLeft1", VAL(LEFT_REARLIMP_1));
+		mesh.applyRotationX("rearLimpLeft1", VAL(LEFT_REARLIMP_1_YAW));
+
+		mesh.restoreIdentity("rearLimpRight1");
+		mesh.applyRotationZ("rearLimpRight1", VAL(RIGHT_REARLIMP_1));
+		mesh.applyRotationX("rearLimpRight1", VAL(RIGHT_REARLIMP_1_YAW));
+
+		//============================================================
+
+		mesh.restoreIdentity("foreLimpLeft2");
+		mesh.applyRotationZ("foreLimpLeft2", VAL(LEFT_FORELIMP_2));
+
+		mesh.restoreIdentity("foreLimpRight2");
+		mesh.applyRotationZ("foreLimpRight2", VAL(RIGHT_FORELIMP_2));
+
+		mesh.restoreIdentity("rearLimpLeft2");
+		mesh.applyRotationZ("rearLimpLeft2", VAL(LEFT_REARLIMP_2));
+
+		mesh.restoreIdentity("rearLimpRight2");
+		mesh.applyRotationZ("rearLimpRight2", VAL(RIGHT_REARLIMP_2));
+
+		//=============================================================
+
+		mesh.applyRotationX("foreLimpLeft2", VAL(LEFT_FORELIMP_2_YAW));
+
+		mesh.applyRotationX("foreLimpRight2", VAL(RIGHT_FORELIMP_2_YAW));
+
+		mesh.applyRotationX("rearLimpLeft2", VAL(LEFT_REARLIMP_2_YAW));
+
+		mesh.applyRotationX("rearLimpRight2", VAL(RIGHT_REARLIMP_2_YAW));
+
+		//=============================================================
+
+		mesh.restoreIdentity("foreLimpLeft3");
+		mesh.applyRotationZ("foreLimpLeft3", VAL(LEFT_FORELIMP_3));
+		mesh.applyRotationX("foreLimpLeft3", VAL(LEFT_FORELIMP_3_YAW));
+
+		mesh.restoreIdentity("foreLimpRight3");
+		mesh.applyRotationZ("foreLimpRight3", VAL(RIGHT_FORELIMP_3));
+		mesh.applyRotationX("foreLimpRight3", VAL(RIGHT_FORELIMP_3_YAW));
+
+		mesh.restoreIdentity("rearLimpLeft3");
+		mesh.applyRotationZ("rearLimpLeft3", VAL(LEFT_REARLIMP_3));
+		mesh.applyRotationX("rearLimpLeft3", VAL(LEFT_REARLIMP_3_YAW));
+
+		mesh.restoreIdentity("rearLimpRight3");
+		mesh.applyRotationZ("rearLimpRight3", VAL(RIGHT_REARLIMP_3));
+		mesh.applyRotationX("rearLimpRight3", VAL(RIGHT_REARLIMP_3_YAW));
+
+		//==============================================================
+
+		mesh.restoreIdentity("tail");
+		mesh.applyRotationZ("tail", VAL(TAIL_PITCH));
+		mesh.applyRotationX("tail", VAL(TAIL_YAW));
+
+
+	// For basic requirements: one slider control multiple bones
+	float angle = VAL(LIMP_FOLDING);
+	mesh.applyRotationZ("foreLimpLeft2", -angle);
+	mesh.applyRotationZ("foreLimpLeft3", angle * 3);
+	
+	mesh.applyRotationZ("foreLimpRight2", -angle);
+	mesh.applyRotationZ("foreLimpRight3", angle * 3);
+	
+	mesh.applyRotationZ("rearLimpLeft2", -angle);
+	mesh.applyRotationZ("rearLimpLeft3", angle * 3);
+
+	mesh.applyRotationZ("rearLimpRight2", -angle);
+	mesh.applyRotationZ("rearLimpRight3", angle * 3);
+}
+
+
+void applyPeaceMood() {
+	auto& mesh = helper.meshes[helper.active_index];
+
+	mesh.restoreIdentity("main");
+	mesh.applyRotationZ("main", VAL(ROTATE_ALL));
+
+	float x = VAL(XPOS), y = VAL(YPOS), z = VAL(ZPOS);
+
+	mesh.applyTranslate("main", aiVector3D(x, y, z));
+
+	//===========================================================
+	mesh.restoreIdentity("neck");
+
+
+	mesh.applyRotationZ("neck",5);
+	mesh.applyRotationX("neck", 30);
+	mesh.applyRotationY("neck", 50);
+
+	mesh.restoreIdentity("head");
+	mesh.applyRotationZ("head", 25);
+	mesh.applyRotationX("head", 27);
+	mesh.applyRotationY("head", -19);
+
+	//============================================================
+
+	mesh.restoreIdentity("foreLimpLeft1");
+	mesh.applyRotationZ("foreLimpLeft1",40);
+	mesh.applyRotationX("foreLimpLeft1",8);
+
+	mesh.restoreIdentity("foreLimpRight1");
+	mesh.applyRotationZ("foreLimpRight1", 40);
+	mesh.applyRotationX("foreLimpRight1", -8);
+
+	mesh.restoreIdentity("rearLimpLeft1");
+	mesh.applyRotationZ("rearLimpLeft1", -60);
+	mesh.applyRotationX("rearLimpLeft1", 17);
+
+	mesh.restoreIdentity("rearLimpRight1");
+	mesh.applyRotationZ("rearLimpRight1",-60);
+	mesh.applyRotationX("rearLimpRight1", -17);
+
+	//============================================================
+
+	mesh.restoreIdentity("foreLimpLeft2");
+	mesh.applyRotationZ("foreLimpLeft2", -119);
+
+	mesh.restoreIdentity("foreLimpRight2");
+	mesh.applyRotationZ("foreLimpRight2", -119);
+
+	mesh.restoreIdentity("rearLimpLeft2");
+	mesh.applyRotationZ("rearLimpLeft2", 93);
+
+	mesh.restoreIdentity("rearLimpRight2");
+	mesh.applyRotationZ("rearLimpRight2", 93);
+
+	//=============================================================
+
+	mesh.applyRotationX("foreLimpLeft2", 0);
+
+	mesh.applyRotationX("foreLimpRight2", 0);
+
+	mesh.applyRotationX("rearLimpLeft2",-13);
+
+	mesh.applyRotationX("rearLimpRight2",-13);
+
+	//=============================================================
+
+	mesh.restoreIdentity("foreLimpLeft3");
+	mesh.applyRotationZ("foreLimpLeft3",180);
+	mesh.applyRotationX("foreLimpLeft3", -15);
+
+	mesh.restoreIdentity("foreLimpRight3");
+	mesh.applyRotationZ("foreLimpRight3",180);
+	mesh.applyRotationX("foreLimpRight3",15);
+
+	mesh.restoreIdentity("rearLimpLeft3");
+	mesh.applyRotationZ("rearLimpLeft3", -127);
+	mesh.applyRotationX("rearLimpLeft3", -44);
+
+	mesh.restoreIdentity("rearLimpRight3");
+	mesh.applyRotationZ("rearLimpRight3",-127);
+	mesh.applyRotationX("rearLimpRight3", 44);
+
+	//==============================================================
+
+	mesh.restoreIdentity("tail");
+	mesh.applyRotationZ("tail",-45);
+	mesh.applyRotationX("tail", 30);
+}
+
+
+void applyWatchMood() {
+	auto& mesh = helper.meshes[helper.active_index];
+
+	mesh.restoreIdentity("main");
+	mesh.applyRotationZ("main", VAL(ROTATE_ALL));
+
+	float x = VAL(XPOS), y = VAL(YPOS), z = VAL(ZPOS);
+
+	mesh.applyTranslate("main", aiVector3D(x, y, z));
+
+	//===========================================================
+	mesh.restoreIdentity("neck");
+
+
+	mesh.applyRotationZ("neck", -27);
+	mesh.applyRotationX("neck", 0);
+	mesh.applyRotationY("neck", 0);
+
+	mesh.restoreIdentity("head");
+	mesh.applyRotationZ("head", -25);
+	mesh.applyRotationX("head", 0);
+	mesh.applyRotationY("head",0);
+
+	//============================================================
+
+	mesh.restoreIdentity("foreLimpLeft1");
+	mesh.applyRotationZ("foreLimpLeft1", -17);
+	mesh.applyRotationX("foreLimpLeft1",0);
+
+	mesh.restoreIdentity("foreLimpRight1");
+	mesh.applyRotationZ("foreLimpRight1",5);
+	mesh.applyRotationX("foreLimpRight1", 0);
+
+	mesh.restoreIdentity("rearLimpLeft1");
+	mesh.applyRotationZ("rearLimpLeft1", -14);
+	mesh.applyRotationX("rearLimpLeft1", 0);
+
+	mesh.restoreIdentity("rearLimpRight1");
+	mesh.applyRotationZ("rearLimpRight1", 8);
+	mesh.applyRotationX("rearLimpRight1", 0);
+
+	//============================================================
+
+	mesh.restoreIdentity("foreLimpLeft2");
+	mesh.applyRotationZ("foreLimpLeft2", -5);
+
+	mesh.restoreIdentity("foreLimpRight2");
+	mesh.applyRotationZ("foreLimpRight2", 0);
+
+	mesh.restoreIdentity("rearLimpLeft2");
+	mesh.applyRotationZ("rearLimpLeft2",9);
+
+	mesh.restoreIdentity("rearLimpRight2");
+	mesh.applyRotationZ("rearLimpRight2", 0);
+
+	//=============================================================
+
+	mesh.applyRotationX("foreLimpLeft2", 0);
+
+	mesh.applyRotationX("foreLimpRight2", 0);
+
+	mesh.applyRotationX("rearLimpLeft2", 0);
+
+	mesh.applyRotationX("rearLimpRight2",0);
+
+	//=============================================================
+
+	mesh.restoreIdentity("foreLimpLeft3");
+	mesh.applyRotationZ("foreLimpLeft3", 27);
+	mesh.applyRotationX("foreLimpLeft3",0);
+
+	mesh.restoreIdentity("foreLimpRight3");
+	mesh.applyRotationZ("foreLimpRight3", 0);
+	mesh.applyRotationX("foreLimpRight3", 0);
+
+	mesh.restoreIdentity("rearLimpLeft3");
+	mesh.applyRotationZ("rearLimpLeft3",-9);
+	mesh.applyRotationX("rearLimpLeft3", 0);
+
+	mesh.restoreIdentity("rearLimpRight3");
+	mesh.applyRotationZ("rearLimpRight3", 0);
+	mesh.applyRotationX("rearLimpRight3",0);
+
+	//==============================================================
+
+	mesh.restoreIdentity("tail");
+	mesh.applyRotationZ("tail", 8);
+	mesh.applyRotationX("tail", 0);
+}
+
+
+void applyPreJumpMood() {
+	auto& mesh = helper.meshes[helper.active_index];
+
+	mesh.restoreIdentity("main");
+	mesh.applyRotationZ("main", -17);
+
+	float x = VAL(XPOS), y = VAL(YPOS), z = VAL(ZPOS);
+
+	mesh.applyTranslate("main", aiVector3D(x, y, z));
+
+	//===========================================================
+	mesh.restoreIdentity("neck");
+
+
+	mesh.applyRotationZ("neck", -18);
+	mesh.applyRotationX("neck", 0);
+	mesh.applyRotationY("neck", 0);
+
+	mesh.restoreIdentity("head");
+	mesh.applyRotationZ("head", -12);
+	mesh.applyRotationX("head", 0);
+	mesh.applyRotationY("head", 0);
+
+	//============================================================
+
+	mesh.restoreIdentity("foreLimpLeft1");
+	mesh.applyRotationZ("foreLimpLeft1", -8);
+	mesh.applyRotationX("foreLimpLeft1", 17);
+
+	mesh.restoreIdentity("foreLimpRight1");
+	mesh.applyRotationZ("foreLimpRight1", -4);
+	mesh.applyRotationX("foreLimpRight1", -10);
+
+	mesh.restoreIdentity("rearLimpLeft1");
+	mesh.applyRotationZ("rearLimpLeft1", -14);
+	mesh.applyRotationX("rearLimpLeft1", 10);
+
+	mesh.restoreIdentity("rearLimpRight1");
+	mesh.applyRotationZ("rearLimpRight1", -5);
+	mesh.applyRotationX("rearLimpRight1", -16);
+
+	//============================================================
+
+	mesh.restoreIdentity("foreLimpLeft2");
+	mesh.applyRotationZ("foreLimpLeft2", 13);
+
+	mesh.restoreIdentity("foreLimpRight2");
+	mesh.applyRotationZ("foreLimpRight2", 9);
+
+	mesh.restoreIdentity("rearLimpLeft2");
+	mesh.applyRotationZ("rearLimpLeft2", 27);
+
+	mesh.restoreIdentity("rearLimpRight2");
+	mesh.applyRotationZ("rearLimpRight2", 25);
+
+	//=============================================================
+
+	mesh.applyRotationX("foreLimpLeft2", -8);
+
+	mesh.applyRotationX("foreLimpRight2", 6);
+
+	mesh.applyRotationX("rearLimpLeft2", 0);
+
+	mesh.applyRotationX("rearLimpRight2", 0);
+
+	//=============================================================
+
+	mesh.restoreIdentity("foreLimpLeft3");
+	mesh.applyRotationZ("foreLimpLeft3", 25);
+	mesh.applyRotationX("foreLimpLeft3", -8);
+
+	mesh.restoreIdentity("foreLimpRight3");
+	mesh.applyRotationZ("foreLimpRight3", 25);
+	mesh.applyRotationX("foreLimpRight3", 6);
+
+	mesh.restoreIdentity("rearLimpLeft3");
+	mesh.applyRotationZ("rearLimpLeft3", -34);
+	mesh.applyRotationX("rearLimpLeft3", -6);
+
+	mesh.restoreIdentity("rearLimpRight3");
+	mesh.applyRotationZ("rearLimpRight3", -25);
+	mesh.applyRotationX("rearLimpRight3", 9);
+
+	//==============================================================
+
+	mesh.restoreIdentity("tail");
+	mesh.applyRotationZ("tail", -14);
+	mesh.applyRotationX("tail", 0);
+}
+
+
+void applyJumpMood() {
+	auto& mesh = helper.meshes[helper.active_index];
+
+	mesh.restoreIdentity("main");
+	mesh.applyRotationZ("main", -25);
+
+	float x = VAL(XPOS), y = VAL(YPOS), z = VAL(ZPOS);
+
+	mesh.applyTranslate("main", aiVector3D(x, y, z));
+
+	//===========================================================
+	mesh.restoreIdentity("neck");
+
+
+	mesh.applyRotationZ("neck", -9);
+	mesh.applyRotationX("neck", 0);
+	mesh.applyRotationY("neck", 0);
+
+	mesh.restoreIdentity("head");
+	mesh.applyRotationZ("head", 4);
+	mesh.applyRotationX("head", 24);
+	mesh.applyRotationY("head", -30);
+
+	//============================================================
+
+	mesh.restoreIdentity("foreLimpLeft1");
+	mesh.applyRotationZ("foreLimpLeft1", -48);
+	mesh.applyRotationX("foreLimpLeft1", 11);
+
+	mesh.restoreIdentity("foreLimpRight1");
+	mesh.applyRotationZ("foreLimpRight1", -51);
+	mesh.applyRotationX("foreLimpRight1", -17);
+
+	mesh.restoreIdentity("rearLimpLeft1");
+	mesh.applyRotationZ("rearLimpLeft1", 44);
+	mesh.applyRotationX("rearLimpLeft1", 23);
+
+	mesh.restoreIdentity("rearLimpRight1");
+	mesh.applyRotationZ("rearLimpRight1", 41);
+	mesh.applyRotationX("rearLimpRight1", -15);
+
+	//============================================================
+
+	mesh.restoreIdentity("foreLimpLeft2");
+	mesh.applyRotationZ("foreLimpLeft2", -13);
+
+	mesh.restoreIdentity("foreLimpRight2");
+	mesh.applyRotationZ("foreLimpRight2", -19);
+
+	mesh.restoreIdentity("rearLimpLeft2");
+	mesh.applyRotationZ("rearLimpLeft2", 17);
+
+	mesh.restoreIdentity("rearLimpRight2");
+	mesh.applyRotationZ("rearLimpRight2", 7);
+
+	//=============================================================
+
+	mesh.applyRotationX("foreLimpLeft2", 1);
+
+	mesh.applyRotationX("foreLimpRight2", 6);
+
+	mesh.applyRotationX("rearLimpLeft2", 0);
+
+	mesh.applyRotationX("rearLimpRight2", 0);
+
+	//=============================================================
+
+	mesh.restoreIdentity("foreLimpLeft3");
+	mesh.applyRotationZ("foreLimpLeft3", 135);
+	mesh.applyRotationX("foreLimpLeft3", 40);
+
+	mesh.restoreIdentity("foreLimpRight3");
+	mesh.applyRotationZ("foreLimpRight3", 145);
+	mesh.applyRotationX("foreLimpRight3", -31);
+
+	mesh.restoreIdentity("rearLimpLeft3");
+	mesh.applyRotationZ("rearLimpLeft3", 15);
+	mesh.applyRotationX("rearLimpLeft3", 0);
+
+	mesh.restoreIdentity("rearLimpRight3");
+	mesh.applyRotationZ("rearLimpRight3", 21);
+	mesh.applyRotationX("rearLimpRight3", 0);
+
+	//==============================================================
+
+	mesh.restoreIdentity("tail");
+	mesh.applyRotationZ("tail", 14);
+	mesh.applyRotationX("tail", 0);
+}
+
+
+void applyJumpDoneMood() {
+	auto& mesh = helper.meshes[helper.active_index];
+
+	mesh.restoreIdentity("main");
+	mesh.applyRotationZ("main", 32);
+
+	float x = VAL(XPOS), y = VAL(YPOS), z = VAL(ZPOS);
+
+	mesh.applyTranslate("main", aiVector3D(x, y, z));
+
+	//===========================================================
+	mesh.restoreIdentity("neck");
+
+
+	mesh.applyRotationZ("neck", -38);
+	mesh.applyRotationX("neck", 41);
+	mesh.applyRotationY("neck", 44);
+
+	mesh.restoreIdentity("head");
+	mesh.applyRotationZ("head", 45);
+	mesh.applyRotationX("head", 30);
+	mesh.applyRotationY("head", 19);
+
+	//============================================================
+
+	mesh.restoreIdentity("foreLimpLeft1");
+	mesh.applyRotationZ("foreLimpLeft1", -60);
+	mesh.applyRotationX("foreLimpLeft1", 18);
+
+	mesh.restoreIdentity("foreLimpRight1");
+	mesh.applyRotationZ("foreLimpRight1", -60);
+	mesh.applyRotationX("foreLimpRight1", -15);
+
+	mesh.restoreIdentity("rearLimpLeft1");
+	mesh.applyRotationZ("rearLimpLeft1", -18);
+	mesh.applyRotationX("rearLimpLeft1", 0);
+
+	mesh.restoreIdentity("rearLimpRight1");
+	mesh.applyRotationZ("rearLimpRight1", -13);
+	mesh.applyRotationX("rearLimpRight1", 0);
+
+	//============================================================
+
+	mesh.restoreIdentity("foreLimpLeft2");
+	mesh.applyRotationZ("foreLimpLeft2", 7);
+
+	mesh.restoreIdentity("foreLimpRight2");
+	mesh.applyRotationZ("foreLimpRight2", -32);
+
+	mesh.restoreIdentity("rearLimpLeft2");
+	mesh.applyRotationZ("rearLimpLeft2", 50);
+
+	mesh.restoreIdentity("rearLimpRight2");
+	mesh.applyRotationZ("rearLimpRight2", 50);
+
+	//=============================================================
+
+	mesh.applyRotationX("foreLimpLeft2", -4);
+
+	mesh.applyRotationX("foreLimpRight2", -21);
+
+	mesh.applyRotationX("rearLimpLeft2", 0);
+
+	mesh.applyRotationX("rearLimpRight2", 0);
+
+	//=============================================================
+
+	mesh.restoreIdentity("foreLimpLeft3");
+	mesh.applyRotationZ("foreLimpLeft3", 5);
+	mesh.applyRotationX("foreLimpLeft3", -18);
+
+	mesh.restoreIdentity("foreLimpRight3");
+	mesh.applyRotationZ("foreLimpRight3", 109);
+	mesh.applyRotationX("foreLimpRight3", -90);
+
+	mesh.restoreIdentity("rearLimpLeft3");
+	mesh.applyRotationZ("rearLimpLeft3", -54);
+	mesh.applyRotationX("rearLimpLeft3", 0);
+
+	mesh.restoreIdentity("rearLimpRight3");
+	mesh.applyRotationZ("rearLimpRight3", -78);
+	mesh.applyRotationX("rearLimpRight3", 0);
+
+	//==============================================================
+
+	mesh.restoreIdentity("tail");
+	mesh.applyRotationZ("tail", 23);
+	mesh.applyRotationX("tail", 0);
 }
