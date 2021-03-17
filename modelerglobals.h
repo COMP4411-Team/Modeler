@@ -9,7 +9,7 @@
 // We'll use these constants to access the values 
 // of the controls from the user interface.
 enum SampleModelControls
-{ 
+{
 	XPOS, YPOS, ZPOS, ROTATE_ALL,
 	LIGHT0_ENABLE, LIGHT1_ENABLE,
 	LIGHTX_0, LIGHTY_0, LIGHTZ_0,
@@ -26,6 +26,10 @@ enum SampleModelControls
 	TAIL_PITCH, TAIL_YAW,
 	LIMP_FOLDING,
 	L_SYSTEM_ENABLE, L_SYSTEM_ANGLE, L_SYSTEM_BRANCH_LENGTH,
+	TORUS_ENABLE,
+	TORUS_RING_LR, TORUS_RING_SR, TORUS_TUBE_LR, TORUS_TUBE_SR,
+	TORUS_PX, TORUS_PY, TORUS_PZ, TORUS_RX, TORUS_RY, TORUS_RZ,
+	TORUS_FLOWER, TORUS_PETAL,
 	NUMCONTROLS
 };
 
