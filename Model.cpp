@@ -442,13 +442,16 @@ void SampleModel::draw()
 		glPopMatrix();
 	}
 
-	if (VAL(TORUS_ENABLE)) {
+	if (VAL(POLYGON_TORUS)) {
 		torus = new Torus(VAL(TORUS_TUBE_LR), VAL(TORUS_TUBE_SR), VAL(TORUS_RING_LR), VAL(TORUS_RING_SR), VAL(TORUS_PX),
 			VAL(TORUS_PY), VAL(TORUS_PZ), VAL(TORUS_RX), VAL(TORUS_RY), VAL(TORUS_RZ), VAL(TORUS_FLOWER), VAL(TORUS_PETAL));
 		glPushMatrix();
 		torus->draw();
 		glPopMatrix();
 		delete torus;
+	}
+	if (VAL(PRIMITIVE_TORUS)) {
+		drawTorus(VAL(TORUS_RING_LR),VAL(TORUS_RING_SR), VAL(TORUS_TUBE_LR),VAL(TORUS_TUBE_SR), VAL(TORUS_PX), VAL(TORUS_PY), VAL(TORUS_PZ), VAL(TORUS_RX), VAL(TORUS_RY), VAL(TORUS_RZ));
 	}
 	// drawSphere(0.1);
 	// drawCylinder(1, 0.1, 0.01);
@@ -469,7 +472,7 @@ void SampleModel::draw()
 	}
 	
 	// Setup env and pose
-	if (!VAL(TORUS_ENABLE)) {
+	if (!VAL(POLYGON_TORUS)&&!VAL(PRIMITIVE_TORUS)) {
 		setAmbientColor(0.75f, 0.75f, 0.75f);
 		setDiffuseColor(0.75f, 0.75f, 0.75f);
 		glScaled(0.5, 0.5, 0.5);
@@ -640,7 +643,8 @@ int main()
 	controls[L_SYSTEM_ANGLE] = ModelerControl("L-system Angle", 0, 60, 1, 22.5);
 	controls[L_SYSTEM_BRANCH_LENGTH] = ModelerControl("L-system Branch Length", 0, 1, 0.001, 0.1);
 
-	controls[TORUS_ENABLE] = ModelerControl("Torus Enable", 0, 1, 1, 0);
+	controls[POLYGON_TORUS] = ModelerControl("Polygon Torus Enable", 0, 1, 1, 0);
+	controls[PRIMITIVE_TORUS] = ModelerControl("Primitive Torus Enable", 0, 1, 1, 0);
 	controls[TORUS_RING_LR] = ModelerControl("Longer Radius of Torus Ring", 2, 5, 0.1, 4);
 	controls[TORUS_RING_SR] = ModelerControl("Shorter Radius of Torus Ring", 0.5, 5, 0.1, 3);
 	controls[TORUS_TUBE_LR] = ModelerControl("Longer Radius of Torus Tube", 0.01, 1, 0.01, 0.5);

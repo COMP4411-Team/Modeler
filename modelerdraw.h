@@ -91,6 +91,9 @@ void drawTextureBox( double x, double y, double z );
 // Draw a cylinder from z=0 to z=h with radius r1 at origin and r2 at z=h
 void drawCylinder( double h, double r1, double r2 );
 
+// Draw a Torus with ring radius r and tube radius t
+void drawTorus(double rl, double tl,double rs, double ts ,double x, double y, double z, double rx, double ry, double rz);
+
 // Driangle with three given vertices.  Specify in counterclockwise direction
 void drawTriangle( double x1, double y1, double z1,
 			       double x2, double y2, double z2,
