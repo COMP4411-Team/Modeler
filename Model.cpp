@@ -484,13 +484,8 @@ void SampleModel::draw()
 
 		// Apply user controls to meshes here
 
-<<<<<<< Updated upstream
-	applyMethod();
-	if (ModelerApplication::Instance()->m_animating && !solver.show_ik_result && int(VAL(MOODS)) == 0)
-		animate();
-=======
 		auto applyMethod = applyMeshControls;
->>>>>>> Stashed changes
+
 
 		switch (int(VAL(MOODS)))
 		{
@@ -514,28 +509,28 @@ void SampleModel::draw()
 		}
 
 		applyMethod();
-		if (ModelerApplication::Instance()->m_animating && !solver.showIkResult && int(VAL(MOODS)) == 0)
+		if (ModelerApplication::Instance()->m_animating && !solver.show_ik_result && int(VAL(MOODS)) == 0)
 			animate();
 
-<<<<<<< Updated upstream
+
 	// Apply the solution of IKSolver
 	if (solver.show_ik_result)
 		solver.applyRotation(mesh);
-=======
+
 		// Apply controls to bones and render them
 		glPushMatrix();
 		glRotated(-90, 1, 0, 0);
 		glRotated(-90, 0, 0, 1);
 		renderBones(mesh, scene->mRootNode);
 		glPopMatrix();
->>>>>>> Stashed changes
+
 
 		// Avoid overlapping bones and meshes
 		glTranslated(0, 5, 0);
 		glRotated(180, 1, 0, 0);
 
 		// Apply the solution of IKSolver
-		if (solver.showIkResult)
+		if (solver.show_ik_result)
 			solver.applyRotation(mesh);
 
 		// Render the meshes
