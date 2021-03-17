@@ -28,4 +28,4 @@
 
 - [x] 8B Inverse kinematics. 
 
-- [ ] 4B (Additional) Make sure that all angle constraints are satisfied as well.
+- [x] 4B (Additional) Make sure that all angle constraints are satisfied as well.
