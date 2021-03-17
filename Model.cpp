@@ -1041,7 +1041,7 @@ void SampleModel::draw()
 	}
 
 	applyMethod();
-	if (ModelerApplication::Instance()->m_animating && !solver.showIkResult && int(VAL(MOODS)) == 0)
+	if (ModelerApplication::Instance()->m_animating && !solver.show_ik_result && int(VAL(MOODS)) == 0)
 		animate();
 
 	// Apply controls to bones and render them
