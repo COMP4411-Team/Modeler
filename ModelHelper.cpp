@@ -882,10 +882,10 @@ void nurbsDemo()
 	GLfloat ambient[] = {0.4, 0.6, 0.2, 1.0};
 	GLfloat position[] = {5.0, 5.0, 5.0, 1.0};
 
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
-	glLightfv(GL_LIGHT0, GL_POSITION, position);
+	//glEnable(GL_LIGHTING);
+	//glEnable(GL_LIGHT0);
+	//glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
+	//glLightfv(GL_LIGHT0, GL_POSITION, position);
 
 	GLfloat mat_ambient[] = {0.247250, 0.199500, 0.074500, 1.000000};
 	GLfloat mat_diffuse[] = {0.751640, 0.606480, 0.226480, 1.000000};
