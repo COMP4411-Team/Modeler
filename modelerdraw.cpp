@@ -378,6 +378,94 @@ void drawCylinder( double h, double r1, double r2 )
     }
     
 }
+
+void drawTorus(double rl,double rs, double tl, double ts, double x, double y, double z, double rx, double ry, double rz) {
+    ModelerDrawState* mds = ModelerDrawState::Instance();
+
+    _setupOpenGl();
+
+    if (mds->m_rayFile)
+    {
+        _dump_current_modelview();
+        fprintf(mds->m_rayFile, "torus with ring long radius=%f, ring short radius=%f, rube long radius=%f, tube short radius=%f {\n", rl, rs, tl, ts);
+        _dump_current_material();
+        fprintf(mds->m_rayFile, "}))\n");
+    }
+    else
+    {
+        int divisionr, divisiont;
+
+        switch (mds->m_quality)
+        {
+        case HIGH:
+            divisionr = 80; divisiont = 40; break;
+        case MEDIUM:
+            divisionr = 60; divisiont = 30; break;
+        case LOW:
+            divisionr = 40; divisiont = 20; break;
+        case POOR:
+            divisionr = 20; divisiont = 10; break;
+        }
+
+        rx = 2 * M_PI / 360 * rx;
+        ry = 2 * M_PI / 360 * ry;
+        rz = 2 * M_PI / 360 * rz;
+        double ringStep = 2 * M_PI / divisionr;
+        double tubeStep = 2 * M_PI / divisiont;
+        double ringA = 0;//ringAngle
+        double tubeA = 0;//TubeAngle
+        double tempx, tempy, tempz;
+        double tempx1, tempy1, tempz1;
+
+         /* remember which matrix mode OpenGL was in. */
+        int savemode;
+        glGetIntegerv(GL_MATRIX_MODE, &savemode);
+
+        /* switch to the model matrix and scale by x,y,z. */
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+        //glScaled(x, y, z);
+
+        glBegin(GL_QUAD_STRIP);
+        for (int i = 0; i < divisionr; i++) {
+            ringA += ringStep;
+            for (int j = 0; j <= divisiont; j++) {
+                tubeA += tubeStep;
+                double dy = cos(ringA) / (rl * sqrt(sin(ringA) * sin(ringA) / (rs * rs) + cos(ringA) * cos(ringA) / (rl * rl)));
+                double dz = sin(ringA) / (rs * sqrt(sin(ringA) * sin(ringA) / (rs * rs) + cos(ringA) * cos(ringA) / (rl * rl)));
+                glNormal3f(sin(tubeA)/ts, dy * cos(tubeA)/tl, dz * cos(tubeA)/tl);
+                tempx = sin(tubeA) * ts; tempy = cos(ringA) * (rl + tl * cos(tubeA)); tempz = sin(ringA) * (rs + tl * cos(tubeA));
+                tempx1 = tempx; tempy1 = tempy * cos(rx) - tempz * sin(rx); tempz1 = tempy * sin(rx) + tempz * cos(rx);//rotate X
+                tempy = tempy1; tempx = tempx1 * cos(ry) + tempz1 * sin(ry); tempz = -tempx1 * sin(ry) + tempz1 * cos(ry);//rotate Y
+                tempz1 = tempz; tempx1 = tempx * cos(rz) - tempy * sin(rz); tempy1 = tempx * sin(rz) + tempy * cos(rz);//rotate Z
+                glVertex3f(tempx1 + x, tempy1 + y, tempz1 + z);
+
+                dy = cos(ringA + ringStep) / (rl * sqrt(sin(ringA + ringStep) * sin(ringA + ringStep) / (rs * rs) + cos(ringA + ringStep) * cos(ringA + ringStep) / (rl * rl)));
+                dz = sin(ringA + ringStep) / (rs * sqrt(sin(ringA + ringStep) * sin(ringA + ringStep) / (rs * rs) + cos(ringA + ringStep) * cos(ringA + ringStep) / (rl * rl)));
+                glNormal3f(sin(tubeA)/ts, dy* cos(tubeA)/tl, dz * cos(tubeA)/tl);
+                tempx = sin(tubeA) * ts; tempy = cos(ringA + ringStep) * (rl + tl * cos(tubeA)); tempz = sin(ringA + ringStep) * (rs + tl * cos(tubeA));
+                tempx1 = tempx; tempy1 = tempy * cos(rx) - tempz * sin(rx); tempz1 = tempy * sin(rx) + tempz * cos(rx);//rotate X
+                tempy = tempy1; tempx = tempx1 * cos(ry) + tempz1 * sin(ry); tempz = -tempx1 * sin(ry) + tempz1 * cos(ry);//rotate Y
+                tempz1 = tempz; tempx1 = tempx * cos(rz) - tempy * sin(rz); tempy1 = tempx * sin(rz) + tempy * cos(rz);//rotate Z
+                glVertex3f(tempx1 + x, tempy1 + y, tempz1 + z);
+            }
+        }
+
+        glEnd();
+        glRotatef(30, 0, 1.0, 0);
+        glPopMatrix();
+        glMatrixMode(savemode);
+    }
+}
+
+void drawSlice(double x1, double y1, double z1,
+    double x2, double y2, double z2,
+    double x3, double y3, double z3,
+    double x4, double y4, double z4) {
+    drawTriangle(x1, y1, z1, x2, y2, z2, x3, y3, z3);
+    drawTriangle(x2, y2, z2, x3, y3, z3, x4, y4, z4);
+}
+
 void drawTriangle( double x1, double y1, double z1,
                    double x2, double y2, double z2,
                    double x3, double y3, double z3 )

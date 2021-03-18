@@ -16,6 +16,7 @@
 #include "modelerui.h"
 #include "LSystem.h"
 #include "IKSolver.h"
+#include "Torus.h"
 
 using namespace std;
 using namespace Assimp;
@@ -28,6 +29,7 @@ float cur_fov = 30.f;
 float cur_zfar = 100.f;
 LSystem l_system;
 IKSolver solver;
+Torus* torus; 
 
 // To make a SampleModel, we inherit off of ModelerView
 class SampleModel : public ModelerView 
@@ -460,6 +462,20 @@ void SampleModel::draw()
 		glPopMatrix();
 	}
 
+	if (VAL(POLYGON_TORUS)) {
+		torus = new Torus(VAL(TORUS_TUBE_LR), VAL(TORUS_TUBE_SR), VAL(TORUS_RING_LR), VAL(TORUS_RING_SR), VAL(TORUS_PX),
+			VAL(TORUS_PY), VAL(TORUS_PZ), VAL(TORUS_RX), VAL(TORUS_RY), VAL(TORUS_RZ), VAL(TORUS_FLOWER), VAL(TORUS_PETAL));
+		glPushMatrix();
+		torus->draw();
+		glPopMatrix();
+		delete torus;
+	}
+
+	if (VAL(PRIMITIVE_TORUS)) {
+		drawTorus(VAL(TORUS_RING_LR),VAL(TORUS_RING_SR), VAL(TORUS_TUBE_LR),VAL(TORUS_TUBE_SR), 
+			VAL(TORUS_PX), VAL(TORUS_PY), VAL(TORUS_PZ), VAL(TORUS_RX), VAL(TORUS_RY), VAL(TORUS_RZ));
+	}
+	
 	// drawSphere(0.1);
 	// drawCylinder(1, 0.1, 0.01);
 	
@@ -478,81 +494,89 @@ void SampleModel::draw()
 		helper.tex_loaded = true;
 	}
 	
-	// Setup environment and pose
-	setAmbientColor(0.75f, 0.75f, 0.75f);
-	setDiffuseColor(0.75f, 0.75f, 0.75f);
-	glScaled(0.5, 0.5, 0.5);
-	glRotated(-90, 1, 0, 0);
-	glRotated(180, 0, 0, 1);
-	glTranslated(0, 0, -5);
-
-	// Initialization
-	auto& mesh = helper.meshes[helper.active_index];
-	auto* scene = helper.scene;
-	global_inverse = scene->mRootNode->mTransformation.Inverse();
-
-	// Function pointer for mesh controls
-	auto applyMethod = applyMeshControls;
-
-	// Switch between different controls according to moods
-	switch (int(VAL(MOODS)))
-	{
-	case 1:
-		applyMethod = applyPeaceMood;
-		break;
-	case 2:
-		applyMethod = applyWatchMood;
-		break;
-	case 3:
-		applyMethod = applyPreJumpMood;
-		break;
-	case 4:
-		applyMethod = applyJumpMood;
-		break;
-	case 5:
-		applyMethod = applyJumpDoneMood;
-		break;
-	default: 
-		break;
-	}
-
-	// Apply controls to meshes
-	applyMethod();
-
-	// Animation
-	if (ModelerApplication::Instance()->m_animating && !solver.show_ik_result && int(VAL(MOODS)) == 0)
-		animate();
-
-	// Apply controls to bones and render them
-	glPushMatrix();
-	glRotated(-90, 1, 0, 0);
-	glRotated(-90, 0, 0, 1);
-	renderBones(mesh, scene->mRootNode);
-	glPopMatrix();
 	
-	// Avoid overlapping bones and meshes
-	glTranslated(0, 5, 0);
-	glRotated(180, 1, 0, 0);
+	if (!VAL(POLYGON_TORUS) && !VAL(PRIMITIVE_TORUS)) {
+		// Setup environment and pose
+		setAmbientColor(0.75f, 0.75f, 0.75f);
+		setDiffuseColor(0.75f, 0.75f, 0.75f);
+		glScaled(0.5, 0.5, 0.5);
+		glRotated(-90, 1, 0, 0);
+		glRotated(180, 0, 0, 1);
+		glTranslated(0, 0, -5);
 
-	// Apply the solution of IKSolver
-	if (solver.show_ik_result)
-		solver.applyRotation(mesh);
+		// Initialization
+		auto& mesh = helper.meshes[helper.active_index];
+		auto* scene = helper.scene;
+		global_inverse = scene->mRootNode->mTransformation.Inverse();
 
-	// Render the meshes
-	traverseBoneHierarchy(mesh, scene->mRootNode, Matrix4f());
-	processVertices(mesh);
-	renderMesh(mesh);
+		// Function pointer for mesh controls
+		auto applyMethod = applyMeshControls;
 
-	if (instance == 3)	// render wreath
-	{
-		for (int i = 1; i <= 3; ++i)
+		// Switch between different controls according to moods
+		switch (int(VAL(MOODS)))
 		{
-			helper.active_index = i;
-			applyMeshControls();
-			applyMethod();
-			traverseBoneHierarchy(helper.meshes[i], scene->mRootNode, Matrix4f());
-			processVertices(helper.meshes[i]);
-			renderMesh(helper.meshes[i]);
+		case 1:
+			applyMethod = applyPeaceMood;
+			break;
+		case 2:
+			applyMethod = applyWatchMood;
+			break;
+		case 3:
+			applyMethod = applyPreJumpMood;
+			break;
+		case 4:
+			applyMethod = applyJumpMood;
+			break;
+		case 5:
+			applyMethod = applyJumpDoneMood;
+			break;
+		default: 
+			break;
+		}
+
+		// Apply controls to meshes
+		applyMethod();
+
+		// Animation
+		if (ModelerApplication::Instance()->m_animating && !solver.show_ik_result && int(VAL(MOODS)) == 0)
+			animate();
+
+		// Apply the solution of IKSolver
+		if (solver.show_ik_result)
+			solver.applyRotation(mesh);
+
+		// Apply controls to bones and render them
+		glPushMatrix();
+		glRotated(-90, 1, 0, 0);
+		glRotated(-90, 0, 0, 1);
+		renderBones(mesh, scene->mRootNode);
+		glPopMatrix();
+
+
+		// Avoid overlapping bones and meshes
+		glTranslated(0, 5, 0);
+		glRotated(180, 1, 0, 0);
+
+		// Apply the solution of IKSolver
+		if (solver.show_ik_result)
+			solver.applyRotation(mesh);
+
+		// Render the meshes
+		traverseBoneHierarchy(mesh, scene->mRootNode, Matrix4f());
+		processVertices(mesh);
+		renderMesh(mesh);
+
+		if (instance == 3)	// render wreath
+		{
+			for (int i = 1; i <= 3; ++i)
+			{
+				helper.active_index = i;
+				applyMeshControls();
+				applyMethod();
+				traverseBoneHierarchy(helper.meshes[i], scene->mRootNode, Matrix4f());
+				processVertices(helper.meshes[i]);
+				renderMesh(helper.meshes[i]);
+			}
 		}
 	}
 }
@@ -644,6 +668,21 @@ int main()
 	controls[L_SYSTEM_ENABLE] = ModelerControl("L-system Enable", 0, 1, 1, 0);
 	controls[L_SYSTEM_ANGLE] = ModelerControl("L-system Angle", 0, 60, 1, 22.5);
 	controls[L_SYSTEM_BRANCH_LENGTH] = ModelerControl("L-system Branch Length", 0, 1, 0.001, 0.1);
+
+	controls[POLYGON_TORUS] = ModelerControl("Polygon Torus Enable", 0, 1, 1, 0);
+	controls[PRIMITIVE_TORUS] = ModelerControl("Primitive Torus Enable", 0, 1, 1, 0);
+	controls[TORUS_RING_LR] = ModelerControl("Longer Radius of Torus Ring", 2, 5, 0.1, 4);
+	controls[TORUS_RING_SR] = ModelerControl("Shorter Radius of Torus Ring", 0.5, 5, 0.1, 3);
+	controls[TORUS_TUBE_LR] = ModelerControl("Longer Radius of Torus Tube", 0.01, 1, 0.01, 0.5);
+	controls[TORUS_TUBE_SR] = ModelerControl("Shorter Radius of Torus Tube", 0.01, 1, 0.01, 0.3);
+	controls[TORUS_PX] = ModelerControl("x Position of Torus", -5, 5, 0.1, 0);
+	controls[TORUS_PY] = ModelerControl("y Position of Torus", -5, 5, 0.1, 0);
+	controls[TORUS_PZ] = ModelerControl("z Position of Torus", -5, 5, 0.1, 0);
+	controls[TORUS_RX] = ModelerControl("x Rotation of Torus", -90, 90, 1, 0);
+	controls[TORUS_RY] = ModelerControl("y Rotation of Torus", -90, 90, 1, 0);
+	controls[TORUS_RZ] = ModelerControl("z Rotation of Torus", -90, 90, 1, 0);
+	controls[TORUS_FLOWER] = ModelerControl("Use Flower Shape Torus?" ,0, 1, 1, 0);
+	controls[TORUS_PETAL] = ModelerControl("Number of Flower Petals" ,3, 8, 1, 3);
 
     ModelerApplication::Instance()->Init(&createSampleModel, controls, NUMCONTROLS);
     return ModelerApplication::Instance()->Run();
