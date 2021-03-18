@@ -664,3 +664,27 @@ void drawTriangle(Mesh& mesh, const aiFace& face)
         glEnd();
     }
 }
+
+void drawNurbs(float* control_points, int width, int height)
+{
+	GLUnurbs* nurbs_renderer = gluNewNurbsRenderer();
+
+    int k = 4;
+	float* s_knots = new float[width + k];
+	float* t_knots = new float[height + k];
+
+	for (int i = 0; i < width + k; ++i)
+        s_knots[i] = i + 1;
+	for (int i = 0; i < height + k; ++i)
+        t_knots[i] = i + 1;
+
+    gluNurbsProperty(nurbs_renderer, GLU_SAMPLING_TOLERANCE, 25);
+	
+    gluBeginSurface(nurbs_renderer);
+	gluNurbsSurface(nurbs_renderer, width + k, s_knots, height + k, t_knots, 
+        height * 3, 3, control_points, k, k, GL_MAP2_VERTEX_3);
+    gluEndSurface(nurbs_renderer);
+	
+	delete [] s_knots;
+	delete [] t_knots;
+}

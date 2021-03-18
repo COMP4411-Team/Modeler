@@ -374,12 +374,30 @@ void renderBones(Mesh& mesh, const aiNode* cur)
 // method of ModelerView to draw out SampleModel
 void SampleModel::draw()
 {
+	// Change LOD
+	int lod = VAL(LOD);
+	switch (lod)
+	{
+	case 0:
+		helper.active_index = 7;
+		break;
+	case 1:
+		helper.active_index = 6;
+		break;
+	case 2:
+		helper.active_index = 0;
+		break;
+	case 3:
+		helper.active_index = 5;
+		break;
+	}
+	
 	// Switch between instances
 	int instance = VAL(INSTANCES);
 	switch (instance)
 	{
 	case 1: case 3:
-		helper.active_index = 0;
+		// helper.active_index = 0;
 		break;
 	case 2:
 		helper.active_index = 4;
@@ -400,7 +418,8 @@ void SampleModel::draw()
     // matrix stuff.  Unless you want to fudge directly with the 
 	// projection matrix, don't bother with this ...
     ModelerView::draw();
-	
+
+	// Light settings
 	if (VAL(LIGHT0_ENABLE)) {
 		glEnable(GL_LIGHT0);
 		GLfloat changedLightPosition0[] = { VAL(LIGHTX_0), VAL(LIGHTY_0), VAL(LIGHTZ_0),0 };
@@ -428,6 +447,7 @@ void SampleModel::draw()
 	//printf("vendor %s\n", glVendor);
 	//printf("glu version %s\n", gluVersion);
 
+	// Render L-system
 	if (VAL(L_SYSTEM_ENABLE))
 	{
 		glPushMatrix();
@@ -450,22 +470,15 @@ void SampleModel::draw()
 		glPopMatrix();
 		delete torus;
 	}
+
 	if (VAL(PRIMITIVE_TORUS)) {
-		glPushMatrix();
-		drawTorus(VAL(TORUS_RING_LR),VAL(TORUS_RING_SR), VAL(TORUS_TUBE_LR),VAL(TORUS_TUBE_SR), VAL(TORUS_PX), VAL(TORUS_PY), VAL(TORUS_PZ), VAL(TORUS_RX), VAL(TORUS_RY), VAL(TORUS_RZ));
-		glPopMatrix();
-	}
-	if (VAL(CURVE_ENABLE)) {
-		glPushMatrix();
-		drawCurve(VAL(POINT_X1), VAL(POINT_Y1), VAL(POINT_Z1), VAL(POINT_X2), VAL(POINT_Y2), VAL(POINT_Z2), VAL(POINT_X3), VAL(POINT_Y3), VAL(POINT_Z3), VAL(POINT_X4), VAL(POINT_Y4), VAL(POINT_Z4));
-		glPopMatrix();
+		drawTorus(VAL(TORUS_RING_LR),VAL(TORUS_RING_SR), VAL(TORUS_TUBE_LR),VAL(TORUS_TUBE_SR), 
+			VAL(TORUS_PX), VAL(TORUS_PY), VAL(TORUS_PZ), VAL(TORUS_RX), VAL(TORUS_RY), VAL(TORUS_RZ));
 	}
 
-	if (VAL(CURVE_ROTATION)) {
-		glPushMatrix();
-		drawRotation(VAL(POINT_X1), VAL(POINT_Y1), VAL(POINT_Z1), VAL(POINT_X2), VAL(POINT_Y2), VAL(POINT_Z2), VAL(POINT_X3), VAL(POINT_Y3), VAL(POINT_Z3), VAL(POINT_X4), VAL(POINT_Y4), VAL(POINT_Z4));
-		glPopMatrix();
-	}
+	if (VAL(DRAW_NURBS))
+		nurbsDemo();
+	
 	// drawSphere(0.1);
 	// drawCylinder(1, 0.1, 0.01);
 	
@@ -484,8 +497,9 @@ void SampleModel::draw()
 		helper.tex_loaded = true;
 	}
 	
-	// Setup env and pose
-	if (!VAL(POLYGON_TORUS)&&!VAL(PRIMITIVE_TORUS)&&!VAL(CURVE_ENABLE)&&!VAL(CURVE_ROTATION)) {
+	
+	if (!VAL(POLYGON_TORUS) && !VAL(PRIMITIVE_TORUS) && !VAL(DRAW_NURBS)) {
+		// Setup environment and pose
 		setAmbientColor(0.75f, 0.75f, 0.75f);
 		setDiffuseColor(0.75f, 0.75f, 0.75f);
 		glScaled(0.5, 0.5, 0.5);
@@ -498,11 +512,10 @@ void SampleModel::draw()
 		auto* scene = helper.scene;
 		global_inverse = scene->mRootNode->mTransformation.Inverse();
 
-		// Apply user controls to meshes here
-
+		// Function pointer for mesh controls
 		auto applyMethod = applyMeshControls;
 
-
+		// Switch between different controls according to moods
 		switch (int(VAL(MOODS)))
 		{
 		case 1:
@@ -520,18 +533,20 @@ void SampleModel::draw()
 		case 5:
 			applyMethod = applyJumpDoneMood;
 			break;
-		default:
+		default: 
 			break;
 		}
 
+		// Apply controls to meshes
 		applyMethod();
+
+		// Animation
 		if (ModelerApplication::Instance()->m_animating && !solver.show_ik_result && int(VAL(MOODS)) == 0)
 			animate();
 
-
-	// Apply the solution of IKSolver
-	if (solver.show_ik_result)
-		solver.applyRotation(mesh);
+		// Apply the solution of IKSolver
+		if (solver.show_ik_result)
+			solver.applyRotation(mesh);
 
 		// Apply controls to bones and render them
 		glPushMatrix();
@@ -572,7 +587,7 @@ void SampleModel::draw()
 int main()
 {
 	// Load the model and init IK solver
-	helper.loadModel("./models/lowpolydeer_1.1.dae", "./models/lowpolydeer_bone_1.1.txt");
+	helper.loadModel("./models/lowpolydeer_1.2.dae", "./models/lowpolydeer_bone_1.1.txt");
 
 	helper.loadTexture("./models/wood_texture.bmp");
 	
@@ -603,8 +618,9 @@ int main()
 	controls[LIGHTX_1] = ModelerControl("Light1 X Position", -6, 2, 0.1f, -2);
 	controls[LIGHTY_1] = ModelerControl("Light1 Y Position", -3, 5, 0.1f, 1);
 	controls[LIGHTZ_1] = ModelerControl("Light1 Z Position", 0, 10, 0.1f, 5);
-
-	controls[INSTANCES] = ModelerControl("Different Instances", 1, 4, 1, 1);
+	
+	controls[LOD] = ModelerControl("Level Of Details", 0, 3, 1, 2);
+	controls[INSTANCES] = ModelerControl("Different Instances", 1, 3, 1, 1);
 	controls[MOODS] = ModelerControl("Different Moods", 0, 5, 1, 0);
 
 	controls[ROTATE_ALL] = ModelerControl("Rotate All", -180, 180, 1, 0);
@@ -656,21 +672,6 @@ int main()
 	controls[L_SYSTEM_ANGLE] = ModelerControl("L-system Angle", 0, 60, 1, 22.5);
 	controls[L_SYSTEM_BRANCH_LENGTH] = ModelerControl("L-system Branch Length", 0, 1, 0.001, 0.1);
 
-	controls[CURVE_ENABLE]= ModelerControl("Draw curve", 0, 1, 1, 0);
-	controls[CURVE_ROTATION] = ModelerControl("Rotate the curve", 0, 1, 1, 0);
-	controls[POINT_X1]= ModelerControl("x of 1st point on the curve", -5, 5, 0.1, -3);
-	controls[POINT_Y1] = ModelerControl("y of 1st point on the curve", -5, 5, 0.1, -3);
-	controls[POINT_Z1] = ModelerControl("z of 1st point on the curve", -5, 5, 0.1, -3);
-	controls[POINT_X2] = ModelerControl("x of 2nd point on the curve", -5, 5, 0.1, -1);
-	controls[POINT_Y2] = ModelerControl("y of 2nd point on the curve", -5, 5, 0.1, -2);
-	controls[POINT_Z2] = ModelerControl("z of 2nd point on the curve", -5, 5, 0.1, -1.5);
-	controls[POINT_X3] = ModelerControl("x of 3rd point on the curve", -5, 5, 0.1, 1.5);
-	controls[POINT_Y3] = ModelerControl("y of 3rd point on the curve", -5, 5, 0.1, 3);
-	controls[POINT_Z3] = ModelerControl("z of 3rd point on the curve", -5, 5, 0.1, 0.5);
-	controls[POINT_X4] = ModelerControl("x of 4th point on the curve", -5, 5, 0.1, 2);
-	controls[POINT_Y4] = ModelerControl("y of 4th point on the curve", -5, 5, 0.1, 1.5);
-	controls[POINT_Z4] = ModelerControl("z of 4th point on the curve", -5, 5, 0.1, 3);
-
 	controls[POLYGON_TORUS] = ModelerControl("Polygon Torus Enable", 0, 1, 1, 0);
 	controls[PRIMITIVE_TORUS] = ModelerControl("Primitive Torus Enable", 0, 1, 1, 0);
 	controls[TORUS_RING_LR] = ModelerControl("Longer Radius of Torus Ring", 2, 5, 0.1, 4);
@@ -685,6 +686,8 @@ int main()
 	controls[TORUS_RZ] = ModelerControl("z Rotation of Torus", -90, 90, 1, 0);
 	controls[TORUS_FLOWER] = ModelerControl("Use Flower Shape Torus?" ,0, 1, 1, 0);
 	controls[TORUS_PETAL] = ModelerControl("Number of Flower Petals" ,3, 8, 1, 3);
+
+	controls[DRAW_NURBS] = ModelerControl("Extruded Surface", 0, 1, 1, 0);
 
     ModelerApplication::Instance()->Init(&createSampleModel, controls, NUMCONTROLS);
     return ModelerApplication::Instance()->Run();

@@ -100,3 +100,5 @@ void applyPreJumpMood();
 void applyJumpMood();
 
 void applyJumpDoneMood();
+
+void nurbsDemo();
