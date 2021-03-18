@@ -106,4 +106,6 @@ void drawSlice( double x1, double y1, double z1,
 
 void drawTriangle( Mesh& mesh, const aiFace& face );
 
+void drawNurbs(float* control_points, int width, int height);
+
 #endif

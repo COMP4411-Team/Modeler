@@ -15,7 +15,6 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include "ModelHelper.h"
 #include "bitmap.h"
 #include "camera.h"
 #include "modelerui.h"
@@ -872,4 +871,43 @@ void applyJumpDoneMood() {
 	mesh.restoreIdentity("tail");
 	mesh.applyRotationZ("tail", 23);
 	mesh.applyRotationX("tail", 0);
+}
+
+
+void nurbsDemo()
+{
+	glDisable(GL_TEXTURE_2D);
+
+	GLfloat ambient[] = { 0.4, 0.6, 0.2, 1.0 };
+    GLfloat position[] = { 1.0, 1.0, 3.0, 1.0 };
+
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
+    glLightfv(GL_LIGHT0, GL_POSITION, position);
+	
+	GLfloat mat_ambient[] = {0.247250, 0.199500, 0.074500, 1.000000};
+	GLfloat mat_diffuse[] = {0.751640, 0.606480, 0.226480, 1.000000};
+	GLfloat mat_specular[] = {0.628281, 0.555802, 0.366065, 1.000000};
+	GLfloat mat_shininess[] = {51.200001};
+
+	glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+	
+	constexpr int n = 20;
+	float control_points[n * n * 3];
+	float t = 0;
+
+	for (int i = 0; i < n; ++i)
+		for (int j = 0; j < n; ++j)
+		{
+			int index = (i + j * n) * 3;
+			control_points[index] = i;
+			control_points[index + 1] = j;
+			control_points[index + 2] = cos(i) * 2 + sin(j) * 2;
+		}
+
+	drawNurbs(control_points, n, n);
 }

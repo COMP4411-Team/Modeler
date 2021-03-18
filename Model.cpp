@@ -475,6 +475,9 @@ void SampleModel::draw()
 		drawTorus(VAL(TORUS_RING_LR),VAL(TORUS_RING_SR), VAL(TORUS_TUBE_LR),VAL(TORUS_TUBE_SR), 
 			VAL(TORUS_PX), VAL(TORUS_PY), VAL(TORUS_PZ), VAL(TORUS_RX), VAL(TORUS_RY), VAL(TORUS_RZ));
 	}
+
+	if (VAL(DRAW_NURBS))
+		nurbsDemo();
 	
 	// drawSphere(0.1);
 	// drawCylinder(1, 0.1, 0.01);
@@ -495,7 +498,7 @@ void SampleModel::draw()
 	}
 	
 	
-	if (!VAL(POLYGON_TORUS) && !VAL(PRIMITIVE_TORUS)) {
+	if (!VAL(POLYGON_TORUS) && !VAL(PRIMITIVE_TORUS) && !VAL(DRAW_NURBS)) {
 		// Setup environment and pose
 		setAmbientColor(0.75f, 0.75f, 0.75f);
 		setDiffuseColor(0.75f, 0.75f, 0.75f);
@@ -683,6 +686,8 @@ int main()
 	controls[TORUS_RZ] = ModelerControl("z Rotation of Torus", -90, 90, 1, 0);
 	controls[TORUS_FLOWER] = ModelerControl("Use Flower Shape Torus?" ,0, 1, 1, 0);
 	controls[TORUS_PETAL] = ModelerControl("Number of Flower Petals" ,3, 8, 1, 3);
+
+	controls[DRAW_NURBS] = ModelerControl("Extruded Surface", 0, 1, 1, 0);
 
     ModelerApplication::Instance()->Init(&createSampleModel, controls, NUMCONTROLS);
     return ModelerApplication::Instance()->Run();
