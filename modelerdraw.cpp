@@ -458,6 +458,108 @@ void drawTorus(double rl,double rs, double tl, double ts, double x, double y, do
     }
 }
 
+void drawRotation(double x1, double y1, double z1,
+    double x2, double y2, double z2,
+    double x3, double y3, double z3,
+    double x4, double y4, double z4) {
+    ModelerDrawState* mds = ModelerDrawState::Instance();
+
+    _setupOpenGl();
+
+    if (mds->m_rayFile)
+    {
+        _dump_current_modelview();
+        fprintf(mds->m_rayFile,
+            "BezierCurve { points=((%f,%f,%f),(%f,%f,%f),(%f,%f,%f),(%f,%f,%f); faces=((0,1,2));\n", x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4);
+        _dump_current_material();
+        fprintf(mds->m_rayFile, "})\n");
+    }
+    else {
+        double t, dr;
+        switch (mds->m_quality)
+        {
+        case HIGH:
+            t = 80.0; dr = 50; break;
+        case MEDIUM:
+            t = 60.0; dr = 40; break;
+        case LOW:
+            t = 40.0; dr = 30; break;
+        case POOR:
+            t = 20.0; dr = 20; break;
+        }
+
+        double rstep = 2 * M_PI / dr;
+        double r, tempr;
+        double x, y, z;
+        double tempx, tempy, tempz;
+        glBegin(GL_QUAD_STRIP);
+
+        for (int i = 0; i < t; i++) {
+            x = pow(1 - i / t, 3) * x1 + 3 * i / t * pow(1 - i / t, 2) * x2 + 3 * i * i / t / t * (1 - i / t) * x3 + pow(i / t, 3) * x4;
+            y = pow(1 - i / t, 3) * y1 + 3 * i / t * pow(1 - i / t, 2) * y2 + 3 * i * i / t / t * (1 - i / t) * y3 + pow(i / t, 3) * y4;
+            z = pow(1 - i / t, 3) * z1 + 3 * i / t * pow(1 - i / t, 2) * z2 + 3 * i * i / t / t * (1 - i / t) * z3 + pow(i / t, 3) * z4;
+            tempx = pow(1 - (i + 1) / t, 3) * x1 + 3 * (i + 1) / t * pow(1 - (i + 1) / t, 2) * x2 + 3 * (i + 1) * (i + 1) / t / t * (1 - (i + 1) / t) * x3 + pow((i + 1) / t, 3) * x4;
+            tempy = pow(1 - (i + 1) / t, 3) * y1 + 3 * (i + 1) / t * pow(1 - (i + 1) / t, 2) * y2 + 3 * (i + 1) * (i + 1) / t / t * (1 - (i + 1) / t) * y3 + pow((i + 1) / t, 3) * y4;
+            tempz = pow(1 - (i + 1) / t, 3) * z1 + 3 * (i + 1) / t * pow(1 - (i + 1) / t, 2) * z2 + 3 * (i + 1) * (i + 1) / t / t * (1 - (i + 1) / t) * z3 + pow((i + 1) / t, 3) * z4;
+            r = sqrt(y * y + z * z); tempr = sqrt(tempy * tempy + tempz * tempz);
+            for (int j = 0; j <= dr; j++) {
+                double angle = j * rstep;
+                double dx = tempx - x; double dy = tempr * cos(angle) - r * cos(angle); double dz = tempr * sin(angle) - r * sin(angle);
+                glNormal3d(dz * sin(angle) + dy * cos(angle), -dx * cos(angle), -sin(angle) * dx);
+                glVertex3d(x, r * cos(angle), r * sin(angle));
+                glVertex3d(tempx, tempr * cos(angle), tempr * sin(angle));
+                //double dx = tempx - x; double dy = tempr * cos(angle) - r * cos(angle); double dz = tempr * sin(angle) - r * sin(angle);
+            }
+        }
+        glEnd();
+
+    }
+}
+
+void drawCurve(double x1, double y1, double z1,
+    double x2, double y2, double z2,
+    double x3, double y3, double z3,
+    double x4, double y4, double z4) {
+    ModelerDrawState* mds = ModelerDrawState::Instance();
+
+    _setupOpenGl();
+
+    if (mds->m_rayFile)
+    {
+        _dump_current_modelview();
+        fprintf(mds->m_rayFile,
+            "BezierCurve { points=((%f,%f,%f),(%f,%f,%f),(%f,%f,%f),(%f,%f,%f); faces=((0,1,2));\n", x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4);
+        _dump_current_material();
+        fprintf(mds->m_rayFile, "})\n");
+    }
+    else {
+        double t;
+        switch (mds->m_quality)
+        {
+        case HIGH:
+            t = 80.0; break;
+        case MEDIUM:
+            t = 60.0; break;
+        case LOW:
+            t = 40.0; break;
+        case POOR:
+            t = 20.0; break;
+        }
+        double x, y, z;
+        glBegin(GL_LINE_STRIP);
+
+        for (int i = 0; i <= t; i++) {
+            x = pow(1 - i / t, 3) * x1 + 3 * i / t * pow(1 - i / t, 2) * x2 + 3 * i * i / t / t * (1 - i / t) * x3 + pow(i / t, 3) * x4;
+            y = pow(1 - i / t, 3) * y1 + 3 * i / t * pow(1 - i / t, 2) * y2 + 3 * i * i / t / t * (1 - i / t) * y3 + pow(i / t, 3) * y4;
+            z = pow(1 - i / t, 3) * z1 + 3 * i / t * pow(1 - i / t, 2) * z2 + 3 * i * i / t / t * (1 - i / t) * z3 + pow(i / t, 3) * z4;
+            glVertex3d(x, y, z);
+        }
+
+        glEnd();
+    }
+
+}
+
 void drawSlice(double x1, double y1, double z1,
     double x2, double y2, double z2,
     double x3, double y3, double z3,

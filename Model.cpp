@@ -451,7 +451,20 @@ void SampleModel::draw()
 		delete torus;
 	}
 	if (VAL(PRIMITIVE_TORUS)) {
+		glPushMatrix();
 		drawTorus(VAL(TORUS_RING_LR),VAL(TORUS_RING_SR), VAL(TORUS_TUBE_LR),VAL(TORUS_TUBE_SR), VAL(TORUS_PX), VAL(TORUS_PY), VAL(TORUS_PZ), VAL(TORUS_RX), VAL(TORUS_RY), VAL(TORUS_RZ));
+		glPopMatrix();
+	}
+	if (VAL(CURVE_ENABLE)) {
+		glPushMatrix();
+		drawCurve(VAL(POINT_X1), VAL(POINT_Y1), VAL(POINT_Z1), VAL(POINT_X2), VAL(POINT_Y2), VAL(POINT_Z2), VAL(POINT_X3), VAL(POINT_Y3), VAL(POINT_Z3), VAL(POINT_X4), VAL(POINT_Y4), VAL(POINT_Z4));
+		glPopMatrix();
+	}
+
+	if (VAL(CURVE_ROTATION)) {
+		glPushMatrix();
+		drawRotation(VAL(POINT_X1), VAL(POINT_Y1), VAL(POINT_Z1), VAL(POINT_X2), VAL(POINT_Y2), VAL(POINT_Z2), VAL(POINT_X3), VAL(POINT_Y3), VAL(POINT_Z3), VAL(POINT_X4), VAL(POINT_Y4), VAL(POINT_Z4));
+		glPopMatrix();
 	}
 	// drawSphere(0.1);
 	// drawCylinder(1, 0.1, 0.01);
@@ -472,7 +485,7 @@ void SampleModel::draw()
 	}
 	
 	// Setup env and pose
-	if (!VAL(POLYGON_TORUS)&&!VAL(PRIMITIVE_TORUS)) {
+	if (!VAL(POLYGON_TORUS)&&!VAL(PRIMITIVE_TORUS)&&!VAL(CURVE_ENABLE)&&!VAL(CURVE_ROTATION)) {
 		setAmbientColor(0.75f, 0.75f, 0.75f);
 		setDiffuseColor(0.75f, 0.75f, 0.75f);
 		glScaled(0.5, 0.5, 0.5);
@@ -642,6 +655,21 @@ int main()
 	controls[L_SYSTEM_ENABLE] = ModelerControl("L-system Enable", 0, 1, 1, 0);
 	controls[L_SYSTEM_ANGLE] = ModelerControl("L-system Angle", 0, 60, 1, 22.5);
 	controls[L_SYSTEM_BRANCH_LENGTH] = ModelerControl("L-system Branch Length", 0, 1, 0.001, 0.1);
+
+	controls[CURVE_ENABLE]= ModelerControl("Draw curve", 0, 1, 1, 0);
+	controls[CURVE_ROTATION] = ModelerControl("Rotate the curve", 0, 1, 1, 0);
+	controls[POINT_X1]= ModelerControl("x of 1st point on the curve", -5, 5, 0.1, -3);
+	controls[POINT_Y1] = ModelerControl("y of 1st point on the curve", -5, 5, 0.1, -3);
+	controls[POINT_Z1] = ModelerControl("z of 1st point on the curve", -5, 5, 0.1, -3);
+	controls[POINT_X2] = ModelerControl("x of 2nd point on the curve", -5, 5, 0.1, -1);
+	controls[POINT_Y2] = ModelerControl("y of 2nd point on the curve", -5, 5, 0.1, -2);
+	controls[POINT_Z2] = ModelerControl("z of 2nd point on the curve", -5, 5, 0.1, -1.5);
+	controls[POINT_X3] = ModelerControl("x of 3rd point on the curve", -5, 5, 0.1, 1.5);
+	controls[POINT_Y3] = ModelerControl("y of 3rd point on the curve", -5, 5, 0.1, 3);
+	controls[POINT_Z3] = ModelerControl("z of 3rd point on the curve", -5, 5, 0.1, 0.5);
+	controls[POINT_X4] = ModelerControl("x of 4th point on the curve", -5, 5, 0.1, 2);
+	controls[POINT_Y4] = ModelerControl("y of 4th point on the curve", -5, 5, 0.1, 1.5);
+	controls[POINT_Z4] = ModelerControl("z of 4th point on the curve", -5, 5, 0.1, 3);
 
 	controls[POLYGON_TORUS] = ModelerControl("Polygon Torus Enable", 0, 1, 1, 0);
 	controls[PRIMITIVE_TORUS] = ModelerControl("Primitive Torus Enable", 0, 1, 1, 0);
