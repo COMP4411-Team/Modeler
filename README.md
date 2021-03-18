@@ -2,7 +2,7 @@
 
 - [x] 1W Change the default light source.
 
-- [ ] 1W Adjustable levels of detail.
+- [x] 1W Adjustable levels of detail.
 
 - [x] 1W Come up with another whistle and implement it.
 
