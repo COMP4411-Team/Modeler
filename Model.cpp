@@ -372,12 +372,30 @@ void renderBones(Mesh& mesh, const aiNode* cur)
 // method of ModelerView to draw out SampleModel
 void SampleModel::draw()
 {
+	// Change LOD
+	int lod = VAL(LOD);
+	switch (lod)
+	{
+	case 0:
+		helper.active_index = 7;
+		break;
+	case 1:
+		helper.active_index = 6;
+		break;
+	case 2:
+		helper.active_index = 0;
+		break;
+	case 3:
+		helper.active_index = 5;
+		break;
+	}
+	
 	// Switch between instances
 	int instance = VAL(INSTANCES);
 	switch (instance)
 	{
 	case 1: case 3:
-		helper.active_index = 0;
+		// helper.active_index = 0;
 		break;
 	case 2:
 		helper.active_index = 4;
@@ -398,7 +416,8 @@ void SampleModel::draw()
     // matrix stuff.  Unless you want to fudge directly with the 
 	// projection matrix, don't bother with this ...
     ModelerView::draw();
-	
+
+	// Light settings
 	if (VAL(LIGHT0_ENABLE)) {
 		glEnable(GL_LIGHT0);
 		GLfloat changedLightPosition0[] = { VAL(LIGHTX_0), VAL(LIGHTY_0), VAL(LIGHTZ_0),0 };
@@ -426,6 +445,7 @@ void SampleModel::draw()
 	//printf("vendor %s\n", glVendor);
 	//printf("glu version %s\n", gluVersion);
 
+	// Render L-system
 	if (VAL(L_SYSTEM_ENABLE))
 	{
 		glPushMatrix();
@@ -458,7 +478,7 @@ void SampleModel::draw()
 		helper.tex_loaded = true;
 	}
 	
-	// Setup env and pose
+	// Setup environment and pose
 	setAmbientColor(0.75f, 0.75f, 0.75f);
 	setDiffuseColor(0.75f, 0.75f, 0.75f);
 	glScaled(0.5, 0.5, 0.5);
@@ -471,10 +491,10 @@ void SampleModel::draw()
 	auto* scene = helper.scene;
 	global_inverse = scene->mRootNode->mTransformation.Inverse();
 
-	// Apply user controls to meshes here
-
+	// Function pointer for mesh controls
 	auto applyMethod = applyMeshControls;
-	
+
+	// Switch between different controls according to moods
 	switch (int(VAL(MOODS)))
 	{
 	case 1:
@@ -496,7 +516,10 @@ void SampleModel::draw()
 		break;
 	}
 
+	// Apply controls to meshes
 	applyMethod();
+
+	// Animation
 	if (ModelerApplication::Instance()->m_animating && !solver.show_ik_result && int(VAL(MOODS)) == 0)
 		animate();
 
@@ -537,7 +560,7 @@ void SampleModel::draw()
 int main()
 {
 	// Load the model and init IK solver
-	helper.loadModel("./models/lowpolydeer_1.1.dae", "./models/lowpolydeer_bone_1.1.txt");
+	helper.loadModel("./models/lowpolydeer_1.2.dae", "./models/lowpolydeer_bone_1.1.txt");
 
 	helper.loadTexture("./models/wood_texture.bmp");
 	
@@ -568,8 +591,9 @@ int main()
 	controls[LIGHTX_1] = ModelerControl("Light1 X Position", -6, 2, 0.1f, -2);
 	controls[LIGHTY_1] = ModelerControl("Light1 Y Position", -3, 5, 0.1f, 1);
 	controls[LIGHTZ_1] = ModelerControl("Light1 Z Position", 0, 10, 0.1f, 5);
-
-	controls[INSTANCES] = ModelerControl("Different Instances", 1, 4, 1, 1);
+	
+	controls[LOD] = ModelerControl("Level Of Details", 0, 3, 1, 2);
+	controls[INSTANCES] = ModelerControl("Different Instances", 1, 3, 1, 1);
 	controls[MOODS] = ModelerControl("Different Moods", 0, 5, 1, 0);
 
 	controls[ROTATE_ALL] = ModelerControl("Rotate All", -180, 180, 1, 0);
