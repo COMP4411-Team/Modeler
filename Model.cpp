@@ -420,7 +420,6 @@ void SampleModel::draw()
     ModelerView::draw();
 
 	// Light settings
-	/*
 	GLfloat LightDiffuse[] = { VAL(LIGHT_INTENSITY), VAL(LIGHT_INTENSITY), VAL(LIGHT_INTENSITY) };
 	if (VAL(LIGHT0_ENABLE)) {
 		glEnable(GL_LIGHT0);
@@ -445,7 +444,8 @@ void SampleModel::draw()
 	else {
 		glDisable(GL_LIGHT1);
 	}
-	*/
+
+
 	//const auto* glVersion = glGetString(GL_VERSION);
 	//const auto* glRenderer = glGetString(GL_RENDERER);
 	//const auto* glVendor = glGetString(GL_VENDOR);
