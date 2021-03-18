@@ -876,16 +876,17 @@ void applyJumpDoneMood() {
 
 void nurbsDemo()
 {
+	glPushMatrix();
 	glDisable(GL_TEXTURE_2D);
 
-	GLfloat ambient[] = { 0.4, 0.6, 0.2, 1.0 };
-    GLfloat position[] = { 1.0, 1.0, 3.0, 1.0 };
+	GLfloat ambient[] = {0.4, 0.6, 0.2, 1.0};
+	GLfloat position[] = {5.0, 5.0, 5.0, 1.0};
 
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-    glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
-    glLightfv(GL_LIGHT0, GL_POSITION, position);
-	
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
+	glLightfv(GL_LIGHT0, GL_POSITION, position);
+
 	GLfloat mat_ambient[] = {0.247250, 0.199500, 0.074500, 1.000000};
 	GLfloat mat_diffuse[] = {0.751640, 0.606480, 0.226480, 1.000000};
 	GLfloat mat_specular[] = {0.628281, 0.555802, 0.366065, 1.000000};
@@ -895,6 +896,13 @@ void nurbsDemo()
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+
+	glEnable(GL_AUTO_NORMAL);
+    glEnable(GL_NORMALIZE);
+	
+	glScaled(0.5, 0.5, 0.5);
+	glRotated(135, 1, 0, 0);
+	glTranslated(-10, -10, 5);
 	
 	constexpr int n = 20;
 	float control_points[n * n * 3];
@@ -910,4 +918,8 @@ void nurbsDemo()
 		}
 
 	drawNurbs(control_points, n, n);
+
+	glDisable(GL_AUTO_NORMAL);
+    glDisable(GL_NORMALIZE);
+	glPopMatrix();
 }

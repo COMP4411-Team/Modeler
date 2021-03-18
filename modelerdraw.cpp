@@ -576,7 +576,7 @@ void drawNurbs(float* control_points, int width, int height)
 	for (int i = 0; i < height + k; ++i)
         t_knots[i] = i + 1;
 
-    gluNurbsProperty(nurbs_renderer, GLU_SAMPLING_TOLERANCE, 5);
+    gluNurbsProperty(nurbs_renderer, GLU_SAMPLING_TOLERANCE, 25);
 	
     gluBeginSurface(nurbs_renderer);
 	gluNurbsSurface(nurbs_renderer, width + k, s_knots, height + k, t_knots, 
