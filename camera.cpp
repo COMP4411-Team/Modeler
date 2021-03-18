@@ -223,4 +223,17 @@ void Camera::lookAt(Vec3f eye, Vec3f at, Vec3f up)
 	glMultMatrixf(mat);
 }
 
+void Camera::reset()
+{
+	mElevation = mAzimuth = mTwist = 0.0f;
+	mDolly = minDolly = -25.0f;
+	mElevation = 0.2f;
+	mAzimuth = (float)M_PI;
+	mTwist = 0.0f;
+
+	mCurrentMouseAction = kActionNone;
+
+	calculateViewingTransformParameters();
+}
+
 #pragma warning(pop)

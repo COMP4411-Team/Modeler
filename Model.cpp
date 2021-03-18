@@ -159,8 +159,10 @@ void frameAll()
 
 	auto mid = (helper.meshes[0].aabb_max + helper.meshes[0].aabb_min) / 2.f;
 
-	camera->setLookAt({mid.x, mid.y, mid.z});
-	camera->applyViewingTransform();
+	Vec3f center(-VAL(YPOS) * 0.5, VAL(XPOS) * 0.5, VAL(ZPOS) * 0.5);
+	camera->setLookAt(center);
+	camera->reset();
+
 	// adjustCameraPos((aabb_min + aabb_max) / 2.f, camera, (aabb_min - aabb_max).Length() / 2);
 	
 	auto point = aabb_max;
@@ -186,9 +188,6 @@ void frameAll()
 
 	point = aiVector3D{aabb_max.x, aabb_min.y, aabb_min.z};
 	adjustCamera(point, aspect);
-
-	camera->applyViewingTransform();
-	
 }
 
 // Animation
@@ -403,17 +402,17 @@ void SampleModel::draw()
 		helper.active_index = 4;
 		break;
 	}
-	
-	if (enableFrame) {
-		frameAll();
-		enableFrame = FALSE;
-	}
     
 	//ModelerView::openLight0(VAL(LIGHT0_ENABLE));
 	//ModelerView::openLight1(VAL(LIGHT1_ENABLE));
 	//ModelerView::moveLight0(VAL(LIGHTX_0), VAL(LIGHTY_0), VAL(LIGHTZ_0));
 	//ModelerView::moveLight1(VAL(LIGHTX_1), VAL(LIGHTY_1), VAL(LIGHTZ_1));
 
+	if (enableFrame) {
+		frameAll();
+		enableFrame = FALSE;
+	}
+	
 	// This call takes care of a lot of the nasty projection 
     // matrix stuff.  Unless you want to fudge directly with the 
 	// projection matrix, don't bother with this ...
@@ -452,6 +451,7 @@ void SampleModel::draw()
 	{
 		glPushMatrix();
 		glRotated(-90, 1, 0, 0);
+		glTranslated(0, -5, 0);
 		if (l_system.pitch_angle != VAL(L_SYSTEM_ANGLE) || l_system.forward_dist != VAL(L_SYSTEM_BRANCH_LENGTH))
 		{
 			l_system.pitch_angle = l_system.yaw_angle = l_system.roll_angle = VAL(L_SYSTEM_ANGLE);
