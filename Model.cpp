@@ -420,13 +420,21 @@ void SampleModel::draw()
 
 	// Light settings
 	GLfloat LightDiffuse[] = { VAL(LIGHT_INTENSITY), VAL(LIGHT_INTENSITY), VAL(LIGHT_INTENSITY) };
-	//GLfloat LightAmbatient[] = { VAL(LIGHT_INTENSITY), VAL(LIGHT_INTENSITY), VAL(LIGHT_INTENSITY) };
+	GLfloat LightAmbient[] = { 0.0, 0.0, 0.0 };
+	switch (int(VAL(LIGHT_RGB))) {
+	case 1:
+		LightAmbient[0] = 0.5; break;
+	case 2:
+		LightAmbient[1] = 0.5; break;
+	case 3:
+		LightAmbient[2] = 0.5; break;
+	}
 	if (VAL(LIGHT0_ENABLE)) {
 		glEnable(GL_LIGHT0);
 		GLfloat changedLightPosition0[] = { VAL(LIGHTX_0), VAL(LIGHTY_0), VAL(LIGHTZ_0),0 };
 		glLightfv(GL_LIGHT0, GL_POSITION, changedLightPosition0);
 		glLightfv(GL_LIGHT0, GL_DIFFUSE, LightDiffuse);
-		//glLightfv(GL_LIGHT0, GL_AMBIENT, LightAmbatient);
+		glLightfv(GL_LIGHT0, GL_AMBIENT, LightAmbient);
 	}
 	else {
 		glDisable(GL_LIGHT0);
@@ -438,7 +446,7 @@ void SampleModel::draw()
 		//GLfloat LightAmbatient[] = { 0.5, 0, 0 };
 		glLightfv(GL_LIGHT1, GL_POSITION, changedLightPosition1);
 		glLightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse);
-		//glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmbatient);
+		glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient);
 	}
 	else {
 		glDisable(GL_LIGHT1);
@@ -639,6 +647,7 @@ int main()
 	controls[LIGHTZ_1] = ModelerControl("Light1 Z Position", -10, 10, 0.1f, 5);
 
 	controls[LIGHT_INTENSITY] = ModelerControl("Lights'Intensity", 0, 2, 0.1, 1);
+	controls[LIGHT_RGB] = ModelerControl("Lights'color", 0, 3, 1, 0);
 	
 	controls[LOD] = ModelerControl("Level Of Details", 0, 3, 1, 2);
 	controls[INSTANCES] = ModelerControl("Different Instances", 1, 3, 1, 1);
