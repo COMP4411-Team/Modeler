@@ -367,6 +367,17 @@ void renderBones(Mesh& mesh, const aiNode* cur)
 	glPopMatrix();
 }
 
+void render(int mesh_id, void(* applyMethod)())
+{
+	helper.active_index = mesh_id;
+	helper.meshes[mesh_id].bindTexture();
+	applyMeshControls();
+	applyMethod();
+	traverseBoneHierarchy(helper.meshes[mesh_id], helper.scene->mRootNode, Matrix4f());
+	processVertices(helper.meshes[mesh_id]);
+	renderMesh(helper.meshes[mesh_id]);
+}
+
 //void adjustLight
 
 // We are going to override (is that the right word?) the draw()
@@ -592,18 +603,32 @@ void SampleModel::draw()
 		processVertices(mesh);
 		renderMesh(mesh);
 
-		if (instance == 3)	// render wreath
+		GLfloat mat_ambient[] = {0.247250, 0.224500, 0.064500, 1.000000};
+		GLfloat mat_diffuse[] = {0.346150, 0.314300, 0.090300, 1.000000};
+		GLfloat mat_specular[] = {0.797357, 0.723991, 0.208006, 1.000000};
+		GLfloat mat_shininess[] = {83.199997};
+
+		switch (instance)
 		{
+		case 3:		// wreath
 			for (int i = 1; i <= 3; ++i)
-			{
-				helper.active_index = i;
-				helper.meshes[i].bindTexture();
-				applyMeshControls();
-				applyMethod();
-				traverseBoneHierarchy(helper.meshes[i], scene->mRootNode, Matrix4f());
-				processVertices(helper.meshes[i]);
-				renderMesh(helper.meshes[i]);
-			}
+				render(i, applyMethod);
+			break;
+		case 4:		// bells
+			glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
+			glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+			glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+			glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+			render(8, applyMethod);
+			break;
+		case 5:		// jet pack
+			glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
+			glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+			glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+			glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+			render(9, applyMethod);
+			render(10, applyMethod);
+			break;
 		}
 	}
 }
@@ -611,9 +636,13 @@ void SampleModel::draw()
 int main()
 {
 	// Load the model and textures and init IK solver
-	helper.loadModel("./models/lowpolydeer_1.2.dae", "./models/lowpolydeer_bone_1.1.txt");
+	helper.loadModel("./models/lowpolydeer_1.3.dae", "./models/lowpolydeer_bone_1.1.txt");
 
 	helper.meshes[0].loadTexture("./models/wood_texture.bmp");
+
+	for (int i = 4; i <= 7; ++i)
+		helper.meshes[i].loadTexture("./models/wood_texture.bmp");
+	
 	helper.meshes[1].loadTexture("./models/wreath_cones_diffuse.bmp");
 	helper.meshes[3].loadTexture("./models/wreath_cones_diffuse.bmp");
 	helper.meshes[2].loadTexture("./models/wreath_diffuse.bmp");
@@ -622,7 +651,11 @@ int main()
 	std::cout << "Import done, mNumMeshes: " << scene->mNumMeshes << std::endl;
 	helper.printMeshInfo();
 
-	helper.meshes[1].parent = helper.meshes[2].parent = helper.meshes[3].parent = &helper.meshes[0];
+	for (int i = 1; i <= 3; ++i)
+		helper.meshes[i].parent = &helper.meshes[0];
+
+	for (int i = 8; i <= 10; ++i)
+		helper.meshes[i].parent = &helper.meshes[0];
 
 	Mesh& mesh = helper.meshes[helper.active_index];
 	solver.scene = scene;
@@ -650,7 +683,7 @@ int main()
 	controls[LIGHT_RGB] = ModelerControl("Lights'color", 0, 3, 1, 0);
 	
 	controls[LOD] = ModelerControl("Level Of Details", 0, 3, 1, 2);
-	controls[INSTANCES] = ModelerControl("Different Instances", 1, 3, 1, 1);
+	controls[INSTANCES] = ModelerControl("Different Instances", 1, 5, 1, 1);
 	controls[MOODS] = ModelerControl("Different Moods", 0, 5, 1, 0);
 
 	controls[ROTATE_ALL] = ModelerControl("Rotate All", -180, 180, 1, 0);

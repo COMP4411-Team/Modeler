@@ -152,7 +152,10 @@ void Mesh::loadTexture(const std::string& filename)
 void Mesh::bindTexture()
 {
 	if (tex == nullptr)
+	{
+		glDisable(GL_TEXTURE_2D);
 		return;
+	}
 
 	glEnable(GL_TEXTURE_2D);
 	if (!tex_loaded)
