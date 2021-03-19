@@ -136,7 +136,7 @@ void ModelHelper::parseBoneInfo(Mesh& mesh, const string& filename)
 	}
 }
 
-void ModelHelper::loadTexture(const std::string& filename)
+void Mesh::loadTexture(const std::string& filename)
 {
 	int height, width;
 	auto* new_tex = readBMP(const_cast<char*>(filename.c_str()), width, height);
@@ -146,7 +146,30 @@ void ModelHelper::loadTexture(const std::string& filename)
 	tex = new_tex;
 	tex_height = height;
 	tex_width = width;
-	tex_loaded = false;		// not loaded or updated in opengl
+	tex_loaded = false;		// not loaded or updated in openGL
+}
+
+void Mesh::bindTexture()
+{
+	if (tex == nullptr)
+		return;
+
+	glEnable(GL_TEXTURE_2D);
+	if (!tex_loaded)
+	{
+		unsigned int texture_id;
+		glGenTextures(1, &texture_id);
+		glBindTexture(GL_TEXTURE_2D, texture_id);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tex_width, tex_height,
+		0, GL_RGB, GL_UNSIGNED_BYTE, tex);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		tex_loaded = true;
+		tex_id = texture_id;
+	}
+	else
+		glBindTexture(GL_TEXTURE_2D, tex_id);
 }
 
 void ModelHelper::printMeshInfo(bool showBoneHierarchy)
