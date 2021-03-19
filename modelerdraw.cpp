@@ -424,7 +424,7 @@ void drawTorus(double rl,double rs, double tl, double ts, double x, double y, do
         /* switch to the model matrix and scale by x,y,z. */
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
-        //glScaled(x, y, z);
+
 
         glBegin(GL_QUAD_STRIP);
         for (int i = 0; i < divisionr; i++) {
@@ -438,7 +438,7 @@ void drawTorus(double rl,double rs, double tl, double ts, double x, double y, do
                 tempx1 = tempx; tempy1 = tempy * cos(rx) - tempz * sin(rx); tempz1 = tempy * sin(rx) + tempz * cos(rx);//rotate X
                 tempy = tempy1; tempx = tempx1 * cos(ry) + tempz1 * sin(ry); tempz = -tempx1 * sin(ry) + tempz1 * cos(ry);//rotate Y
                 tempz1 = tempz; tempx1 = tempx * cos(rz) - tempy * sin(rz); tempy1 = tempx * sin(rz) + tempy * cos(rz);//rotate Z
-                glVertex3f(tempx1 + x, tempy1 + y, tempz1 + z);
+                glVertex3f(tempx1+x, tempy1+y, tempz1+z);
 
                 dy = cos(ringA + ringStep) / (rl * sqrt(sin(ringA + ringStep) * sin(ringA + ringStep) / (rs * rs) + cos(ringA + ringStep) * cos(ringA + ringStep) / (rl * rl)));
                 dz = sin(ringA + ringStep) / (rs * sqrt(sin(ringA + ringStep) * sin(ringA + ringStep) / (rs * rs) + cos(ringA + ringStep) * cos(ringA + ringStep) / (rl * rl)));
