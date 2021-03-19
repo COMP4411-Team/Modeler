@@ -194,24 +194,25 @@ void frameAll()
 void animate()
 {
 	auto& mesh = helper.meshes[helper.active_index];
-	float left1 = cos(tick) * 15;
-	float right1 = sin(tick) * 15;
-	float left2 = cos(tick) * 30;
-	float right2 = sin(tick) * 30;
-	float left3 = -cos(cos(tick)) * 35;
-	float right3 = -sin(sin(tick)) * 35;
+	float left1 = -cos(tick) * 20;
+	float right1 = -sin(tick) * 20;
+	float left2 = -cos(tick) * 45;
+	float right2 = -sin(tick) * 45;
+	float left3 = max(cos(tick) * 110, 0);
+	float right3 = max(sin(tick) * 110, 0);
 	float head = sin(tick) * 2;
 	float neck = cos(tick) * 2;
 	float tail = cos(tick) * 4;
 	float main = sin(tick) * 0.1f;
+	float fore_body = sin(tick) * 1.5f;
+	float rear = cos(tick) * 1.f;
 
 	mesh.applyTranslate("main", aiVector3D(0, 0, main));
-
 	mesh.applyRotationZ("neck", neck);
-
 	mesh.applyRotationZ("head", head);
-
 	mesh.applyRotationZ("tail", tail);
+	mesh.applyRotationZ("foreBody", fore_body);
+	mesh.applyRotationZ("rear", rear);
 	
 	mesh.applyRotationZ("foreLimpLeft1", left1);
 	mesh.applyRotationZ("foreLimpRight1", right1);
@@ -603,10 +604,10 @@ void SampleModel::draw()
 		processVertices(mesh);
 		renderMesh(mesh);
 
-		GLfloat mat_ambient[] = {0.247250, 0.224500, 0.064500, 1.000000};
-		GLfloat mat_diffuse[] = {0.346150, 0.314300, 0.090300, 1.000000};
-		GLfloat mat_specular[] = {0.797357, 0.723991, 0.208006, 1.000000};
-		GLfloat mat_shininess[] = {83.199997};
+		GLfloat mat_ambient[] = {0.247250, 0.199500, 0.074500, 1.000000};
+		GLfloat mat_diffuse[] = {0.751640, 0.606480, 0.226480, 1.000000};
+		GLfloat mat_specular[] = {0.628281, 0.555802, 0.366065, 1.000000};
+		GLfloat mat_shininess[] = {51.200001};
 
 		switch (instance)
 		{

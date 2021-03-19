@@ -14,11 +14,11 @@
 
 - [x] 1B1W Add some widgets to create individual-looking instances of your character.
 
-- [ ] 1B Add a "Frame All" feature
+- [x] 1B Add a "Frame All" feature
 
 - [x] 1B1W (1) handle camera twists and (2) to come up with an intuitive way for the user to twist the camera via mouse control.
 
-- [ ] 2B Add a function in your model file for drawing a new type of primitive. 1) Extruded surface 2) Surfaces of rotation 3) Torus.
+- [x] 2B Add a function in your model file for drawing a new type of primitive. 1) Extruded surface 2) Surfaces of rotation 3) Torus.
 
 - [x] 2B (Variable) Procedural modeling. Controllable by the user via control widgets.
 
