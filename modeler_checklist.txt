@@ -3,9 +3,9 @@ Modeler Bells and Whistles checklist for grading
 HKUST login(s): bhuai hqinac
 
 ###############################################################################
-We use assimp in this project.
+We use assimp in this project. And we also use obj files
 
-If you find the dynamic library missing, you can copy the assimp-vc142-mt.dll
+If you find the dynamic library or model scene missing, you can copy the assimp-vc142-mt.dll and model file folder
 in the main folder to where the executive is.
 ###############################################################################
 
