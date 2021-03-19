@@ -508,24 +508,10 @@ void SampleModel::draw()
 	
 	// drawSphere(0.1);
 	// drawCylinder(1, 0.1, 0.01);
-	
-	// Init texture
-	glEnable(GL_TEXTURE_2D);
-	if (!helper.tex_loaded)
-	{
-		unsigned int texture_id;
-		glGenTextures(1, &texture_id);
-		glBindTexture(GL_TEXTURE_2D, texture_id);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, helper.tex_width, helper.tex_height,
-		0, GL_RGB, GL_UNSIGNED_BYTE, helper.tex);
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		helper.tex_loaded = true;
-	}
-	
-	
-	if (!VAL(POLYGON_TORUS) && !VAL(PRIMITIVE_TORUS) && !VAL(DRAW_NURBS) && !VAL(CURVE_ENABLE) && !VAL(CURVE_ROTATION)) {
+	// Render the model
+	if (!VAL(POLYGON_TORUS) && !VAL(PRIMITIVE_TORUS) && !VAL(DRAW_NURBS) && !VAL(CURVE_ENABLE) && !VAL(CURVE_ROTATION)) 
+	{	
 		// Setup environment and pose
 		setAmbientColor(0.75f, 0.75f, 0.75f);
 		setDiffuseColor(0.75f, 0.75f, 0.75f);
@@ -538,6 +524,8 @@ void SampleModel::draw()
 		auto& mesh = helper.meshes[helper.active_index];
 		auto* scene = helper.scene;
 		global_inverse = scene->mRootNode->mTransformation.Inverse();
+
+		mesh.bindTexture();
 
 		// Function pointer for mesh controls
 		auto applyMethod = applyMeshControls;
@@ -601,6 +589,7 @@ void SampleModel::draw()
 			for (int i = 1; i <= 3; ++i)
 			{
 				helper.active_index = i;
+				helper.meshes[i].bindTexture();
 				applyMeshControls();
 				applyMethod();
 				traverseBoneHierarchy(helper.meshes[i], scene->mRootNode, Matrix4f());
@@ -613,10 +602,13 @@ void SampleModel::draw()
 
 int main()
 {
-	// Load the model and init IK solver
+	// Load the model and textures and init IK solver
 	helper.loadModel("./models/lowpolydeer_1.2.dae", "./models/lowpolydeer_bone_1.1.txt");
 
-	helper.loadTexture("./models/wood_texture.bmp");
+	helper.meshes[0].loadTexture("./models/wood_texture.bmp");
+	helper.meshes[1].loadTexture("./models/wreath_cones_diffuse.bmp");
+	helper.meshes[3].loadTexture("./models/wreath_cones_diffuse.bmp");
+	helper.meshes[2].loadTexture("./models/wreath_diffuse.bmp");
 	
 	auto* scene = helper.scene;
 	std::cout << "Import done, mNumMeshes: " << scene->mNumMeshes << std::endl;

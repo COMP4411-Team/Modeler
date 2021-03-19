@@ -48,6 +48,11 @@ public:
 	std::map<std::string, int> bone_map;
 	aiVector3D aabb_min, aabb_max;
 
+	unsigned int tex_id;
+	unsigned char* tex{nullptr};
+	int tex_height, tex_width;
+	bool tex_loaded{false};
+
 	bool applyTranslate(const std::string& bone_name, const aiVector3D& translation);
 
 	// angle in degrees
@@ -61,6 +66,9 @@ public:
 
 	void printBoneHierarchy(const aiNode* cur, int depth);
 	Bone& getBone(const std::string& name);
+
+	void loadTexture(const std::string& filename);
+	void bindTexture();
 	
 	static std::string processBoneName(const std::string& name);
 };
@@ -72,7 +80,6 @@ public:
 	void preprocess();
 	void calBoneTransformation(const aiQuaternion& global_rotation, const aiNode* cur);
 	void parseBoneInfo(Mesh& mesh, const std::string& filename);
-	void loadTexture(const std::string& filename);
 	void printMeshInfo(bool showBoneHierarchy = true);
 
 	static aiVector3D calSphericalCoords(const aiVector3D& vec);		// unused
@@ -84,9 +91,6 @@ public:
 	std::vector<Mesh> meshes;
 
 	int active_index{0};
-	unsigned char* tex{nullptr};
-	int tex_height, tex_width;
-	bool tex_loaded{false};
 };
 
 void applyMeshControls();
