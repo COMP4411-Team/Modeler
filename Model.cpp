@@ -373,11 +373,6 @@ void renderBones(Mesh& mesh, const aiNode* cur)
 // method of ModelerView to draw out SampleModel
 void SampleModel::draw()
 {
-	#ifndef MESA
-		// To avoid flicker on some machines.
-		glDrawBuffer(GL_FRONT_AND_BACK);
-	#endif // !MESA
-
 	// Change LOD
 	int lod = VAL(LOD);
 	switch (lod)

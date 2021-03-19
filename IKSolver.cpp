@@ -80,7 +80,7 @@ void IKSolver::ccdSolve(Bone& cur, Bone& end, int index, int iter)
 	if (enable_constraints)
 	{
 		// Yaw - x, roll - y, pitch - z
-		Constraints& constraint = constraints[index];
+		Constraints& constraint = constraints[index + (constraints.size() - bones.size())];
 		aiVector3D delta_angles = quaternion2Euler(rotation);
 		delta_angles = radian2Degree(delta_angles);
 
