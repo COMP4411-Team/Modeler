@@ -58,7 +58,6 @@ void ModelerUserInterface::cb_jointChoice(Fl_Widget* o, void* v)
 {
 	auto* ui = ((ModelerUserInterface*)(o->user_data()));
 	int choice = solver.constraints.size() - 1 - (int)v;
-	choice = max(0, choice);
 	ui->jointChoice = choice;
 
 	auto& constraint = solver.constraints[choice];

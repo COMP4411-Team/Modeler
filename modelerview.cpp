@@ -14,6 +14,7 @@ static const int	kMouseZoomButton				= FL_RIGHT_MOUSE;
 ModelerView::ModelerView(int x, int y, int w, int h, char *label)
 : Fl_Gl_Window(x,y,w,h,label)
 {
+	mode(FL_DOUBLE);
     m_camera = new Camera();
 }
 

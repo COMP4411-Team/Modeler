@@ -1,0 +1,64 @@
+Modeler Bells and Whistles checklist for grading
+
+HKUST login(s): bhuai hqinac
+
+Basic requirements: 
+Please state what 2B you implemented to exclude from your B/W scores below
+
+All but the metaballs are done, so you can just exclude any 2B from them.
+
+NOTE: About the requirements of using glTranslate(), glRotate() and glScale(), we specially render the skeleton separately and you can find that we use all the required functions in renderBones() (line 324-368 in Model.cpp),
+and you can find glScale() at line 532 and other places by searching.
+
+There is a slider called "Limp Folding" which is tied to 8 joints.
+
+
+B/W:
+
+Delete yes/no when appropriate
+
+
+W dramatic light					yes
+
+W adjustable LoD					yes
+
+W your idea 						yes
+We did skeletal animation (or skinning) and we think that deserves more than a whistle ;)
+
+B texture map						yes
+We used a wooden like texture, you can find it at ./models/wood_texture.bmp
+
+B polygonal faces (triangles)		yes
+
+B animation       					yes
+
+B individual looking (not just red/green) 		yes
+
+B frame all							yes
+The option is under File->Frame All
+
+BW up vector 						yes
+Press the left and right button of your mouse together and move can twist the camera
+
+2B new primitives for each 			yes
+All three primitives mentioned are implemented (extruded surfaces, surfaces of rotation, torus)
+You can find demos at the bottom of the Modeler controls list
+
+!!!CAVEAT!!! Please only enable one demo at a time, and disable all the demos to see the original model
+
+2B L-system							yes
+!!!CAVEAT!!! The rendering is very expensive and has performance issue
+
+2B mood cycling 					yes
+
+4B metaballs						no
+
+8B goal-oriented motion 			yes
+You can find it in the top row of menu
+You can choose the end effector and the target position (measured as the relative offset to the original position of the end effector)
+The target position input is actually a slider as well. You can also manually input.
+
++4B joint contraints 				yes
+There's a joint dropdown list for you to select. Check the "enable constraints" and then modify all the constraints as you want.
+
+Note that some end effectors do not have three joints (e.g. the head), in this case the constraints on the 3rd joint will have no effect.
