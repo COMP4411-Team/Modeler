@@ -385,7 +385,6 @@ void render(int mesh_id, void(* applyMethod)())
 // method of ModelerView to draw out SampleModel
 void SampleModel::draw()
 {
-
 	// Change LOD
 	int lod = VAL(LOD);
 	switch (lod)
@@ -605,10 +604,10 @@ void SampleModel::draw()
 		processVertices(mesh);
 		renderMesh(mesh);
 
-		GLfloat mat_ambient[] = {0.247250, 0.224500, 0.064500, 1.000000};
-		GLfloat mat_diffuse[] = {0.346150, 0.314300, 0.090300, 1.000000};
-		GLfloat mat_specular[] = {0.797357, 0.723991, 0.208006, 1.000000};
-		GLfloat mat_shininess[] = {83.199997};
+		GLfloat mat_ambient[] = {0.247250, 0.199500, 0.074500, 1.000000};
+		GLfloat mat_diffuse[] = {0.751640, 0.606480, 0.226480, 1.000000};
+		GLfloat mat_specular[] = {0.628281, 0.555802, 0.366065, 1.000000};
+		GLfloat mat_shininess[] = {51.200001};
 
 		switch (instance)
 		{
