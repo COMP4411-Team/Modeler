@@ -379,7 +379,7 @@ void drawCylinder( double h, double r1, double r2 )
     
 }
 
-void drawTorus(double rl,double rs, double tl, double ts, double x, double y, double z, double rx, double ry, double rz) {
+void drawTorus(double rl,double rs, double tl, double ts, double x, double y, double z, double rx, double ry, double rz, int flower, int numPetal) {
     ModelerDrawState* mds = ModelerDrawState::Instance();
 
     _setupOpenGl();
@@ -393,18 +393,18 @@ void drawTorus(double rl,double rs, double tl, double ts, double x, double y, do
     }
     else
     {
-        int divisionr, divisiont;
+        int divisionr, divisiont, divisionp;
 
         switch (mds->m_quality)
         {
         case HIGH:
-            divisionr = 80; divisiont = 40; break;
+            divisionr = 80; divisiont = 40; divisionp = 50; break;
         case MEDIUM:
-            divisionr = 60; divisiont = 30; break;
+            divisionr = 60; divisiont = 30; divisionp = 40; break;
         case LOW:
-            divisionr = 40; divisiont = 20; break;
+            divisionr = 40; divisiont = 20; divisionp = 30; break;
         case POOR:
-            divisionr = 20; divisiont = 10; break;
+            divisionr = 20; divisiont = 10; divisionp = 20; break;
         }
 
         rx = 2 * M_PI / 360 * rx;
@@ -412,6 +412,8 @@ void drawTorus(double rl,double rs, double tl, double ts, double x, double y, do
         rz = 2 * M_PI / 360 * rz;
         double ringStep = 2 * M_PI / divisionr;
         double tubeStep = 2 * M_PI / divisiont;
+        double flowerStep = 2 * M_PI / numPetal;
+        double petalStep = M_PI / divisionp;
         double ringA = 0;//ringAngle
         double tubeA = 0;//TubeAngle
         double tempx, tempy, tempz;
@@ -448,6 +450,12 @@ void drawTorus(double rl,double rs, double tl, double ts, double x, double y, do
                 tempy = tempy1; tempx = tempx1 * cos(ry) + tempz1 * sin(ry); tempz = -tempx1 * sin(ry) + tempz1 * cos(ry);//rotate Y
                 tempz1 = tempz; tempx1 = tempx * cos(rz) - tempy * sin(rz); tempy1 = tempx * sin(rz) + tempy * cos(rz);//rotate Z
                 glVertex3f(tempx1 + x, tempy1 + y, tempz1 + z);
+            }
+        }
+        if (flower) {
+            for (int i = 0; i < numPetal; i++) {
+                ringA = i * flowerStep;
+
             }
         }
 

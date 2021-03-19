@@ -92,7 +92,7 @@ void drawTextureBox( double x, double y, double z );
 void drawCylinder( double h, double r1, double r2 );
 
 // Draw a Torus with ring radius r and tube radius t
-void drawTorus(double rl, double tl,double rs, double ts ,double x, double y, double z, double rx, double ry, double rz);
+void drawTorus(double rl, double tl,double rs, double ts ,double x, double y, double z, double rx, double ry, double rz, int flower, int numPetal);
 
 //Draw the Bzier curve for rotation
 void drawCurve(double x1, double y1, double z1,

@@ -373,6 +373,7 @@ void renderBones(Mesh& mesh, const aiNode* cur)
 // method of ModelerView to draw out SampleModel
 void SampleModel::draw()
 {
+
 	// Change LOD
 	int lod = VAL(LOD);
 	switch (lod)
@@ -494,7 +495,7 @@ void SampleModel::draw()
 		//glRotatef(VAL(TORUS_RY), 0.0, 1.0, 0.0);
 		//glRotatef(VAL(TORUS_RZ), 0.0, 0.0, 1.0);
 		drawTorus(VAL(TORUS_RING_LR),VAL(TORUS_RING_SR), VAL(TORUS_TUBE_LR),VAL(TORUS_TUBE_SR), 
-			VAL(TORUS_PX), VAL(TORUS_PY), VAL(TORUS_PZ), VAL(TORUS_RX), VAL(TORUS_RY), VAL(TORUS_RZ));
+			VAL(TORUS_PX), VAL(TORUS_PY), VAL(TORUS_PZ), VAL(TORUS_RX), VAL(TORUS_RY), VAL(TORUS_RZ), VAL(TORUS_FLOWER), VAL(TORUS_PETAL));
 		glPopMatrix();
 	}
 

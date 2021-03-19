@@ -18,7 +18,8 @@ B/W:
 Delete yes/no when appropriate
 
 
-W dramatic light					yes
+W dramatic light					yes 
+two light sources, you can open and close them , take control of the position of them individually. You can also change the intensity and color of lights.
 
 W adjustable LoD					yes
 
@@ -43,13 +44,24 @@ Press the left and right button of your mouse together and move can twist the ca
 2B new primitives for each 			yes
 All three primitives mentioned are implemented (extruded surfaces, surfaces of rotation, torus)
 You can find demos at the bottom of the Modeler controls list
+for the surfaces of rotation, we use Bezier curve and you can control the curve by the coordinates of 4 points. and the curve will rotate about z axis.
+for the torus primitive, there is an additional polygon version because of misunderstanding. both polygon version and primitive version can be controled.
+
 
 !!!CAVEAT!!! Please only enable one demo at a time, and disable all the demos to see the original model
+                    but there is no need to disable beer model, as it is default and only works when all other primitives are disabled.
 
 2B L-system							yes
 !!!CAVEAT!!! The rendering is very expensive and has performance issue
 
-2B mood cycling 					yes
+2B mood cycling 					yes 
+There is a mood controling slider, 0 means default, 1 is peaceful and sleepy mood, 2 is curious mood, 3 to 5 shows a process of jump.
+the storyline is: at first the beer is sitting sleeply, but the she/he finds something intresting(maybe an apple on a tree), and jump to get it.
+in mood 1, only head, nack and tails are under control, as the beer is sleepy, the control effect on it will be smaller.
+in mood 2 and 3, as the beer is attracted, the direction of head will keep the same no matter how you control the neck;
+in mood 3 and 4, as the beer is engaged and happy, the control effect on tail will be larger.
+in mood 4, as the beer is jumping, only head, neck and tail can be controled. Because of the wind, tail can only yaw and cannot pitch.
+in mood 3 and 5, according to the special posture, the legs can only pitch to distinct direction.
 
 4B metaballs						no
 
