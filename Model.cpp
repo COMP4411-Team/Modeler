@@ -384,7 +384,6 @@ void render(int mesh_id, void(* applyMethod)())
 // method of ModelerView to draw out SampleModel
 void SampleModel::draw()
 {
-
 	// Change LOD
 	int lod = VAL(LOD);
 	switch (lod)
@@ -435,11 +434,11 @@ void SampleModel::draw()
 	GLfloat LightAmbient[] = { 0.0, 0.0, 0.0 };
 	switch (int(VAL(LIGHT_RGB))) {
 	case 1:
-		LightAmbient[0] = 0.5; break;
+		LightDiffuse[0] *= 0.5; break;
 	case 2:
-		LightAmbient[1] = 0.5; break;
+		LightDiffuse[1] *= 0.5; break;
 	case 3:
-		LightAmbient[2] = 0.5; break;
+		LightDiffuse[2] *= 0.5; LightDiffuse[1] *= 0.7; break;
 	}
 	if (VAL(LIGHT0_ENABLE)) {
 		glEnable(GL_LIGHT0);
@@ -576,7 +575,7 @@ void SampleModel::draw()
 		applyMethod();
 
 		// Animation
-		if (ModelerApplication::Instance()->m_animating && !solver.show_ik_result && int(VAL(MOODS)) == 0)
+		if (ModelerApplication::Instance()->m_animating && !solver.show_ik_result && int(VAL(MOODS))==0)
 			animate();
 
 		// Apply the solution of IKSolver
@@ -632,6 +631,7 @@ void SampleModel::draw()
 			break;
 		}
 	}
+
 }
 
 int main()
