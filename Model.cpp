@@ -194,24 +194,25 @@ void frameAll()
 void animate()
 {
 	auto& mesh = helper.meshes[helper.active_index];
-	float left1 = cos(tick) * 15;
-	float right1 = sin(tick) * 15;
-	float left2 = cos(tick) * 30;
-	float right2 = sin(tick) * 30;
-	float left3 = -cos(cos(tick)) * 35;
-	float right3 = -sin(sin(tick)) * 35;
+	float left1 = -cos(tick) * 20;
+	float right1 = -sin(tick) * 20;
+	float left2 = -cos(tick) * 45;
+	float right2 = -sin(tick) * 45;
+	float left3 = max(cos(tick) * 110, 0);
+	float right3 = max(sin(tick) * 110, 0);
 	float head = sin(tick) * 2;
 	float neck = cos(tick) * 2;
 	float tail = cos(tick) * 4;
 	float main = sin(tick) * 0.1f;
+	float fore_body = sin(tick) * 1.5f;
+	float rear = cos(tick) * 1.f;
 
 	mesh.applyTranslate("main", aiVector3D(0, 0, main));
-
 	mesh.applyRotationZ("neck", neck);
-
 	mesh.applyRotationZ("head", head);
-
 	mesh.applyRotationZ("tail", tail);
+	mesh.applyRotationZ("foreBody", fore_body);
+	mesh.applyRotationZ("rear", rear);
 	
 	mesh.applyRotationZ("foreLimpLeft1", left1);
 	mesh.applyRotationZ("foreLimpRight1", right1);
