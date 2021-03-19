@@ -3,10 +3,9 @@ Modeler Bells and Whistles checklist for grading
 HKUST login(s): bhuai hqinac
 
 ###############################################################################
-We use assimp in this project. And we also use obj files
+We use assimp in this project to import meshes and bone information.
 
-If you find the dynamic library or model scene missing, you can copy the assimp-vc142-mt.dll and model file folder
-in the main folder to where the executive is.
+If you find the dynamic library or the models missing (in this case the program will crash immediately), you can copy the assimp-vc142-mt.dll and the whole models folder in the main folder to where the executive is.
 ###############################################################################
 
 Basic requirements: 
