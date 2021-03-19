@@ -416,6 +416,7 @@ void drawTorus(double rl,double rs, double tl, double ts, double x, double y, do
         double petalStep = M_PI / divisionp;
         double ringA = 0;//ringAngle
         double tubeA = 0;//TubeAngle
+        double petalA = 0;
         double tempx, tempy, tempz;
         double tempx1, tempy1, tempz1;
 
@@ -451,11 +452,40 @@ void drawTorus(double rl,double rs, double tl, double ts, double x, double y, do
                 tempz1 = tempz; tempx1 = tempx * cos(rz) - tempy * sin(rz); tempy1 = tempx * sin(rz) + tempy * cos(rz);//rotate Z
                 glVertex3f(tempx1 + x, tempy1 + y, tempz1 + z);
             }
+            tubeA = 0;
         }
+        ringA = 0;
         if (flower) {
             for (int i = 0; i < numPetal; i++) {
                 ringA = i * flowerStep;
+                double petaly = rl * (cos(ringA) + cos(ringA + flowerStep)) / 2;
+                double petalz = rs * (sin(ringA) + sin(ringA + flowerStep)) / 2;
+                double dpy = rl * cos(ringA) - petaly;
+                double dpz = rs * sin(ringA) - petalz;
+                double petalR = sqrt(dpy * dpy + dpz * dpz);
+                double petaliA = atan(dpz / dpy);
+                if (dpy < 0) petaliA += M_PI;
+                for (int j = 0; j < divisionp; j++) {
+                    petalA = petaliA+j * petalStep;
+                    for (int k = 0; k <= divisiont; k++) {
+                        tubeA = k * tubeStep;
+                        glNormal3f(sin(tubeA) / ts, cos(tubeA) / tl * cos(petalA), cos(tubeA) / tl * sin(petalA));
+                        tempx = ts * sin(tubeA); tempy = (tl * cos(tubeA) + petalR) * cos(petalA) + petaly; tempz = (tl * cos(tubeA) + petalR) * sin(petalA) + petalz;
+                        tempx1 = tempx; tempy1 = tempy * cos(rx) - tempz * sin(rx); tempz1 = tempy * sin(rx) + tempz * cos(rx);//rotate X
+                        tempy = tempy1; tempx = tempx1 * cos(ry) + tempz1 * sin(ry); tempz = -tempx1 * sin(ry) + tempz1 * cos(ry);//rotate Y
+                        tempz1 = tempz; tempx1 = tempx * cos(rz) - tempy * sin(rz); tempy1 = tempx * sin(rz) + tempy * cos(rz);//rotate Z
+                        glVertex3f(tempx1 + x, tempy1 + y, tempz1 + z);
 
+                        glNormal3f(sin(tubeA) / ts, cos(tubeA) / tl * cos(petalA + petalStep), cos(tubeA) / tl * sin(petalA + petalStep));
+                        tempx = ts * sin(tubeA); tempy = (tl * cos(tubeA) + petalR) * cos(petalA + petalStep) + petaly; tempz = (tl * cos(tubeA) + petalR) * sin(petalA + petalStep) + petalz;
+                        tempx1 = tempx; tempy1 = tempy * cos(rx) - tempz * sin(rx); tempz1 = tempy * sin(rx) + tempz * cos(rx);//rotate X
+                        tempy = tempy1; tempx = tempx1 * cos(ry) + tempz1 * sin(ry); tempz = -tempx1 * sin(ry) + tempz1 * cos(ry);//rotate Y
+                        tempz1 = tempz; tempx1 = tempx * cos(rz) - tempy * sin(rz); tempy1 = tempx * sin(rz) + tempy * cos(rz);//rotate Z
+                        glVertex3f(tempx1 + x, tempy1 + y, tempz1 + z);
+                    }
+                }
+                    
+                    
             }
         }
 

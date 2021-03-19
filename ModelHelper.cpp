@@ -568,7 +568,7 @@ void applyWatchMood() {
 	mesh.applyRotationX("head", 0);
 	mesh.applyRotationY("head",0);
 	mesh.applyRotationZ("head", min(0, -VAL(NECK_PITCH)));
-	mesh.applyRotationX("neck", -VAL(NECK_YAW));
+	mesh.applyRotationX("head", -VAL(NECK_YAW));
 	mesh.applyRotationY("head", VAL(HEAD_ROLL) / 3);
 
 	//============================================================
@@ -760,6 +760,7 @@ void applyPreJumpMood() {
 
 	//=============================================================
 
+	mesh.restoreIdentity("foreLimpLeft3");
 	mesh.applyRotationZ("foreLimpLeft3", 25);
 	mesh.applyRotationX("foreLimpLeft3", -8);
 	mesh.applyRotationZ("foreLimpLeft3", abs(VAL(LEFT_FORELIMP_3)));
